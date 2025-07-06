@@ -1,0 +1,7 @@
+1. File fromat check (Done)
+2. File size check (Done)
+3. Background check (Done)
+4. Symmetry check  (Done)
+5. Focus check (Done)
+6. Head check (Done)
+7. able to upload folder(.zip) after deployment (Done)

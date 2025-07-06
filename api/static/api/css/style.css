@@ -1,0 +1,202 @@
+/* Navigation Tabs */
+#nav-tab {
+  background: #111;
+
+}
+
+#nav-tab-main {
+  margin-top: -2%;
+  margin-bottom: 18px;
+  display: flex;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.nav-link {
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem; 
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.nav-link.active {
+  background: #16a085;
+  color: #fff;
+}
+/* About Section */
+.about-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem 0; 
+  background: rgba(22, 22, 22, 0.9);
+  min-height: 100vh;
+}
+
+.about-section p {
+  margin-bottom: 2rem; /* Reduce the margin bottom to adjust spacing */
+}
+
+.admin-form {
+  display: flex;
+  justify-content: center;
+}
+
+.adminButton {
+  font-weight: bold;
+  font-size: 19px;
+  background: #16a085;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+label {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 10px;
+}
+#uploadFolder,
+#btnSubmit,
+#btnSaveConfig {
+  align-items: center;
+  font-weight: bold;
+  font-size: 19px;
+  margin: 0.5rem auto 1rem auto;
+  background: #16a085;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.showInvalid {
+  font-weight: bold;
+  font-size: 19px;
+  margin: 0.5rem 0;
+  background: #16a085;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.showInvalid:hover,
+.adminButton:hover,
+#uploadFolder:hover,
+#btnSubmit:hover,
+#btnSaveConfig:hover  {
+  color: #000;
+}
+
+#btnSubmit:disabled, 
+#showInvalid:disabled {
+  background: rgba(255, 255, 255, 0.5);
+  color: #000;
+  cursor: not-allowed;
+}
+
+#configInput {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* Add this line */
+}
+
+#heightConfig,
+#widthConfig,
+#sizeConfig {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Add this line */
+}
+
+#heightConfig span,
+#widthConfig span,
+#sizeConfig span {
+  margin: 1rem;
+}
+
+#heightConfig input,
+#widthConfig input,
+#sizeConfig input {
+  margin: 0.5rem;
+}
+
+#allowedFormat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3%; /* Adjust margin as needed */
+  order: 3; /* Add this line */
+}
+
+#othersFormat {
+  margin-left: 13%;
+}
+
+#othersFormatText {
+  margin-left: 15%;
+}
+#uploadFolder{
+  font-weight: bold;
+  margin-top:6%;
+  margin-left: 1%;
+}
+
+/* Selected Folder Text Styles */
+#selectedFolderText {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: bold;
+  font-size: medium;
+  width: 100%;
+}
+  
+  #categoryDropDown{
+    margin-top: 20px;
+    margin-left: 25%;
+    font-weight: bold;
+  }
+  
+  #numberInput{
+    float:left;
+  }  
+
+  .simple-text{
+    color:rgba(255, 255, 255, 0.5) ;
+    font-weight:bold;
+    font-size: 16px;
+  }
+  .head-text{
+    color: #fff;
+    padding: 2px;
+    text-decoration: underline;
+  
+  }
+  #result {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: bold;
+    padding: 20px;
+    margin: 20px; 
+    font-family: 'Varela Round';
+    font-size: xx-large;
+  }
+  /* .full-width-hr {
+    width: 100%;
+    height: 1px;
+    background-color: #fff;
+    border: none;
+    margin: 30px 0;
+    padding: 0;
+  } */
+  

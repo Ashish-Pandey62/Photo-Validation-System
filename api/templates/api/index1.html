@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    {% load static %}
+
+    <title>Photo Validation System</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'api/css/bootstrap.css' %}" rel="stylesheet" />
+
+    <!-- Custom fonts for this template -->
+    <link
+      href="{% static 'api/vendor/fontawesome-free/css/all.min.css' %}"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{% static 'api/css/style.css' %}" />
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'api/css/grayscale.css' %}" rel="stylesheet" />
+
+    <script src="{% static 'api/js/jquer.js' %}"></script>
+    <style>
+      label {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .file-upload-wrapper input[type="file"] {
+        display: none;
+      }
+      .process-button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      .process-button:hover {
+        background-color: rgb(37, 147, 183);
+      }
+      .process-button:disabled {
+        background-color: gray;
+      }
+      .button-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+
+      #btnSubmit {
+        background-color: mediumseagreen;
+      }
+
+      #btnSubmit:hover {
+        background-color: rgb(37, 147, 183);
+      }
+
+      #btnSubmit:disabled {
+        background-color: gray;
+      }
+
+      .file-name-label {
+        display: inline-block;
+        margin-left: 10px;
+        color: aliceblue;
+      }
+    </style>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("id_folder");
+        const fileNameLabel = document.querySelector(".file-name-label");
+
+        fileInput.addEventListener("change", function () {
+          if (fileInput.files.length > 0) {
+            fileNameLabel.textContent = fileInput.files[0].name;
+            $("#uploadZip").prop("disabled", false);
+          } else {
+            fileNameLabel.textContent = "No files chosen";
+          }
+        });
+      });
+      $(document).ready(function () {
+        // Apply the adminButton class styling
+        $(".adminButton").css({
+          position: "absolute",
+          right: "0",
+          top: "0",
+          padding: "10px 20px",
+          "background-color": "#4CAF50",
+          color: "white",
+          border: "none",
+          "border-radius": "5px",
+          cursor: "pointer",
+        });
+
+        $(".redirectButton").css({
+          position: "absolute",
+          right: "0",
+          bottom: "0",
+          padding: "10px 20px",
+          "background-color": "#4CAF50",
+          color: "white",
+          border: "none",
+          "border-radius": "5px",
+          cursor: "pointer",
+        });
+
+        $("#showInvalid").click(function (event) {
+          event.preventDefault();
+          window.location.href = "{% url 'image_gallery' %}";
+        });
+
+        $("#adminButton").click(function (event) {
+          event.preventDefault();
+          window.location.href = "{% url 'admin:index' %}";
+        });
+
+        $("#deleteData").click(function (event) {
+          event.preventDefault();
+          window.location.href = "{% url 'delete_all' %}";
+        });
+
+        // $("#showCSV").click(function (event) {
+        //     event.preventDefault();
+        //     window.location.href = "{% url 'displayCsv' %}";
+        // });
+      });
+    </script>
+  </head>
+
+  <body id="page-top" class="about-section text-center">
+    <div class="container" id="nav-tab-main">
+      <div class="row">
+        <div class="col-xs-12">
+          <nav>
+            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+              <a
+                class="nav-item nav-link active"
+                id="nav-home-tab"
+                data-toggle="tab"
+                href="#nav-home"
+                role="tab"
+                aria-controls="nav-home"
+                aria-selected="true"
+                >Home</a
+              >
+              <a
+                class="nav-item nav-link"
+                id="nav-config-tab"
+                data-toggle="tab"
+                href="#nav-configuration"
+                role="tab"
+                aria-controls="nav-profile"
+                aria-selected="false"
+                >Configurations</a
+              >
+            </div>
+          </nav>
+          <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+            <div
+              class="tab-pane fade show active"
+              id="nav-home"
+              role="tabpanel"
+              aria-labelledby="nav-home-tab"
+            >
+              <div class="container d-flex h-100 align-items-center">
+                <div class="mx-auto text-center">
+                  {#
+                  <h1 class="mx-auto my-0 text-uppercase">Photo Validator</h1>
+                  #}
+                  <h2 class="text-white-50 mx-auto mt-2 mb-5">
+                    Photo Validation System
+                  </h2>
+                </div>
+              </div>
+              <div class="container">
+                <div class="row">
+                  <div class="col-lg-8 mx-auto">
+                    <!-- <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
+                                    {% csrf_token %}
+                                    <br>
+                                    <select class="form-control" id="categoryDropDown" name="">
+                                        <option value="folder">validate the folder </option>
+                                        <option value="file">Validate an image</option>
+                                    </select>
+                                
+                                    <input type="submit" name="file" value="Choose a zipfile" id="uploadZip"> -->
+                    <form
+                      method="post"
+                      enctype="multipart/form-data"
+                      id="fileUploadForm"
+                    >
+                      {% csrf_token %}
+                      <div class="file-upload-wrapper">
+                        <label for="id_folder">Choose a Zip File</label>
+                        {{ form.folder }}
+                        <br />
+                        <span class="file-name-label">No files chosen</span>
+                      </div>
+                      <br />
+                      <br />
+                      <button
+                        type="submit"
+                        id="uploadZip"
+                        class="process-button"
+                        disabled
+                      >
+                        Start Validation
+                      </button>
+                    </form>
+                    <!-- <br/>
+                                    <br>
+                                    <span id="selectedFolderText"></span>
+                                    <input type="button" value="Submit" id="btnSubmit" class="process-button" disabled/>
+
+                                </form> -->
+
+                    <span
+                      id="result"
+                      style="
+                        color: rgba(255, 255, 255, 0.5);
+                        font-weight: bold;
+                        font-family: 'Varela Round';
+                        font-size: xx-large;
+                      "
+                    ></span>
+
+                    <div class="button-container">
+                      <button id="showInvalid" class="process-button" disabled>
+                        Show invalid images
+                      </button>
+                    </div>
+                    <!-- <div class="button-container">
+                                    <button id="showCSV" class="process-button" disabled>Display Results in CSV</button>
+                                </div> -->
+                    <div class="button-container">
+                      <button id="deleteData" class="process-button">
+                        Delete Data
+                      </button>
+                    </div>
+                    <div class="button-container">
+                      <button id="adminButton" class="process-button">
+                        Admin
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="tab-pane fade"
+              id="nav-configuration"
+              role="tabpanel"
+              aria-labelledby="nav-profile-tab"
+            >
+              <div class="container d-flex h-100 align-items-center">
+                <div class="mx-auto text-center">
+                  {#
+                  <h1 class="mx-auto my-0 text-uppercase">Photo Validator</h1>
+                  #}
+                  <h2 class="text-white-50 mx-auto mt-2 mb-5">
+                    Photo Validation System
+                  </h2>
+                </div>
+              </div>
+              <form
+                method="POST"
+                enctype="multipart/form-data"
+                id="fileUploadForm1"
+              >
+                {% csrf_token %}
+
+                <div id="configInput">
+                  <div id="heightConfig">
+                    <span class="head-text">Height(in Pixel):</span>
+                    <span class="simple-text">Minimum: </span>
+
+                    <input
+                      type="number"
+                      value="{{config.min_height}}"
+                      min="0"
+                      max="100000"
+                      step="10"
+                      id="minHeight"
+                    />
+
+                    <span class="simple-text"> Maximum: </span>
+
+                    <input
+                      type="number"
+                      value="{{config.max_height}}"
+                      min="0"
+                      max="100000"
+                      step="10"
+                      id="maxHeight"
+                    />
+                  </div>
+                  <br /><br />
+                  <br />
+                  <div id="widthConfig">
+                    <span class="head-text">Width(in Pixel):</span>
+
+                    <span class="simple-text">Minimum: </span>
+
+                    <input
+                      type="number"
+                      value="{{config.min_width}}"
+                      min="0"
+                      max="100000"
+                      step="10"
+                      id="minWidth"
+                    />
+
+                    <span class="simple-text"> Maximum: </span>
+
+                    <input
+                      type="number"
+                      value="{{config.max_width}}"
+                      min="0"
+                      max="100000"
+                      step="10"
+                      id="maxWidth"
+                    />
+                  </div>
+                  <br /><br />
+                  <br />
+                  <div id="sizeConfig">
+                    <span class="head-text">Size(in KB):</span>
+
+                    <span class="simple-text">Minimum: </span>
+
+                    <input
+                      type="number"
+                      value="{{config.min_size}}"
+                      min="0"
+                      max="100000"
+                      step="10"
+                      id="minSize"
+                    />
+
+                    <span class="simple-text"> Maximum: </span>
+
+                    <input
+                      type="number"
+                      value="{{config.max_size}}"
+                      min="0"
+                      max="100000"
+                      step="10"
+                      id="maxSize"
+                    />
+                  </div>
+                </div>
+                <br />
+                <div id="allowedFormat">
+                  <span class="head-text">Allowed Formats</span>
+                  <br />
+                  <div class="form-check" id="formatCheck">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="jpgchecked"
+                      {%
+                      if
+                      config.is_jpg
+                      %}CHECKED{%
+                      endif
+                      %}
+                    />
+                    <label
+                      class="form-check-label simple-text"
+                      for="exampleCheck1"
+                      >JPG</label
+                    >
+                    <br />
+                    <br />
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="pngchecked"
+                      {%
+                      if
+                      config.is_png
+                      %}CHECKED{%
+                      endif
+                      %}
+                    />
+                    <label
+                      class="form-check-label simple-text"
+                      for="exampleCheck1"
+                      >PNG</label
+                    >
+                    <br />
+                    <br />
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      id="jpegchecked"
+                      {%
+                      if
+                      config.is_jpeg
+                      %}CHECKED{%
+                      endif
+                      %}
+                    />
+                    <label
+                      class="form-check-label simple-text"
+                      for="exampleCheck1"
+                      >JPEG</label
+                    >
+                    <br />
+                    <br /><br />
+                    <br />
+                  </div>
+                </div>
+                <input type="button" value="Save" id="btnSaveConfig" />
+              </form>
+              <!-- <span id="updatebutton" style="color:rgba(255, 255, 255, 0.5) ;font-weight:bold;  font-family: 'Varela Round';  font-size:xx-large"></span> -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Bootstrap core JavaScript -->
+        <script src="{% static 'api/vendor/jquery/jquery.min.js' %}"></script>
+        <script src="{% static 'api/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+        <!-- Plugin JavaScript -->
+        <script src="{% static 'api/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+        <!-- Custom scripts for this template -->
+        <script src="{% static 'api/js/grayscale.min.js' %}"></script>
+
+        <script src="{% static 'api/js/logic.js' %}"></script>
+      </div>
+    </div>
+  </body>
+</html>

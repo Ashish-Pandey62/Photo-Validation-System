@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Invalid Image Gallery
+        {% load static %}
+        {% load custom_filters %}
+    </title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #181818;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .image {
+            position: relative;
+            background-color: #2a2a2a;
+            padding: 10px;
+            height: 200px;
+            width: 200px;
+            margin-bottom: 40px;
+        }
+
+        .image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: 0;
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+        }
+
+        input[type="checkbox"] {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .process-button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .process-button:hover {
+            background-color: rgb(37, 147, 183);
+        }
+
+        .reasons-list {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 40px;
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            list-style-type: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 align="center">Invalid Images</h2>
+        <form action="/process_selected_images/" method="post">
+            {% csrf_token %}
+            <div class="image-grid">
+                {% for image, reasons in reasons_for_invalidity.items %}
+                    <div class="image">
+                        <img src="{% static 'api/images/invalid/'|add:image %}" alt="{{ image }}">
+                        <div class="image-content">
+                            <label for="image{{ forloop.counter }}">
+                                <p class="image-caption">{{ image|get_image_name }}</p>
+                            </label> 
+                        </div>
+                        <ul class="reasons-list">
+                            {% for reason in reasons %}
+                                <li>{{ reason }}</li>
+                            {% endfor %}
+                        </ul>
+                        <input type="checkbox" id="image{{ forloop.counter }}" name="selected_images" value="{{ image }}">
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="movetovalidButton" class="button-container">
+                <button class="process-button" type="submit">Move to valid</button>
+            </div>
+        </form>
+        <form action="/process_rejected_images/" method="post">
+            {% csrf_token %}
+            <div class="button-container">
+                <button id="finishButton" class="process-button" type="submit">Finished process/ Display CSV</button>
+            </div>
+        </form>
+        <form action="/photoValidator/" method="post">
+            {% csrf_token %}
+            <div class="button-container">
+                <button id="homeButton" class="process-button" type="submit">Return</button>
+            </div>
+        </form>
+    </div>
+    <!-- <script src="{% static 'api/js/logic.js' %}"></script> -->
+</body>
+</html>
