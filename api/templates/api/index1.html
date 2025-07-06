@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <meta name="description" content="" />
+    <meta name="description" content="Professional Photo Validation System" />
     <meta name="author" content="" />
     {% load static %}
 
@@ -20,6 +20,11 @@
       href="{% static 'api/vendor/fontawesome-free/css/all.min.css' %}"
       rel="stylesheet"
     />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="{% static 'api/css/style.css' %}" />
 
     <!-- Custom styles for this template -->
@@ -27,419 +32,1171 @@
 
     <script src="{% static 'api/js/jquer.js' %}"></script>
     <style>
-      label {
-        padding: 10px 20px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+      /* Modern Variables */
+      :root {
+        --primary-color: #3b82f6;
+        --primary-hover: #2563eb;
+        --success-color: #10b981;
+        --success-hover: #059669;
+        --warning-color: #f59e0b;
+        --warning-hover: #d97706;
+        --danger-color: #ef4444;
+        --danger-hover: #dc2626;
+        --dark-bg: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+        --card-bg: rgba(255, 255, 255, 0.08);
+        --text-primary: #ffffff;
+        --text-secondary: rgba(255, 255, 255, 0.8);
+        --text-muted: rgba(255, 255, 255, 0.6);
+        --border-color: rgba(255, 255, 255, 0.1);
+        --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        --shadow-heavy: 0 20px 60px 0 rgba(0, 0, 0, 0.5);
       }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--dark-bg);
+        color: var(--text-primary);
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Animated Background */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+          radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+        z-index: -1;
+        animation: backgroundShift 10s ease-in-out infinite alternate;
+      }
+
+      @keyframes backgroundShift {
+        0% { opacity: 0.3; }
+        100% { opacity: 0.6; }
+      }
+
+      /* Header Styles */
+      .header {
+        text-align: center;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+      }
+
+      .header h1 {
+        font-family: 'Poppins', sans-serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.6;
+      }
+
+      /* Glassmorphism Card */
+      .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: var(--shadow-light);
+        margin: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-heavy);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      /* Modern File Upload */
+      .file-upload-area {
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.02);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .file-upload-area::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.5s;
+      }
+
+      .file-upload-area:hover::before {
+        left: 100%;
+      }
+
+      .file-upload-area:hover {
+        border-color: rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .file-upload-area.dragover {
+        border-color: var(--primary-color);
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      .upload-icon {
+        font-size: 3rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        display: block;
+      }
+
       .file-upload-wrapper input[type="file"] {
         display: none;
       }
-      .process-button {
-        padding: 10px 20px;
-        background-color: #4caf50;
+
+      .file-upload-label {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: var(--primary-color);
         color: white;
-        border: none;
-        border-radius: 5px;
+        border-radius: 50px;
         cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
       }
-      .process-button:hover {
-        background-color: rgb(37, 147, 183);
+
+      .file-upload-label:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
       }
-      .process-button:disabled {
-        background-color: gray;
+
+      .file-name-display {
+        margin-top: 1rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        border: 1px solid rgba(255, 255, 255, 0.1);
       }
-      .button-container {
+
+      /* Modern Buttons */
+      .btn-modern {
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+        margin: 0.5rem;
+      }
+
+      .btn-primary {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+      }
+
+      .btn-success {
+        background: var(--success-color);
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-success:hover {
+        background: var(--success-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+      }
+
+      .btn-warning {
+        background: var(--warning-color);
+        color: white;
+        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+      }
+
+      .btn-warning:hover {
+        background: var(--warning-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+      }
+
+      .btn-danger {
+        background: var(--danger-color);
+        color: white;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+      }
+
+      .btn-danger:hover {
+        background: var(--danger-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+      }
+
+      .btn-modern:disabled {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.3);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* Results Display */
+      .result-display {
+        margin: 2rem 0;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        min-height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Button Container */
+      .button-grid {
         display: flex;
         justify-content: center;
-        margin-top: 20px;
+        align-items: stretch;
+        gap: 1.5rem;
+        margin-top: 2rem;
+        padding: 1rem 0;
+        flex-wrap: nowrap; /* Keep in single row on desktop */
       }
 
-      #btnSubmit {
-        background-color: mediumseagreen;
+      /* Enhanced Action Buttons */
+      .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        padding: 1.25rem 2rem;
+        border: none;
+        border-radius: 15px;
+        font-weight: 500;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+        min-height: 60px;
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        box-shadow: var(--shadow-light);
+        flex: 1; /* Equal width for all buttons */
+        max-width: 280px; /* Prevent buttons from becoming too wide */
+        min-width: 220px; /* Minimum width for readability */
       }
 
-      #btnSubmit:hover {
-        background-color: rgb(37, 147, 183);
+      .action-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.05);
+        opacity: 0;
+        transition: opacity 0.3s ease;
       }
 
-      #btnSubmit:disabled {
-        background-color: gray;
+      .action-btn:hover::before {
+        opacity: 1;
       }
 
-      .file-name-label {
+      .action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-heavy);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: var(--text-primary);
+        text-decoration: none;
+      }
+
+      .action-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: var(--shadow-light);
+      }
+
+      .action-btn:disabled:hover {
+        transform: none;
+        box-shadow: var(--shadow-light);
+      }
+
+      .action-btn i {
+        font-size: 1.25rem;
+        transition: transform 0.3s ease;
+      }
+
+      .action-btn:hover i {
+        transform: scale(1.1);
+      }
+
+      /* Specific button styles */
+      .btn-view-invalid {
+        border-left: 4px solid var(--warning-color);
+      }
+
+      .btn-view-invalid:hover {
+        border-left-color: var(--warning-hover);
+        background: rgba(245, 158, 11, 0.1);
+      }
+
+      .btn-clear-data {
+        border-left: 4px solid var(--danger-color);
+      }
+
+      .btn-clear-data:hover {
+        border-left-color: var(--danger-hover);
+        background: rgba(239, 68, 68, 0.1);
+      }
+
+      .btn-admin-panel {
+        border-left: 4px solid var(--success-color);
+      }
+
+      .btn-admin-panel:hover {
+        border-left-color: var(--success-hover);
+        background: rgba(16, 185, 129, 0.1);
+      }
+
+      /* Button text styling */
+      .action-btn .btn-text {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+      }
+
+      .action-btn .btn-title {
+        font-weight: 600;
+        font-size: 1rem;
+      }
+
+      .action-btn .btn-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+
+      /* Loading Animation */
+      .loading {
         display: inline-block;
-        margin-left: 10px;
-        color: aliceblue;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 1s ease-in-out infinite;
+        margin-right: 0.5rem;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      /* Progress Bar */
+      .progress-container {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        margin: 1rem 0;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
+        background: var(--success-color);
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.3s ease;
+        position: relative;
+      }
+
+      .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background-image: linear-gradient(
+          -45deg,
+          rgba(255, 255, 255, 0.2) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(255, 255, 255, 0.2) 50%,
+          rgba(255, 255, 255, 0.2) 75%,
+          transparent 75%,
+          transparent
+        );
+        background-size: 50px 50px;
+        animation: progressMove 1s linear infinite;
+      }
+
+      @keyframes progressMove {
+        0% { background-position: 0 0; }
+        100% { background-position: 50px 50px; }
+      }
+
+      /* Configuration Styles */
+      .config-section {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .config-section:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 30px 0 rgba(0, 0, 0, 0.15);
+        border-color: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .config-title {
+        color: var(--text-primary);
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .config-row {
+        margin-bottom: 1.5rem;
+      }
+
+      .config-group {
+        width: 100%;
+      }
+
+      .config-label {
+        display: block;
+        color: var(--text-secondary);
+        font-weight: 500;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+      }
+
+      .input-group {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.02);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .input-label {
+        color: var(--text-secondary);
+        font-weight: 600;
+        min-width: 50px;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .config-input {
+        padding: 0.9rem 1.2rem;
+        background: rgba(255, 255, 255, 0.08);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: var(--text-primary);
+        font-size: 1rem;
+        font-weight: 500;
+        width: 140px;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .config-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        transform: translateY(-1px);
+      }
+
+      .config-input:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      /* Format Selection */
+      .format-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .format-option {
+        position: relative;
+      }
+
+      .format-checkbox {
+        display: none;
+      }
+
+      .format-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
+
+      .format-label i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .format-label span {
+        font-size: 1rem;
+      }
+
+      .format-checkbox:checked + .format-label {
+        background: rgba(59, 130, 246, 0.2);
+        border-color: var(--primary-color);
+        color: var(--text-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+      }
+
+      .format-checkbox:checked + .format-label i {
+        color: var(--primary-color);
+        transform: scale(1.1);
+      }
+
+      .format-label:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      /* Navigation Tabs Modern Style */
+      .nav-tabs {
+        border: none;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        padding: 0.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .nav-tabs .nav-link {
+        border: none;
+        color: var(--text-secondary);
+        background: transparent;
+        border-radius: 10px;
+        padding: 1rem 2rem;
+        margin: 0 0.25rem;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .nav-tabs .nav-link:hover {
+        color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-tabs .nav-link.active {
+        color: var(--text-primary);
+        background: var(--primary-color);
+        border: none;
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 2.5rem;
+        }
+
+        .header p {
+          font-size: 1rem;
+        }
+
+        .glass-card {
+          margin: 0.5rem;
+          padding: 1.5rem;
+        }
+
+        .input-group {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .config-input {
+          width: 100%;
+        }
+
+        .format-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .button-grid {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .action-btn {
+          padding: 1rem 1.5rem;
+          min-height: 70px;
+        }
+
+        .action-btn .btn-text {
+          align-items: center;
+          text-align: center;
+        }
+
+        .action-btn .btn-title {
+          font-size: 0.95rem;
+        }
+
+        .action-btn .btn-subtitle {
+          font-size: 0.8rem;
+        }
       }
     </style>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const fileInput = document.getElementById("id_folder");
-        const fileNameLabel = document.querySelector(".file-name-label");
+        const fileNameDisplay = document.querySelector(".file-name-display");
+        const uploadArea = document.querySelector(".file-upload-area");
+        const uploadButton = document.getElementById("uploadZip");
+        const resultDisplay = document.getElementById("result");
 
+        // File input change handler
         fileInput.addEventListener("change", function () {
           if (fileInput.files.length > 0) {
-            fileNameLabel.textContent = fileInput.files[0].name;
-            $("#uploadZip").prop("disabled", false);
+            const fileName = fileInput.files[0].name;
+            fileNameDisplay.innerHTML = `<i class="fas fa-file-archive"></i> ${fileName}`;
+            fileNameDisplay.style.display = "block";
+            uploadButton.disabled = false;
+            uploadArea.style.borderColor = "#3b82f6";
           } else {
-            fileNameLabel.textContent = "No files chosen";
+            fileNameDisplay.style.display = "none";
+            uploadButton.disabled = true;
+            uploadArea.style.borderColor = "rgba(255, 255, 255, 0.3)";
           }
         });
+
+        // Drag and drop functionality
+        uploadArea.addEventListener("dragover", function(e) {
+          e.preventDefault();
+          uploadArea.classList.add("dragover");
+        });
+
+        uploadArea.addEventListener("dragleave", function(e) {
+          e.preventDefault();
+          uploadArea.classList.remove("dragover");
+        });
+
+        uploadArea.addEventListener("drop", function(e) {
+          e.preventDefault();
+          uploadArea.classList.remove("dragover");
+          
+          const files = e.dataTransfer.files;
+          if (files.length > 0) {
+            fileInput.files = files;
+            fileInput.dispatchEvent(new Event('change'));
+          }
+        });
+
+        // Form submission with loading state
+        document.getElementById("fileUploadForm").addEventListener("submit", function(e) {
+          uploadButton.innerHTML = '<span class="loading"></span>Processing...';
+          uploadButton.disabled = true;
+          
+          // Show progress simulation
+          const progressContainer = document.createElement('div');
+          progressContainer.className = 'progress-container';
+          progressContainer.innerHTML = '<div class="progress-bar"></div>';
+          uploadButton.parentNode.insertBefore(progressContainer, uploadButton.nextSibling);
+          
+          let progress = 0;
+          const progressBar = progressContainer.querySelector('.progress-bar');
+          const progressInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 90) progress = 90;
+            progressBar.style.width = progress + '%';
+          }, 500);
+          
+          // Clean up on page unload (when form actually submits)
+          window.addEventListener('beforeunload', () => {
+            clearInterval(progressInterval);
+          });
+        });
       });
+
       $(document).ready(function () {
-        // Apply the adminButton class styling
-        $(".adminButton").css({
-          position: "absolute",
-          right: "0",
-          top: "0",
-          padding: "10px 20px",
-          "background-color": "#4CAF50",
-          color: "white",
-          border: "none",
-          "border-radius": "5px",
-          cursor: "pointer",
-        });
+        // Button animations and styling
+        $(".btn-modern").hover(
+          function() {
+            $(this).css("transform", "translateY(-2px)");
+          },
+          function() {
+            if (!$(this).is(":disabled")) {
+              $(this).css("transform", "translateY(0)");
+            }
+          }
+        );
 
-        $(".redirectButton").css({
-          position: "absolute",
-          right: "0",
-          bottom: "0",
-          padding: "10px 20px",
-          "background-color": "#4CAF50",
-          color: "white",
-          border: "none",
-          "border-radius": "5px",
-          cursor: "pointer",
-        });
+        // Enhanced action button hover effects
+        $(".action-btn").hover(
+          function() {
+            if (!$(this).is(":disabled")) {
+              $(this).find("i").css("transform", "scale(1.1)");
+            }
+          },
+          function() {
+            if (!$(this).is(":disabled")) {
+              $(this).find("i").css("transform", "scale(1)");
+            }
+          }
+        );
 
+        // Navigation handlers with enhanced feedback
         $("#showInvalid").click(function (event) {
           event.preventDefault();
-          window.location.href = "{% url 'image_gallery' %}";
+          if (!$(this).is(":disabled")) {
+            const originalContent = $(this).html();
+            $(this).html(`
+              <span class="loading"></span>
+              <div class="btn-text">
+                <span class="btn-title">Loading...</span>
+                <span class="btn-subtitle">Fetching invalid images</span>
+              </div>
+            `);
+            setTimeout(() => {
+              window.location.href = "{% url 'image_gallery' %}";
+            }, 500);
+          }
         });
 
         $("#adminButton").click(function (event) {
           event.preventDefault();
-          window.location.href = "{% url 'admin:index' %}";
+          const originalContent = $(this).html();
+          $(this).html(`
+            <span class="loading"></span>
+            <div class="btn-text">
+              <span class="btn-title">Redirecting...</span>
+              <span class="btn-subtitle">Opening admin panel</span>
+            </div>
+          `);
+          setTimeout(() => {
+            window.location.href = "{% url 'admin:index' %}";
+          }, 500);
         });
 
         $("#deleteData").click(function (event) {
           event.preventDefault();
-          window.location.href = "{% url 'delete_all' %}";
+          if (confirm("Are you sure you want to delete all data? This action cannot be undone.")) {
+            const originalContent = $(this).html();
+            $(this).html(`
+              <span class="loading"></span>
+              <div class="btn-text">
+                <span class="btn-title">Deleting...</span>
+                <span class="btn-subtitle">Clearing all data</span>
+              </div>
+            `);
+            $(this).prop('disabled', true);
+            setTimeout(() => {
+              window.location.href = "{% url 'delete_all' %}";
+            }, 1000);
+          }
         });
 
-        // $("#showCSV").click(function (event) {
-        //     event.preventDefault();
-        //     window.location.href = "{% url 'displayCsv' %}";
-        // });
+        // Configuration form handling
+        $("#btnSaveConfig").click(function(e) {
+          e.preventDefault();
+          $(this).html('<span class="loading"></span>Saving...');
+          $(this).prop('disabled', true);
+          
+          // Simulate save process
+          setTimeout(() => {
+            $(this).html('<i class="fas fa-check"></i> Saved!');
+            setTimeout(() => {
+              $(this).html('<i class="fas fa-save"></i> Save Configuration');
+              $(this).prop('disabled', false);
+            }, 2000);
+          }, 1000);
+        });
       });
     </script>
   </head>
 
-  <body id="page-top" class="about-section text-center">
-    <div class="container" id="nav-tab-main">
-      <div class="row">
-        <div class="col-xs-12">
-          <nav>
-            <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-              <a
-                class="nav-item nav-link active"
-                id="nav-home-tab"
-                data-toggle="tab"
-                href="#nav-home"
-                role="tab"
-                aria-controls="nav-home"
-                aria-selected="true"
-                >Home</a
-              >
-              <a
-                class="nav-item nav-link"
-                id="nav-config-tab"
-                data-toggle="tab"
-                href="#nav-configuration"
-                role="tab"
-                aria-controls="nav-profile"
-                aria-selected="false"
-                >Configurations</a
-              >
-            </div>
-          </nav>
-          <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
-            <div
-              class="tab-pane fade show active"
-              id="nav-home"
-              role="tabpanel"
-              aria-labelledby="nav-home-tab"
-            >
-              <div class="container d-flex h-100 align-items-center">
-                <div class="mx-auto text-center">
-                  {#
-                  <h1 class="mx-auto my-0 text-uppercase">Photo Validator</h1>
-                  #}
-                  <h2 class="text-white-50 mx-auto mt-2 mb-5">
-                    Photo Validation System
-                  </h2>
-                </div>
-              </div>
-              <div class="container">
-                <div class="row">
-                  <div class="col-lg-8 mx-auto">
-                    <!-- <form method="POST" enctype="multipart/form-data" id="fileUploadForm">
-                                    {% csrf_token %}
-                                    <br>
-                                    <select class="form-control" id="categoryDropDown" name="">
-                                        <option value="folder">validate the folder </option>
-                                        <option value="file">Validate an image</option>
-                                    </select>
-                                
-                                    <input type="submit" name="file" value="Choose a zipfile" id="uploadZip"> -->
-                    <form
-                      method="post"
-                      enctype="multipart/form-data"
-                      id="fileUploadForm"
-                    >
-                      {% csrf_token %}
-                      <div class="file-upload-wrapper">
-                        <label for="id_folder">Choose a Zip File</label>
-                        {{ form.folder }}
-                        <br />
-                        <span class="file-name-label">No files chosen</span>
-                      </div>
-                      <br />
-                      <br />
-                      <button
-                        type="submit"
-                        id="uploadZip"
-                        class="process-button"
-                        disabled
-                      >
-                        Start Validation
-                      </button>
-                    </form>
-                    <!-- <br/>
-                                    <br>
-                                    <span id="selectedFolderText"></span>
-                                    <input type="button" value="Submit" id="btnSubmit" class="process-button" disabled/>
+  <body>
+    <!-- Header Section -->
+    <div class="header">
+      <h1><i class="fas fa-camera"></i> Photo Validator</h1>
+    </div>
 
-                                </form> -->
+    <div class="container">
+      <!-- Navigation Tabs -->
+      <div class="glass-card">
+        <nav>
+          <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+            <a
+              class="nav-item nav-link active"
+              id="nav-home-tab"
+              data-toggle="tab"
+              href="#nav-home"
+              role="tab"
+              aria-controls="nav-home"
+              aria-selected="true"
+            ><i class="fas fa-upload"></i> Upload & Validate</a>
+            <a
+              class="nav-item nav-link"
+              id="nav-config-tab"
+              data-toggle="tab"
+              href="#nav-configuration"
+              role="tab"
+              aria-controls="nav-configuration"
+              aria-selected="false"
+            ><i class="fas fa-cog"></i> Configuration</a>
+          </div>
+        </nav>
 
-                    <span
-                      id="result"
-                      style="
-                        color: rgba(255, 255, 255, 0.5);
-                        font-weight: bold;
-                        font-family: 'Varela Round';
-                        font-size: xx-large;
-                      "
-                    ></span>
-
-                    <div class="button-container">
-                      <button id="showInvalid" class="process-button" disabled>
-                        Show invalid images
-                      </button>
-                    </div>
-                    <!-- <div class="button-container">
-                                    <button id="showCSV" class="process-button" disabled>Display Results in CSV</button>
-                                </div> -->
-                    <div class="button-container">
-                      <button id="deleteData" class="process-button">
-                        Delete Data
-                      </button>
-                    </div>
-                    <div class="button-container">
-                      <button id="adminButton" class="process-button">
-                        Admin
-                      </button>
-                    </div>
+        <div class="tab-content py-4" id="nav-tabContent">
+          <!-- Home Tab -->
+          <div
+            class="tab-pane fade show active"
+            id="nav-home"
+            role="tabpanel"
+            aria-labelledby="nav-home-tab"
+          >
+            <!-- File Upload Section -->
+            <div class="glass-card">
+              <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
+                <i class="fas fa-cloud-upload-alt"></i> Upload Photos for Validation
+              </h3>
+              
+              <form method="post" enctype="multipart/form-data" id="fileUploadForm">
+                {% csrf_token %}
+                
+                <div class="file-upload-area">
+                  <i class="fas fa-file-archive upload-icon"></i>
+                  <h4 style="margin-bottom: 1rem; color: var(--text-secondary);">
+                    Drag & Drop or Click to Upload
+                  </h4>
+                  <p style="margin-bottom: 1.5rem; color: var(--text-muted);">
+                    Select a ZIP file containing photos to validate
+                  </p>
+                  
+                  <div class="file-upload-wrapper">
+                    <label for="id_folder" class="file-upload-label">
+                      <i class="fas fa-folder-open"></i> Choose ZIP File
+                    </label>
+                    {{ form.folder }}
+                  </div>
+                  
+                  <div class="file-name-display" style="display: none;">
+                    No file selected
                   </div>
                 </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                  <button type="submit" id="uploadZip" class="btn-modern btn-primary" disabled>
+                    <i class="fas fa-play"></i> Start Validation
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Results Section -->
+            <div class="glass-card">
+              <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
+                <i class="fas fa-chart-line"></i> Validation Results
+              </h3>
+              
+              <div id="result" class="result-display">
+                Upload a ZIP file to see validation results
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="button-grid">
+                <button id="showInvalid" class="action-btn btn-view-invalid" disabled>
+                  <i class="fas fa-exclamation-triangle"></i>
+                  <div class="btn-text">
+                    <span class="btn-title">View Invalid Images</span>
+                    <span class="btn-subtitle">Review failed validations</span>
+                  </div>
+                </button>
+                
+                <button id="deleteData" class="action-btn btn-clear-data">
+                  <i class="fas fa-trash-alt"></i>
+                  <div class="btn-text">
+                    <span class="btn-title">Clear All Data</span>
+                    <span class="btn-subtitle">Remove validation history</span>
+                  </div>
+                </button>
+                
+                <button id="adminButton" class="action-btn btn-admin-panel">
+                  <i class="fas fa-user-shield"></i>
+                  <div class="btn-text">
+                    <span class="btn-title">Admin Panel</span>
+                    <span class="btn-subtitle">System management</span>
+                  </div>
+                </button>
               </div>
             </div>
-            <div
-              class="tab-pane fade"
-              id="nav-configuration"
-              role="tabpanel"
-              aria-labelledby="nav-profile-tab"
-            >
-              <div class="container d-flex h-100 align-items-center">
-                <div class="mx-auto text-center">
-                  {#
-                  <h1 class="mx-auto my-0 text-uppercase">Photo Validator</h1>
-                  #}
-                  <h2 class="text-white-50 mx-auto mt-2 mb-5">
-                    Photo Validation System
-                  </h2>
-                </div>
-              </div>
-              <form
-                method="POST"
-                enctype="multipart/form-data"
-                id="fileUploadForm1"
-              >
+          </div>
+          <!-- Configuration Tab -->
+          <div
+            class="tab-pane fade"
+            id="nav-configuration"
+            role="tabpanel"
+            aria-labelledby="nav-config-tab"
+          >
+            <div class="glass-card">
+              <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
+                <i class="fas fa-sliders-h"></i> Validation Configuration
+              </h3>
+              
+              <form method="POST" enctype="multipart/form-data" id="configForm">
                 {% csrf_token %}
 
-                <div id="configInput">
-                  <div id="heightConfig">
-                    <span class="head-text">Height(in Pixel):</span>
-                    <span class="simple-text">Minimum: </span>
-
-                    <input
-                      type="number"
-                      value="{{config.min_height}}"
-                      min="0"
-                      max="100000"
-                      step="10"
-                      id="minHeight"
-                    />
-
-                    <span class="simple-text"> Maximum: </span>
-
-                    <input
-                      type="number"
-                      value="{{config.max_height}}"
-                      min="0"
-                      max="100000"
-                      step="10"
-                      id="maxHeight"
-                    />
+                <!-- Image Dimensions -->
+                <div class="config-section">
+                  <h4 class="config-title">
+                    <i class="fas fa-expand-arrows-alt"></i> Image Dimensions
+                  </h4>
+                  
+                  <div class="config-row">
+                    <div class="config-group">
+                      <label class="config-label">Height (pixels)</label>
+                      <div class="input-group">
+                        <label class="input-label">Min:</label>
+                        <input
+                          type="number"
+                          value="{{config.min_height}}"
+                          min="0"
+                          max="100000"
+                          step="10"
+                          id="minHeight"
+                          class="config-input"
+                        />
+                        <label class="input-label">Max:</label>
+                        <input
+                          type="number"
+                          value="{{config.max_height}}"
+                          min="0"
+                          max="100000"
+                          step="10"
+                          id="maxHeight"
+                          class="config-input"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <br /><br />
-                  <br />
-                  <div id="widthConfig">
-                    <span class="head-text">Width(in Pixel):</span>
 
-                    <span class="simple-text">Minimum: </span>
-
-                    <input
-                      type="number"
-                      value="{{config.min_width}}"
-                      min="0"
-                      max="100000"
-                      step="10"
-                      id="minWidth"
-                    />
-
-                    <span class="simple-text"> Maximum: </span>
-
-                    <input
-                      type="number"
-                      value="{{config.max_width}}"
-                      min="0"
-                      max="100000"
-                      step="10"
-                      id="maxWidth"
-                    />
-                  </div>
-                  <br /><br />
-                  <br />
-                  <div id="sizeConfig">
-                    <span class="head-text">Size(in KB):</span>
-
-                    <span class="simple-text">Minimum: </span>
-
-                    <input
-                      type="number"
-                      value="{{config.min_size}}"
-                      min="0"
-                      max="100000"
-                      step="10"
-                      id="minSize"
-                    />
-
-                    <span class="simple-text"> Maximum: </span>
-
-                    <input
-                      type="number"
-                      value="{{config.max_size}}"
-                      min="0"
-                      max="100000"
-                      step="10"
-                      id="maxSize"
-                    />
+                  <div class="config-row">
+                    <div class="config-group">
+                      <label class="config-label">Width (pixels)</label>
+                      <div class="input-group">
+                        <label class="input-label">Min:</label>
+                        <input
+                          type="number"
+                          value="{{config.min_width}}"
+                          min="0"
+                          max="100000"
+                          step="10"
+                          id="minWidth"
+                          class="config-input"
+                        />
+                        <label class="input-label">Max:</label>
+                        <input
+                          type="number"
+                          value="{{config.max_width}}"
+                          min="0"
+                          max="100000"
+                          step="10"
+                          id="maxWidth"
+                          class="config-input"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <br />
-                <div id="allowedFormat">
-                  <span class="head-text">Allowed Formats</span>
-                  <br />
-                  <div class="form-check" id="formatCheck">
-                    <input
-                      type="checkbox"
-                      class="form-check-input"
-                      id="jpgchecked"
-                      {%
-                      if
-                      config.is_jpg
-                      %}CHECKED{%
-                      endif
-                      %}
-                    />
-                    <label
-                      class="form-check-label simple-text"
-                      for="exampleCheck1"
-                      >JPG</label
-                    >
-                    <br />
-                    <br />
-                    <input
-                      type="checkbox"
-                      class="form-check-input"
-                      id="pngchecked"
-                      {%
-                      if
-                      config.is_png
-                      %}CHECKED{%
-                      endif
-                      %}
-                    />
-                    <label
-                      class="form-check-label simple-text"
-                      for="exampleCheck1"
-                      >PNG</label
-                    >
-                    <br />
-                    <br />
-                    <input
-                      type="checkbox"
-                      class="form-check-input"
-                      id="jpegchecked"
-                      {%
-                      if
-                      config.is_jpeg
-                      %}CHECKED{%
-                      endif
-                      %}
-                    />
-                    <label
-                      class="form-check-label simple-text"
-                      for="exampleCheck1"
-                      >JPEG</label
-                    >
-                    <br />
-                    <br /><br />
-                    <br />
+
+                <!-- File Size -->
+                <div class="config-section">
+                  <h4 class="config-title">
+                    <i class="fas fa-hdd"></i> File Size
+                  </h4>
+                  
+                  <div class="config-row">
+                    <div class="config-group">
+                      <label class="config-label">Size (KB)</label>
+                      <div class="input-group">
+                        <label class="input-label">Min:</label>
+                        <input
+                          type="number"
+                          value="{{config.min_size}}"
+                          min="0"
+                          max="100000"
+                          step="10"
+                          id="minSize"
+                          class="config-input"
+                        />
+                        <label class="input-label">Max:</label>
+                        <input
+                          type="number"
+                          value="{{config.max_size}}"
+                          min="0"
+                          max="100000"
+                          step="10"
+                          id="maxSize"
+                          class="config-input"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <input type="button" value="Save" id="btnSaveConfig" />
+
+                <!-- File Formats -->
+                <div class="config-section">
+                  <h4 class="config-title">
+                    <i class="fas fa-file-image"></i> Allowed File Formats
+                  </h4>
+                  
+                  <div class="format-grid">
+                    <div class="format-option">
+                      <input
+                        type="checkbox"
+                        class="format-checkbox"
+                        id="jpgchecked"
+                        {% if config.is_jpg %}checked{% endif %}
+                      />
+                      <label for="jpgchecked" class="format-label">
+                        <i class="fas fa-image"></i>
+                        <span>JPG</span>
+                      </label>
+                    </div>
+
+                    <div class="format-option">
+                      <input
+                        type="checkbox"
+                        class="format-checkbox"
+                        id="pngchecked"
+                        {% if config.is_png %}checked{% endif %}
+                      />
+                      <label for="pngchecked" class="format-label">
+                        <i class="fas fa-image"></i>
+                        <span>PNG</span>
+                      </label>
+                    </div>
+
+                    <div class="format-option">
+                      <input
+                        type="checkbox"
+                        class="format-checkbox"
+                        id="jpegchecked"
+                        {% if config.is_jpeg %}checked{% endif %}
+                      />
+                      <label for="jpegchecked" class="format-label">
+                        <i class="fas fa-image"></i>
+                        <span>JPEG</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 3rem;">
+                  <button type="button" id="btnSaveConfig" class="btn-modern btn-success">
+                    <i class="fas fa-save"></i> Save Configuration
+                  </button>
+                </div>
               </form>
-              <!-- <span id="updatebutton" style="color:rgba(255, 255, 255, 0.5) ;font-weight:bold;  font-family: 'Varela Round';  font-size:xx-large"></span> -->
             </div>
           </div>
         </div>
-
-        <!-- Bootstrap core JavaScript -->
-        <script src="{% static 'api/vendor/jquery/jquery.min.js' %}"></script>
-        <script src="{% static 'api/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-        <!-- Plugin JavaScript -->
-        <script src="{% static 'api/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-        <!-- Custom scripts for this template -->
-        <script src="{% static 'api/js/grayscale.min.js' %}"></script>
-
-        <script src="{% static 'api/js/logic.js' %}"></script>
       </div>
     </div>
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'api/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'api/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- Plugin JavaScript -->
+    <script src="{% static 'api/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <!-- Custom scripts for this template -->
+    <script src="{% static 'api/js/grayscale.min.js' %}"></script>
+    <script src="{% static 'api/js/logic.js' %}"></script>
   </body>
 </html>

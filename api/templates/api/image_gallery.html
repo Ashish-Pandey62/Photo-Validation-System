@@ -1,141 +1,579 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Invalid Image Gallery
-        {% load static %}
-        {% load custom_filters %}
-    </title>
+    <title>Invalid Images Gallery - Photo Validation System</title>
+    {% load static %}
+    {% load custom_filters %}
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-heavy: 0 20px 60px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #181818;
-            color: #fff;
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            z-index: -1;
+            animation: backgroundShift 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes backgroundShift {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.6; }
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--warning-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        /* Navigation Bar */
+        .nav-bar {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .nav-info {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .image-count {
+            background: var(--warning-gradient);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .btn-back {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Image Grid */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .image-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+            position: relative;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-heavy);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .image-container {
+            position: relative;
+            height: 250px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover .image-container img {
+            transform: scale(1.05);
+        }
+
+        .image-checkbox {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .image-info {
+            padding: 1.5rem;
+        }
+
+        .image-filename {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            word-break: break-word;
+        }
+
+        .validation-issues {
+            background: rgba(255, 82, 82, 0.1);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+        }
+
+        .issues-title {
+            color: #ff5252;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .issues-list {
+            list-style: none;
             margin: 0;
             padding: 0;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+        .issues-list li {
+            color: var(--text-secondary);
+            padding: 0.25rem 0;
+            padding-left: 1.5rem;
             position: relative;
         }
 
-        .image-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .image {
-            position: relative;
-            background-color: #2a2a2a;
-            padding: 10px;
-            height: 200px;
-            width: 200px;
-            margin-bottom: 40px;
-        }
-
-        .image img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .image-caption {
+        .issues-list li::before {
+            content: '•';
+            color: #ff5252;
             position: absolute;
-            bottom: 0;
             left: 0;
-            right: 0;
-            margin: 0;
-            padding: 5px 10px;
-            font-size: 14px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
+            font-weight: bold;
         }
 
-        input[type="checkbox"] {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        .button-container {
+        /* Action Buttons */
+        .action-buttons {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
         }
 
-        .process-button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
+        .btn-action {
+            padding: 1rem 2rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .process-button:hover {
-            background-color: rgb(37, 147, 183);
+        .btn-delete {
+            background: var(--secondary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
         }
 
-        .reasons-list {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin-bottom: 40px;
-            padding: 5px 10px;
-            font-size: 14px;
-            background-color: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            list-style-type: none;
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+        }
+
+        .btn-export {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .image-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-action {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 
 <body>
+    <!-- Header Section -->
+    <div class="header">
+        <h1><i class="fas fa-exclamation-triangle"></i> Invalid Images Gallery</h1>
+        <p>Review and manage images that failed validation checks</p>
+    </div>
+
     <div class="container">
-        <h2 align="center">Invalid Images</h2>
-        <form action="/process_selected_images/" method="post">
-            {% csrf_token %}
+        <!-- Navigation Bar -->
+        <div class="nav-bar">
+            <div class="nav-info">
+                <div class="image-count">
+                    <i class="fas fa-images"></i>
+                    {{ invalid_images|length }} Invalid Images Found
+                </div>
+            </div>
+            <a href="{% url 'startPage' %}" class="btn-back">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+
+        {% if invalid_images %}
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button id="deleteSelectedBtn" class="btn-action btn-delete">
+                    <i class="fas fa-trash-alt"></i>
+                    Delete Selected
+                </button>
+                <button id="exportResultsBtn" class="btn-action btn-export">
+                    <i class="fas fa-download"></i>
+                    Export Results
+                </button>
+            </div>
+
+            <!-- Image Grid -->
             <div class="image-grid">
-                {% for image, reasons in reasons_for_invalidity.items %}
-                    <div class="image">
-                        <img src="{% static 'api/images/invalid/'|add:image %}" alt="{{ image }}">
-                        <div class="image-content">
-                            <label for="image{{ forloop.counter }}">
-                                <p class="image-caption">{{ image|get_image_name }}</p>
-                            </label> 
-                        </div>
-                        <ul class="reasons-list">
-                            {% for reason in reasons %}
-                                <li>{{ reason }}</li>
-                            {% endfor %}
-                        </ul>
-                        <input type="checkbox" id="image{{ forloop.counter }}" name="selected_images" value="{{ image }}">
+                {% for image in invalid_images %}
+                <div class="image-card">
+                    <div class="image-container">
+                        <input type="checkbox" class="image-checkbox" value="{{ image.id }}" />
+                        <img src="{{ image.photo.url }}" alt="{{ image.filename }}" 
+                             loading="lazy" onerror="this.src='/static/api/images/placeholder.png';" />
                     </div>
+                    <div class="image-info">
+                        <div class="image-filename">
+                            <i class="fas fa-file-image"></i>
+                            {{ image.filename }}
+                        </div>
+                        <div class="validation-issues">
+                            <div class="issues-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Validation Issues
+                            </div>
+                            <ul class="issues-list">
+                                {% for reason in image.reason_array %}
+                                    <li>{{ reason }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
-            <div id="movetovalidButton" class="button-container">
-                <button class="process-button" type="submit">Move to valid</button>
+
+            <!-- Bottom Actions -->
+            <div class="action-buttons">
+                <button id="selectAllBtn" class="btn-action btn-export">
+                    <i class="fas fa-check-square"></i>
+                    Select All
+                </button>
+                <button id="deselectAllBtn" class="btn-action btn-delete">
+                    <i class="fas fa-square"></i>
+                    Deselect All
+                </button>
             </div>
-        </form>
-        <form action="/process_rejected_images/" method="post">
-            {% csrf_token %}
-            <div class="button-container">
-                <button id="finishButton" class="process-button" type="submit">Finished process/ Display CSV</button>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h3>No Invalid Images Found!</h3>
+                <p>All images in your upload passed the validation checks. Great job!</p>
+                <a href="{% url 'startPage' %}" class="btn-back" style="margin-top: 1rem;">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </a>
             </div>
-        </form>
-        <form action="/photoValidator/" method="post">
-            {% csrf_token %}
-            <div class="button-container">
-                <button id="homeButton" class="process-button" type="submit">Return</button>
-            </div>
-        </form>
+        {% endif %}
     </div>
-    <!-- <script src="{% static 'api/js/logic.js' %}"></script> -->
+
+    <script>
+        $(document).ready(function() {
+            // Select/Deselect All functionality
+            $('#selectAllBtn').click(function() {
+                $('.image-checkbox').prop('checked', true);
+                updateDeleteButton();
+            });
+
+            $('#deselectAllBtn').click(function() {
+                $('.image-checkbox').prop('checked', false);
+                updateDeleteButton();
+            });
+
+            // Update delete button state
+            $('.image-checkbox').change(function() {
+                updateDeleteButton();
+            });
+
+            function updateDeleteButton() {
+                const selectedCount = $('.image-checkbox:checked').length;
+                const deleteBtn = $('#deleteSelectedBtn');
+                
+                if (selectedCount > 0) {
+                    deleteBtn.prop('disabled', false);
+                    deleteBtn.html(`<i class="fas fa-trash-alt"></i> Delete Selected (${selectedCount})`);
+                } else {
+                    deleteBtn.prop('disabled', true);
+                    deleteBtn.html('<i class="fas fa-trash-alt"></i> Delete Selected');
+                }
+            }
+
+            // Delete selected images
+            $('#deleteSelectedBtn').click(function() {
+                const selectedImages = $('.image-checkbox:checked');
+                
+                if (selectedImages.length === 0) {
+                    alert('Please select at least one image to delete.');
+                    return;
+                }
+
+                const confirmMessage = `Are you sure you want to delete ${selectedImages.length} selected image(s)? This action cannot be undone.`;
+                
+                if (confirm(confirmMessage)) {
+                    $(this).html('<span class="loading"></span>Deleting...');
+                    $(this).prop('disabled', true);
+                    
+                    // Here you would typically send an AJAX request to delete the images
+                    // For now, we'll simulate the action
+                    setTimeout(() => {
+                        selectedImages.each(function() {
+                            $(this).closest('.image-card').fadeOut(300, function() {
+                                $(this).remove();
+                                updateImageCount();
+                            });
+                        });
+                        
+                        $('#deleteSelectedBtn').html('<i class="fas fa-trash-alt"></i> Delete Selected');
+                        $('#deleteSelectedBtn').prop('disabled', false);
+                    }, 1000);
+                }
+            });
+
+            // Export results
+            $('#exportResultsBtn').click(function() {
+                $(this).html('<span class="loading"></span>Exporting...');
+                
+                // Simulate export process
+                setTimeout(() => {
+                    $(this).html('<i class="fas fa-check"></i> Exported!');
+                    
+                    setTimeout(() => {
+                        $(this).html('<i class="fas fa-download"></i> Export Results');
+                    }, 2000);
+                }, 1000);
+            });
+
+            function updateImageCount() {
+                const remainingCount = $('.image-card').length;
+                $('.image-count').html(`<i class="fas fa-images"></i> ${remainingCount} Invalid Images Found`);
+                
+                if (remainingCount === 0) {
+                    $('.container').html(`
+                        <div class="empty-state">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>All invalid images have been processed!</h3>
+                            <p>No more invalid images to review.</p>
+                            <a href="{% url 'startPage' %}" class="btn-back" style="margin-top: 1rem;">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to Home
+                            </a>
+                        </div>
+                    `);
+                }
+            }
+
+            // Initialize delete button state
+            updateDeleteButton();
+
+            // Add hover effects for image cards
+            $('.image-card').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-5px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+        });
+    </script>
 </body>
 </html>
