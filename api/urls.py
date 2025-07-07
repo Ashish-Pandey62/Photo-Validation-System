@@ -10,12 +10,12 @@ def redirect_root(request):
 
 
 urlpatterns = [
+    path('', views.startPage, name='startPage'),
     path('photoValidator/', views.process_image, name='photoValidator'),
     path('displayCsv/',views.display_csv, name ='displayCsv'),
     #path('upload/', views.process_image, name='upload'),
     #path('dialogueBox/', views.dialogueBox, name='dialogueBox'),
     path('saveConfig/', views.save_config, name='save_config'),
-    path('', redirect_root),
     path('image_gallery/', views.image_gallery, name='image_gallery'),
     path('process_selected_images/', views.process_selected_images, name='process_selected_images'),
     path('process_rejected_images/', views.process_rejected_images, name='process_rejected_images'),

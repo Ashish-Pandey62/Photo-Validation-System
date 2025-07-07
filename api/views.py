@@ -28,37 +28,149 @@ class NameForm(forms.Form):
 #     config = Config.objects.all()[0]
 #     return render(request, 'api/index1.html', {'config': config})
 
+def startPage(request):
+    """Main page view with safe config retrieval"""
+    form = PhotoFolderUploadForm()
+    
+    # Safely get or create a default config
+    try:
+        config = Config.objects.first()
+        if not config:
+            # Create a default config if none exists
+            config = Config.objects.create(
+                min_height=100,
+                max_height=2000,
+                min_width=100,
+                max_width=2000,
+                min_size=10,
+                max_size=5000,
+                is_jpg=True,
+                is_png=True,
+                is_jpeg=True
+            )
+    except Exception as e:
+        # If there's any error, create a new config
+        config = Config(
+            min_height=100,
+            max_height=2000,
+            min_width=100,
+            max_width=2000,
+            min_size=10,
+            max_size=5000,
+            is_jpg="True",
+            is_png="True",
+            is_jpeg="True"
+        )
+        config.save()
+    
+    return render(request, 'api/index1.html', {'config': config, 'form': form})
+
 # def dialogueBox(request):
 
 
 def process_image(request):
+    # Get or create config safely
+    try:
+        config = Config.objects.first()
+        if not config:
+            config = Config.objects.create(
+                min_height=100,
+                max_height=2000,
+                min_width=100,
+                max_width=2000,
+                min_size=10,
+                max_size=5000,
+                is_jpg=True,
+                is_png=True,
+                is_jpeg=True
+            )
+    except Exception as e:
+        config = Config(
+            min_height=100,
+            max_height=2000,
+            min_width=100,
+            max_width=2000,
+            min_size=10,
+            max_size=5000,
+            is_jpg=True,
+            is_png=True,
+            is_jpeg=True
+        )
+        config.save()
+
     if request.method == "POST":
         form = PhotoFolderUploadForm(request.POST, request.FILES)
         if form.is_valid():
-            # get the uploded zip file and extract it
-            folder = form.cleaned_data["folder"]
-            photo_folder = PhotoFolder(folder=folder)
-            photo_folder.save()
-            folder_path = os.path.join(settings.MEDIA_ROOT, "photo_folder", folder.name)
-            unzip_directory = os.path.join(settings.MEDIA_ROOT, "photos")
+            try:
+                # get the uploaded zip file and extract it
+                folder = form.cleaned_data["folder"]
+                photo_folder = PhotoFolder(folder=folder)
+                photo_folder.save()
+                
+                # Ensure media directories exist
+                media_root = settings.MEDIA_ROOT
+                if not os.path.exists(media_root):
+                    os.makedirs(media_root)
+                
+                photo_folder_dir = os.path.join(media_root, "photo_folder")
+                if not os.path.exists(photo_folder_dir):
+                    os.makedirs(photo_folder_dir)
+                
+                photos_dir = os.path.join(media_root, "photos")
+                if not os.path.exists(photos_dir):
+                    os.makedirs(photos_dir)
+                
+                folder_path = os.path.join(photo_folder_dir, folder.name)
+                
+                # Extract the ZIP file
+                with zipfile.ZipFile(folder_path, "r") as zip_ref:
+                    zip_ref.extractall(photos_dir)
 
-            with zipfile.ZipFile(folder_path, "r") as zip_ref:
-                zip_ref.extractall(unzip_directory)
-
-            path = os.path.join(
-                settings.MEDIA_ROOT, "photos", os.path.splitext(folder.name)[0]
-            )
-            # processing the image
-            # logging.info("Validating images from path: " + path)
-            request.session["path"] = path
-            photo_validator_dir.main(path)
+                # Determine the extracted folder path
+                extracted_folder_name = os.path.splitext(folder.name)[0]
+                path = os.path.join(photos_dir, extracted_folder_name)
+                
+                # Check if the extracted path exists
+                if not os.path.exists(path):
+                    # Try to find the extracted content
+                    for item in os.listdir(photos_dir):
+                        item_path = os.path.join(photos_dir, item)
+                        if os.path.isdir(item_path) and item.startswith(extracted_folder_name):
+                            path = item_path
+                            break
+                    else:
+                        # If still not found, create the directory
+                        os.makedirs(path, exist_ok=True)
+                
+                # Ensure the invalid images directory exists
+                invalid_images_dir = os.path.join(
+                    settings.BASE_DIR, "api", "static", "api", "images", "invalid"
+                )
+                if not os.path.exists(invalid_images_dir):
+                    os.makedirs(invalid_images_dir)
+                
+                # processing the image
+                # logging.info("Validating images from path: " + path)
+                request.session["path"] = path
+                photo_validator_dir.main(path)
+                
+                # Redirect to a results page or show success message
+                from django.contrib import messages
+                messages.success(request, 'Photo validation completed successfully!')
+                
+            except Exception as e:
+                from django.contrib import messages
+                messages.error(request, f'Error processing upload: {str(e)}')
+                print(f"Error in process_image: {e}")
+            
             # return render(request, 'api/image_gallery.html')
         else:
             print(form.errors)
             print(request.FILES)
     else:
         form = PhotoFolderUploadForm()
-    return render(request, "api/index1.html", {"form": form})
+    
+    return render(request, "api/index1.html", {"form": form, "config": config})
 
 
 # def process_image(request):
@@ -77,34 +189,42 @@ def process_image(request):
 
 
 def save_config(request):
+    if request.method == "POST":
+        try:
+            minHeight = float(request.POST.get("minHeight", 100))
+            maxHeight = float(request.POST.get("maxHeight", 2000))
+            minWidth = float(request.POST.get("minWidth", 100))
+            maxWidth = float(request.POST.get("maxWidth", 2000))
+            minSize = float(request.POST.get("minSize", 10))
+            maxSize = float(request.POST.get("maxSize", 5000))
+            
+            # Handle checkbox values properly
+            jpgchecked = request.POST.get("jpgchecked") == "on"
+            pngchecked = request.POST.get("pngchecked") == "on"
+            jpegchecked = request.POST.get("jpegchecked") == "on"
 
-    minHeight = request.POST["minHeight"]
-    maxHeight = request.POST["maxHeight"]
-    minWidth = request.POST["minWidth"]
-    maxWidth = request.POST["maxWidth"]
-    minSize = request.POST["minSize"]
-    maxSize = request.POST["maxSize"]
-    jpgchecked = request.POST.get("jpgchecked", "True")
-    pngchecked = request.POST.get("pngchecked", "True")
-    jpegchecked = request.POST.get("jpegchecked", "True")
+            # Get existing config or create new one
+            config = Config.objects.first()
+            if not config:
+                config = Config()
 
-    config = Config.objects.all()
-    config.delete()
+            config.min_height = minHeight
+            config.max_height = maxHeight
+            config.min_width = minWidth
+            config.max_width = maxWidth
+            config.min_size = minSize
+            config.max_size = maxSize
+            config.is_jpg = jpgchecked
+            config.is_png = pngchecked
+            config.is_jpeg = jpegchecked
 
-    config = Config()
-    config.min_height = minHeight
-    config.max_height = maxHeight
-    config.min_width = minWidth
-    config.max_width = maxWidth
-    config.min_size = minSize
-    config.max_size = maxSize
-    config.is_jpg = "True" if jpgchecked == "True" else "False"
-    config.is_png = "True" if pngchecked == "True" else "False"
-    config.is_jpeg = "True" if jpegchecked == "True" else "False"
+            config.save()
 
-    config.save()
-
-    return HttpResponse("Updated configurations")
+            return HttpResponse("Configuration updated successfully")
+        except Exception as e:
+            return HttpResponse(f"Error updating configuration: {str(e)}", status=400)
+    else:
+        return HttpResponse("Method not allowed", status=405)
 
 
 def image_gallery(request):

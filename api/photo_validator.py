@@ -33,7 +33,7 @@ def main(imgPath):
     # Check image file size
     if config.bypass_size_check==False:
       is_file_size_valid = file_size_check.check_image(imgPath)
-      message = message + "File size check: " + ('Passed' if is_file_format_valid else 'Failed') + "\n"
+      message = message + "File size check: " + ('Passed' if is_file_size_valid else 'Failed') + "\n"
       logging.info(message)
     else:
       message = message + "Bypassed file size check\n"

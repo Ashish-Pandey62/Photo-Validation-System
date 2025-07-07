@@ -3,7 +3,14 @@ import numpy as np
 from .models import Config
 
 def check_symmetry_with_head(image):
-    config = Config.objects.all()[0]
+    try:
+        config = Config.objects.first()
+        if not config:
+            threshold = 20  # default symmetry threshold
+        else:
+            threshold = config.symmetry_threshold
+    except Exception:
+        threshold = 20
 
     # Perform symmetry check
     height, width, _ = image.shape
@@ -27,9 +34,6 @@ def check_symmetry_with_head(image):
     # Calculate the average pixel intensity difference as a symmetry score
     symmetry_score = np.mean(diff_gray)
 
-    # Determine a threshold for symmetry
-    threshold = config.symmetry_threshold
-
     # Compare the symmetry score with the threshold
     is_symmetric = symmetry_score < threshold
 
@@ -41,3 +45,7 @@ def issymmetric(image):
         return is_symmetric
     except ValueError as e:
         print("Error:", str(e))
+        return False
+    except Exception as e:
+        print(f"Error in issymmetric: {e}")
+        return False

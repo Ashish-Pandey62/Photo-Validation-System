@@ -35,30 +35,62 @@ def moveToFolder(label, imagePath):
 
 
 def main(directory):
-    config = Config.objects.all()[0]
+    # Ensure directory exists
+    if not os.path.exists(directory):
+        raise FileNotFoundError(f"Directory not found: {directory}")
+    
+    # Safely get config object
+    try:
+        config = Config.objects.first()
+        if not config:
+            # Create default config if none exists
+            config = Config.objects.create(
+                min_height=100,
+                max_height=2000,
+                min_width=100,
+                max_width=2000,
+                min_size=10,
+                max_size=5000,
+                is_jpg=True,
+                is_png=True,
+                is_jpeg=True
+            )
+    except Exception as e:
+        # Create a fallback config
+        config = Config(
+            min_height=100,
+            max_height=2000,
+            min_width=100,
+            max_width=2000,
+            min_size=10,
+            max_size=5000,
+            is_jpg=True,
+            is_png=True,
+            is_jpeg=True
+        )
+        config.save()
+        
     initialTime = time.time()
 
-    # make valid and invalid directories
-    validDirectory = directory + "\\" + "valid\\"
-    # validDirectory = directory + "/" + "valid/"
-    # invalidDirectory = directory + "/" + "invalid/"
-
+    # make valid and invalid directories using os.path.join for cross-platform compatibility
+    validDirectory = os.path.join(directory, "valid")
+    
     seconds = time.time()
 
     invalid_images_static_directory = os.path.join(
-        settings.STATIC_ROOT, "api", "static", "api", "images", "invalid"
+        settings.BASE_DIR, "api", "static", "api", "images", "invalid"
     )
 
     resultFile_static_directory = os.path.join(
-        settings.STATIC_ROOT, "api", "static", "api", "images", "result.csv"
+        settings.BASE_DIR, "api", "static", "api", "images", "result.csv"
     )
 
-    if not os.path.exists(validDirectory):
-        os.mkdir(validDirectory)
-
-    # Create the directory if it doesn't exist
-    if not os.path.exists(invalid_images_static_directory):
-        os.makedirs(invalid_images_static_directory)
+    # Ensure all required directories exist
+    os.makedirs(validDirectory, exist_ok=True)
+    os.makedirs(invalid_images_static_directory, exist_ok=True)
+    
+    # Ensure result file directory exists
+    os.makedirs(os.path.dirname(resultFile_static_directory), exist_ok=True)
 
     if not os.path.exists(resultFile_static_directory):
         rows = []
@@ -73,7 +105,7 @@ def main(directory):
 
         messages = []
 
-        imagePath = directory + "/" + image
+        imagePath = os.path.join(directory, image)
 
         if os.path.isdir(imagePath):
             continue
@@ -166,12 +198,15 @@ def main(directory):
             csv_string = csv_string + "\n"
     else:
         logging.info("There are no invalid images")
+        # Write a summary header when no invalid images found
+        csv_string = f"# Validation Summary: {len(fileLists)} images processed, {len(error_message)} invalid images found\n"
+        csv_string += f"# Validation completed at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        if len(fileLists) > 0:
+            csv_string += "# All images passed validation!\n"
 
     logging.info("Writing result to result.csv... ")
-    f = open(resultFile_static_directory, "a")
-    f.write(csv_string)  # Give your csv text here.
-    # Python will convert \n to os.linesep
-    f.close()
+    with open(resultFile_static_directory, "a") as f:
+        f.write(csv_string)  # Give your csv text here.
     # print(csv_string)
     finalTime = time.time()
 

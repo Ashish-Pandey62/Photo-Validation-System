@@ -2,36 +2,29 @@ import dlib
 import cv2
 
 def valid_head_check(image):
-
     faces = detect_faces(image)
-
-    # Print the number of detected faces
     num_faces = len(faces)
-    #print("Number of faces detected:", num_faces)
-
-    # Draw rectangles around the detected faces
-    if not num_faces == 0:
-        for rect in faces:
-            x, y, w, h = rect.left(), rect.top(), rect.width(), rect.height()
-            cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            proper_head_percentage = calculate_head_percentage(rect, image)
-
- 
-
-    # #pyt Display the image with detected faces
-    # cv2.imshow("Detected Faces", image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
     
-    if (num_faces == 1 and (10<proper_head_percentage<80)):
-        print("head percent" ,proper_head_percentage)
-        return True, proper_head_percentage
-    elif(num_faces == 1 and (proper_head_percentage<10 or proper_head_percentage>80)):
-        return False, proper_head_percentage
-    elif(num_faces == 0):
-        return False, 101
+    # Initialize head percentage
+    proper_head_percentage = 0
+    
+    # Calculate head percentage only if exactly one face is detected
+    if num_faces == 1:
+        rect = faces[0]  # Get the first (and only) face
+        x, y, w, h = rect.left(), rect.top(), rect.width(), rect.height()
+        cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        proper_head_percentage = calculate_head_percentage(rect, image)
+        
+        # Check if head percentage is within acceptable range
+        if 10 < proper_head_percentage < 80:
+            print("head percent", proper_head_percentage)
+            return True, proper_head_percentage
+        else:
+            return False, proper_head_percentage
+    elif num_faces == 0:
+        return False, 101  # No face detected
     else:
-        return False, 102
+        return False, 102  # Multiple faces detected
     
 def detect_eyes(image):
     # Load the pre-trained eye cascade classifier from OpenCV

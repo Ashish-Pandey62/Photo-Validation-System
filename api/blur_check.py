@@ -9,17 +9,32 @@ def check_image_blurness(image):
     return (check_if_pixaleted(grey) or check_if_blur(grey))
 
 def check_if_blur(gray):
-    config = Config.objects.all()[0]
-    # compute the Laplacian of the image and then return the focus
-    # measure, which is simply the variance of the Laplacian
-    laplacianVar = cv2.Laplacian(gray, cv2.CV_64F).var()
-    #logging.info(" variance = "+ str(laplacianVar))
-    return laplacianVar < config.blurness_threshold
+    try:
+        config = Config.objects.first()
+        if not config:
+            blurness_threshold = 35  # default value
+        else:
+            blurness_threshold = config.blurness_threshold
+        
+        # compute the Laplacian of the image and then return the focus
+        # measure, which is simply the variance of the Laplacian
+        laplacianVar = cv2.Laplacian(gray, cv2.CV_64F).var()
+        #logging.info(" variance = "+ str(laplacianVar))
+        return laplacianVar < blurness_threshold
+    except Exception as e:
+        print(f"Error in check_if_blur: {e}")
+        return False
 
 
 def check_if_pixaleted(gray):
-    config = Config.objects.all()[0]
-    pixelated_threshold = config.pixelated_threshold
+    try:
+        config = Config.objects.first()
+        if not config:
+            pixelated_threshold = 50  # default value
+        else:
+            pixelated_threshold = config.pixelated_threshold
+    except Exception:
+        pixelated_threshold = 50
     #edge detection using canny
     edges = cv2.Canny(gray, 50, 150, apertureSize=3)
     minLineLength = 200
