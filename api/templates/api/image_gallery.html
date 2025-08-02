@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% csrf_token %}
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -108,6 +109,13 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .nav-info {
@@ -392,10 +400,16 @@
                     {{ invalid_images|length }} Invalid Images Found
                 </div>
             </div>
-            <a href="{% url 'startPage' %}" class="btn-back">
-                <i class="fas fa-arrow-left"></i>
-                Back to Home
-            </a>
+            <div class="nav-actions">
+                <a href="{% url 'valid_images_gallery' %}" class="btn-action btn-export">
+                    <i class="fas fa-check-circle"></i>
+                    View Valid Images
+                </a>
+                <a href="{% url 'startPage' %}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Home
+                </a>
+            </div>
         </div>
 
         {% if invalid_images %}
@@ -497,49 +511,74 @@
                 }
             }
 
-            // Delete selected images
+            // Delete selected images (revalidate them)
             $('#deleteSelectedBtn').click(function() {
                 const selectedImages = $('.image-checkbox:checked');
                 
                 if (selectedImages.length === 0) {
-                    alert('Please select at least one image to delete.');
+                    alert('Please select at least one image to revalidate.');
                     return;
                 }
 
-                const confirmMessage = `Are you sure you want to delete ${selectedImages.length} selected image(s)? This action cannot be undone.`;
+                const confirmMessage = `Are you sure you want to revalidate ${selectedImages.length} selected image(s)? This will move them from invalid to valid folder.`;
                 
                 if (confirm(confirmMessage)) {
-                    $(this).html('<span class="loading"></span>Deleting...');
+                    $(this).html('<span class="loading"></span>Revalidating...');
                     $(this).prop('disabled', true);
                     
-                    // Here you would typically send an AJAX request to delete the images
-                    // For now, we'll simulate the action
-                    setTimeout(() => {
-                        selectedImages.each(function() {
-                            $(this).closest('.image-card').fadeOut(300, function() {
-                                $(this).remove();
-                                updateImageCount();
-                            });
-                        });
-                        
-                        $('#deleteSelectedBtn').html('<i class="fas fa-trash-alt"></i> Delete Selected');
-                        $('#deleteSelectedBtn').prop('disabled', false);
-                    }, 1000);
+                    // Create form and submit to backend
+                    const form = $('<form>', {
+                        'method': 'POST',
+                        'action': "{% url 'process_selected_images' %}"
+                    });
+                    
+                    // Add CSRF token
+                    form.append($('<input>', {
+                        'type': 'hidden',
+                        'name': 'csrfmiddlewaretoken',
+                        'value': $('[name=csrfmiddlewaretoken]').val()
+                    }));
+                    
+                    // Add selected images
+                    selectedImages.each(function() {
+                        const imageName = $(this).val();
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': 'selected_images',
+                            'value': imageName
+                        }));
+                    });
+                    
+                    // Submit form
+                    $('body').append(form);
+                    form.submit();
                 }
             });
 
             // Export results
             $('#exportResultsBtn').click(function() {
-                $(this).html('<span class="loading"></span>Exporting...');
+                const $btn = $(this);
+                $btn.html('<span class="loading"></span>Exporting...');
+                $btn.prop('disabled', true);
                 
-                // Simulate export process
-                setTimeout(() => {
-                    $(this).html('<i class="fas fa-check"></i> Exported!');
-                    
-                    setTimeout(() => {
-                        $(this).html('<i class="fas fa-download"></i> Export Results');
-                    }, 2000);
-                }, 1000);
+                // Create a temporary link element for download
+                const link = document.createElement('a');
+                link.href = "{% url 'download_csv' %}";
+                link.download = 'validation_results.csv';
+                link.style.display = 'none';
+                
+                // Add link to body and trigger download
+                document.body.appendChild(link);
+                link.click();
+                
+                // Remove the link element
+                document.body.removeChild(link);
+                
+                // Reset button after download starts
+                setTimeout(function() {
+                    $btn.html('<i class="fas fa-download"></i> Export Results');
+                    $btn.prop('disabled', false);
+                }, 2000);
             });
 
             function updateImageCount() {
