@@ -100,6 +100,8 @@ def main(directory):
 
     error_message = {}
     fileLists = sorted(os.listdir(directory))
+    logging.info(f"Found {len(fileLists)} files to process in directory: {directory}")
+    
     for image in fileLists:
         logging.info("processing Image: " + image)
 
@@ -108,86 +110,161 @@ def main(directory):
         imagePath = os.path.join(directory, image)
 
         if os.path.isdir(imagePath):
+            logging.info(f"Skipping directory: {image}")
             continue
 
         # Check image file format
         if config.bypass_format_check == False:
-            is_file_format_valid = file_format_check.check_image(imagePath)
-            if not is_file_format_valid:
-                messages.append("File format check failed")
+            try:
+                is_file_format_valid = file_format_check.check_image(imagePath)
+                if not is_file_format_valid:
+                    messages.append("File format check failed")
+            except Exception as e:
+                logging.error(f"Error in file format check for {image}: {e}")
 
         if config.bypass_size_check == False:
-            is_file_size_valid = file_size_check.check_image(imagePath)
-            if not is_file_size_valid:
-                messages.append("File size check failed")
+            try:
+                is_file_size_valid = file_size_check.check_image(imagePath)
+                if not is_file_size_valid:
+                    messages.append("File size check failed")
+            except Exception as e:
+                logging.error(f"Error in file size check for {image}: {e}")
 
         if config.bypass_height_check == False:
-            is_file_height_valid = file_size_check.check_height(imagePath)
-            if not is_file_height_valid:
-                messages.append("File height check failed")
+            try:
+                is_file_height_valid = file_size_check.check_height(imagePath)
+                if not is_file_height_valid:
+                    messages.append("File height check failed")
+            except Exception as e:
+                logging.error(f"Error in file height check for {image}: {e}")
 
         if config.bypass_width_check == False:
-            is_file_width_valid = file_size_check.check_width(imagePath)
-            if not is_file_width_valid:
-                messages.append("File width check failed")
+            try:
+                is_file_width_valid = file_size_check.check_width(imagePath)
+                if not is_file_width_valid:
+                    messages.append("File width check failed")
+            except Exception as e:
+                logging.error(f"Error in file width check for {image}: {e}")
 
         # Load the image
-        img = cv2.imread(imagePath)
+        try:
+            img = cv2.imread(imagePath)
+            if img is None:
+                messages.append("Could not load image")
+                logging.error(f"Failed to load image: {imagePath}")
+                # Skip further processing for this image
+                if len(messages) > 0:
+                    error_message[image] = messages
+                    try:
+                        if os.path.exists(os.path.join(invalid_images_static_directory, image)):
+                            continue
+                        move(imagePath, invalid_images_static_directory)
+                        logging.info(f"Moved {image} to invalid directory due to load failure")
+                    except Exception as e:
+                        logging.error(f"Error moving {image} to invalid directory: {e}")
+                continue
+        except Exception as e:
+            messages.append(f"Error loading image: {str(e)}")
+            logging.error(f"Exception loading image {imagePath}: {e}")
+            # Skip further processing for this image
+            if len(messages) > 0:
+                error_message[image] = messages
+                try:
+                    if os.path.exists(os.path.join(invalid_images_static_directory, image)):
+                        continue
+                    move(imagePath, invalid_images_static_directory)
+                    logging.info(f"Moved {image} to invalid directory due to load exception")
+                except Exception as move_e:
+                    logging.error(f"Error moving {image} to invalid directory: {move_e}")
+            continue
 
         # Check if corrupted image
         if config.bypass_corrupted_check == False:
-            if file_format_check.is_corrupted_image(img):
-                messages.append("Corrupted Image")
+            try:
+                if file_format_check.is_corrupted_image(img):
+                    messages.append("Corrupted Image")
+            except Exception as e:
+                logging.error(f"Error in corrupted image check for {image}: {e}")
 
         # Check for grey image
         if config.bypass_greyness_check == False:
-            if grey_black_and_white_check.is_grey(img):
-                messages.append("GreyScale check failed")
+            try:
+                if grey_black_and_white_check.is_grey(img):
+                    messages.append("GreyScale check failed")
+            except Exception as e:
+                logging.error(f"Error in greyness check for {image}: {e}")
 
         # Check image for blurness
         if config.bypass_blurness_check == False:
-            if blur_check.check_image_blurness(img):
-                messages.append("Blurness check failed")
+            try:
+                if blur_check.check_image_blurness(img):
+                    messages.append("Blurness check failed")
+            except Exception as e:
+                logging.error(f"Error in blurness check for {image}: {e}")
 
         # Check the background of image
         if config.bypass_background_check == False:
-            if not background_check.background_check(img):
-                messages.append("Background check failed")
+            try:
+                if not background_check.background_check(img):
+                    messages.append("Background check failed")
+            except Exception as e:
+                logging.error(f"Error in background check for {image}: {e}")
 
         # Check image for head position and coverage
         if config.bypass_head_check == False:
-            is_head_valid, head_percent = head_check.valid_head_check(img)
-            if not is_head_valid:
-                if head_percent < 10:
-                    messages.append("Head Ratio Small")
-                elif 100 > head_percent > 80:
-                    messages.append("Head Ratio Large")
-                elif head_percent == 101:
-                    messages.append("couldnot detect head")
-                else:
-                    messages.append("multiple heads detected")
+            try:
+                is_head_valid, head_percent = head_check.valid_head_check(img)
+                if not is_head_valid:
+                    if head_percent < 10:
+                        messages.append("Head Ratio Small")
+                    elif 100 > head_percent > 80:
+                        messages.append("Head Ratio Large")
+                    elif head_percent == 101:
+                        messages.append("couldnot detect head")
+                    else:
+                        messages.append("multiple heads detected")
+            except Exception as e:
+                logging.error(f"Error in head check for {image}: {e}")
 
         if config.bypass_eye_check == False:
-            if head_check.detect_eyes(img):
-                messages.append("Eye check failed")
+            try:
+                if head_check.detect_eyes(img):
+                    messages.append("Eye check failed")
+            except Exception as e:
+                logging.error(f"Error in eye check for {image}: {e}")
 
         # Check for symmetry
         if config.bypass_symmetry_check == False:
-            if not symmetry_check.issymmetric(img):
-                messages.append("Symmetry check failed")
+            try:
+                if not symmetry_check.issymmetric(img):
+                    messages.append("Symmetry check failed")
+            except Exception as e:
+                logging.error(f"Error in symmetry check for {image}: {e}")
 
         # logging.info("Copying valid and invalid images to respective folders...")
         if len(messages) > 0:
             error_message[image] = messages
+            logging.info(f"Image {image} failed validation: {messages}")
             # move(imagePath, invalidDirectory)
-            if os.path.exists(os.path.join(invalid_images_static_directory, image)):
-                continue
-            move(imagePath, invalid_images_static_directory)
-            # copy(imagePath, invalid_directory)
+            try:
+                if os.path.exists(os.path.join(invalid_images_static_directory, image)):
+                    logging.info(f"File {image} already exists in invalid directory, skipping move")
+                    continue
+                move(imagePath, invalid_images_static_directory)
+                logging.info(f"Moved {image} to invalid directory")
+            except Exception as e:
+                logging.error(f"Error moving {image} to invalid directory: {e}")
+                # copy(imagePath, invalid_directory)
         else:
-            if os.path.exists(os.path.join(validDirectory, image)):
-                continue
-            move(imagePath, validDirectory)
+            logging.info(f"Image {image} passed all validation checks")
+            try:
+                if os.path.exists(os.path.join(validDirectory, image)):
+                    logging.info(f"File {image} already exists in valid directory, skipping move")
+                    continue
+                move(imagePath, validDirectory)
+                logging.info(f"Moved {image} to valid directory")
+            except Exception as e:
+                logging.error(f"Error moving {image} to valid directory: {e}")
 
     csv_string = ""
     if len(error_message) > 0:
@@ -219,6 +296,15 @@ def main(directory):
         + str(finalTime - initialTime)
         + " seconds"
     )
+    
+    # Log summary of results
+    valid_count = len(fileLists) - len(error_message)
+    logging.info(f"Validation Summary: {valid_count} valid images, {len(error_message)} invalid images")
+    
+    if len(error_message) > 0:
+        logging.info("Invalid images and their issues:")
+        for image, issues in error_message.items():
+            logging.info(f"  {image}: {', '.join(issues)}")
 
     return HttpResponse("Validation completed")
 

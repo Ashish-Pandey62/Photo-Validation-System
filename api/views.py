@@ -120,27 +120,55 @@ def process_image(request):
                 if not os.path.exists(photos_dir):
                     os.makedirs(photos_dir)
                 
+                # Save the uploaded file to disk
                 folder_path = os.path.join(photo_folder_dir, folder.name)
+                logging.info(f"Saving uploaded file to: {folder_path}")
+                with open(folder_path, 'wb+') as destination:
+                    for chunk in folder.chunks():
+                        destination.write(chunk)
                 
                 # Extract the ZIP file
+                logging.info(f"Extracting ZIP file from: {folder_path} to: {photos_dir}")
                 with zipfile.ZipFile(folder_path, "r") as zip_ref:
                     zip_ref.extractall(photos_dir)
+                
+                # List contents after extraction
+                logging.info(f"Contents of photos_dir after extraction: {os.listdir(photos_dir)}")
 
                 # Determine the extracted folder path
                 extracted_folder_name = os.path.splitext(folder.name)[0]
                 path = os.path.join(photos_dir, extracted_folder_name)
+                logging.info(f"Initial path assumption: {path}")
                 
                 # Check if the extracted path exists
                 if not os.path.exists(path):
-                    # Try to find the extracted content
-                    for item in os.listdir(photos_dir):
-                        item_path = os.path.join(photos_dir, item)
-                        if os.path.isdir(item_path) and item.startswith(extracted_folder_name):
-                            path = item_path
-                            break
+                    logging.info(f"Path {path} does not exist, checking for direct image files")
+                    # Check if images were extracted directly to photos_dir (no subfolder)
+                    image_files = [f for f in os.listdir(photos_dir) 
+                                 if os.path.isfile(os.path.join(photos_dir, f)) 
+                                 and f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.gif'))]
+                    
+                    logging.info(f"Found {len(image_files)} image files directly in photos_dir: {image_files}")
+                    
+                    if image_files:
+                        # Images were extracted directly, use photos_dir as the path
+                        path = photos_dir
+                        logging.info(f"Using photos_dir as path: {path}")
                     else:
-                        # If still not found, create the directory
-                        os.makedirs(path, exist_ok=True)
+                        logging.info("No direct image files found, checking subdirectories")
+                        # Try to find the extracted content in subdirectories
+                        for item in os.listdir(photos_dir):
+                            item_path = os.path.join(photos_dir, item)
+                            if os.path.isdir(item_path) and item.startswith(extracted_folder_name):
+                                path = item_path
+                                logging.info(f"Found matching subdirectory: {path}")
+                                break
+                        else:
+                            # If still not found, create the directory
+                            logging.info(f"No matching subdirectory found, creating: {path}")
+                            os.makedirs(path, exist_ok=True)
+                else:
+                    logging.info(f"Path {path} exists")
                 
                 # Ensure the invalid images directory exists
                 invalid_images_dir = os.path.join(
@@ -150,8 +178,23 @@ def process_image(request):
                     os.makedirs(invalid_images_dir)
                 
                 # processing the image
-                # logging.info("Validating images from path: " + path)
+                logging.info(f"Validating images from path: {path}")
                 request.session["path"] = path
+                
+                # Check if path contains any image files
+                if os.path.exists(path):
+                    files_in_path = os.listdir(path)
+                    image_files = [f for f in files_in_path 
+                                 if os.path.isfile(os.path.join(path, f)) 
+                                 and f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.gif'))]
+                    logging.info(f"Found {len(image_files)} image files in {path}")
+                    if not image_files:
+                        raise Exception(f"No image files found in {path}. Available files: {files_in_path}")
+                    
+                    # Store total count in session for later use
+                    request.session["total_images_count"] = len(image_files)
+                    logging.info(f"Stored total images count in session: {len(image_files)}")
+                
                 photo_validator_dir.main(path)
                 
                 # Redirect to a results page or show success message
@@ -162,6 +205,9 @@ def process_image(request):
                 from django.contrib import messages
                 messages.error(request, f'Error processing upload: {str(e)}')
                 print(f"Error in process_image: {e}")
+                logging.error(f"Error in process_image: {e}")
+                import traceback
+                logging.error(f"Traceback: {traceback.format_exc()}")
             
             # return render(request, 'api/image_gallery.html')
         else:
@@ -228,74 +274,246 @@ def save_config(request):
 
 
 def image_gallery(request):
-    images = []
-
     invalid_images_directory = os.path.join(
-        settings.STATIC_ROOT, "api", "static", "api", "images", "invalid"
+        settings.BASE_DIR, "api", "static", "api", "images", "invalid"
     )
 
     # read the reasons for invalidity from the results.csv file
     result_file = os.path.join(
-        settings.STATIC_ROOT, "api", "static", "api", "images", "result.csv"
+        settings.BASE_DIR, "api", "static", "api", "images", "result.csv"
     )
     reasons_for_invalidity = {}  # a dict
 
-    with open(result_file, "r") as csv_file:
-        csv_reader = csv.reader(csv_file)
-        for row in csv_reader:
-            image_filename = row[0]  # The image filename is in the first column
-            reasons = row[1:]  # Initialize the list of reasons
-            reasons_for_invalidity[image_filename] = reasons
+    logging.info(f"Looking for invalid images in: {invalid_images_directory}")
+    logging.info(f"Looking for result file at: {result_file}")
+
+    # Check if directories exist
+    if not os.path.exists(invalid_images_directory):
+        logging.error(f"Invalid images directory does not exist: {invalid_images_directory}")
+    else:
+        logging.info(f"Invalid images directory exists, contents: {os.listdir(invalid_images_directory)}")
+
+    if not os.path.exists(result_file):
+        logging.error(f"Result file does not exist: {result_file}")
+    else:
+        logging.info(f"Result file exists")
+
+    try:
+        with open(result_file, "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if len(row) > 0:  # Skip empty rows
+                    image_filename = row[0]  # The image filename is in the first column
+                    reasons = row[1:]  # Initialize the list of reasons
+                    reasons_for_invalidity[image_filename] = reasons
+                    logging.info(f"Found invalid image: {image_filename} with reasons: {reasons}")
+    except Exception as e:
+        logging.error(f"Error reading result file: {e}")
+
+    # First, collect all image files
+    images = []
+    if os.path.exists(invalid_images_directory):
+        for filename in os.listdir(invalid_images_directory):
+            if (
+                filename.endswith(".jpg")
+                or filename.endswith(".jpeg")
+                or filename.endswith(".png")
+                or filename.endswith(".PNG")
+                or filename.endswith(".JPG")
+            ):
+                images.append(os.path.join(invalid_images_directory, filename))
+                logging.info(f"Added image to gallery: {filename}")
+
+    logging.info(f"Total images found for gallery: {len(images)}")
+    logging.info(f"Images list: {images}")
+
+    # Create the context that the template expects
+    invalid_images = []
+    for image_path in images:
+        filename = os.path.basename(image_path)
+        # Convert file path to URL path for web access
+        # Use a direct URL to serve images from the invalid directory
+        image_url = f"/invalid_image/{filename}"
+        logging.info(f"Generated URL for {filename}: {image_url}")
+        
+        # Create a mock object that the template expects
+        image_obj = type('Image', (), {
+            'id': filename,
+            'filename': filename,
+            'photo': type('Photo', (), {'url': image_url})(),
+            'reason_array': reasons_for_invalidity.get(filename, [])
+        })()
+        invalid_images.append(image_obj)
 
     context = {
-        "images_with_paths": images,
+        "invalid_images": invalid_images,
         "reasons_for_invalidity": reasons_for_invalidity,
     }
 
-    for filename in os.listdir(invalid_images_directory):
-        if (
-            filename.endswith(".jpg")
-            or filename.endswith(".jpeg")
-            or filename.endswith(".png")
-        ):
-            images.append(os.path.join(invalid_images_directory, filename))
+    logging.info(f"Final context - invalid_images count: {len(invalid_images)}")
+    for img in invalid_images:
+        logging.info(f"  - {img.filename}: {img.photo.url}")
 
     return render(request, "api/image_gallery.html", context)
 
 
+def valid_images_gallery(request):
+    """Show valid images that passed validation"""
+    path = request.session.get("path")
+    if not path:
+        return HttpResponse("No validation session found", status=400)
+    
+    valid_directory = os.path.join(path, "valid")
+    valid_images = []
+    
+    if os.path.exists(valid_directory):
+        for filename in os.listdir(valid_directory):
+            if (
+                filename.endswith(".jpg")
+                or filename.endswith(".jpeg")
+                or filename.endswith(".png")
+                or filename.endswith(".PNG")
+                or filename.endswith(".JPG")
+            ):
+                # Create a mock object for valid images
+                image_obj = type('Image', (), {
+                    'id': filename,
+                    'filename': filename,
+                    'photo': type('Photo', (), {'url': f"/valid_image/{filename}"})(),
+                    'reason_array': ['Passed all validation checks']
+                })()
+                valid_images.append(image_obj)
+    
+    # Calculate total images and success rate
+    valid_count = len(valid_images)
+    
+    # Get total count from session (stored during initial processing)
+    total_images = request.session.get("total_images_count", 0)
+    
+    # If session doesn't have the count, calculate from current state
+    if total_images == 0:
+        invalid_count = 0
+        # Count invalid images from the invalid directory
+        invalid_directory = os.path.join(
+            settings.BASE_DIR, "api", "static", "api", "images", "invalid"
+        )
+        if os.path.exists(invalid_directory):
+            for filename in os.listdir(invalid_directory):
+                if filename.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp")):
+                    invalid_count += 1
+        total_images = valid_count + invalid_count
+    
+    # Add logging for debugging
+    logging.info(f"Valid images count: {valid_count}")
+    logging.info(f"Total images count from session: {total_images}")
+    
+    # Calculate success rate
+    if total_images > 0:
+        success_rate = round((len(valid_images) / total_images) * 100, 1)
+    else:
+        success_rate = 0.0
+    
+    context = {
+        "valid_images": valid_images,
+        "title": "Valid Images Gallery",
+        "total_images": total_images,
+        "success_rate": success_rate
+    }
+    
+    return render(request, "api/valid_images_gallery.html", context)
+
+
+def serve_valid_image(request, filename):
+    """Serve valid images directly"""
+    from django.http import FileResponse
+    import mimetypes
+    
+    path = request.session.get("path")
+    if not path:
+        from django.http import Http404
+        raise Http404("No validation session found")
+    
+    valid_directory = os.path.join(path, "valid")
+    image_path = os.path.join(valid_directory, filename)
+    
+    if os.path.exists(image_path):
+        # Determine content type
+        content_type, _ = mimetypes.guess_type(image_path)
+        if content_type is None:
+            content_type = 'application/octet-stream'
+        
+        # Serve the file
+        response = FileResponse(open(image_path, 'rb'), content_type=content_type)
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        return response
+    else:
+        from django.http import Http404
+        raise Http404(f"Image {filename} not found")
+
+
+def serve_invalid_image(request, filename):
+    """Serve invalid images directly"""
+    from django.http import FileResponse
+    import mimetypes
+    
+    invalid_images_directory = os.path.join(
+        settings.BASE_DIR, "api", "static", "api", "images", "invalid"
+    )
+    
+    image_path = os.path.join(invalid_images_directory, filename)
+    
+    if os.path.exists(image_path):
+        # Determine content type
+        content_type, _ = mimetypes.guess_type(image_path)
+        if content_type is None:
+            content_type = 'application/octet-stream'
+        
+        # Serve the file
+        response = FileResponse(open(image_path, 'rb'), content_type=content_type)
+        response['Content-Disposition'] = f'inline; filename="{filename}"'
+        return response
+    else:
+        from django.http import Http404
+        raise Http404(f"Image {filename} not found")
+
+
 def process_selected_images(request):
+    """Move selected invalid images to valid folder (revalidate them)"""
     if request.method == "POST":
         path = request.session.get("path")
-        validDirectory = path + "/" + "valid/"
-        # validDirectory = path + "/" + "valid/"
+        validDirectory = os.path.join(path, "valid")
         result_file = os.path.join(
-            settings.STATIC_ROOT, "api", "static", "api", "images", "result.csv"
+            settings.BASE_DIR, "api", "static", "api", "images", "result.csv"
         )
 
         if not os.path.exists(validDirectory):
-            os.mkdir(validDirectory)
+            os.makedirs(validDirectory, exist_ok=True)
 
         selected_images = request.POST.getlist("selected_images")
+        logging.info(f"Selected images for revalidation: {selected_images}")
 
         # read the CSV file into a list of rows
         rows_to_keep = []
-        with open(result_file, "r") as csv_file:
-            csv_reader = csv.reader(csv_file)
-            for row in csv_reader:
-                image_filename = row[0]
-                if image_filename not in selected_images:
-                    rows_to_keep.append(
-                        row
-                    )  # Keep the row if the image is not in the selected list
+        if os.path.exists(result_file):
+            with open(result_file, "r") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                for row in csv_reader:
+                    if len(row) > 0:
+                        image_filename = row[0]
+                        if image_filename not in selected_images:
+                            rows_to_keep.append(row)  # Keep the row if the image is not in the selected list
 
         # Write the updated rows (excluding the removed row) back to the CSV file
         with open(result_file, "w", newline="") as csv_file:
             csv_writer = csv.writer(csv_file)
             csv_writer.writerows(rows_to_keep)
 
+        # Move selected images from invalid to valid directory
+        moved_count = 0
         for image_name in selected_images:
+            # Source: api/static/api/images/invalid/
             image_path = os.path.join(
-                settings.STATIC_ROOT,
+                settings.BASE_DIR,
                 "api",
                 "static",
                 "api",
@@ -303,45 +521,23 @@ def process_selected_images(request):
                 "invalid",
                 image_name,
             )
+            # Destination: media/photos/valid/
             destination_path = os.path.join(validDirectory, image_name)
 
             try:
-                shutil.move(image_path, destination_path)
-                print(f"Moved from {image_path} to {destination_path}: {e}")
-
+                if os.path.exists(image_path):
+                    shutil.move(image_path, destination_path)
+                    logging.info(f"Moved {image_name} from {image_path} to {destination_path}")
+                    moved_count += 1
+                else:
+                    logging.warning(f"Image {image_name} not found at {image_path}")
             except Exception as e:
-                print(f"Error moving {image_path} to {destination_path}: {e}")
+                logging.error(f"Error moving {image_name}: {e}")
 
-        # now that the directory's content is changed
-        images = []
-        invalid_images_directory = os.path.join(
-            settings.STATIC_ROOT, "api", "static", "api", "images", "invalid"
-        )
+        logging.info(f"Successfully moved {moved_count} images to valid directory")
 
-        # read the reasons for invalidity from the results.csv file
-        reasons_for_invalidity = {}  # a dict
-
-        with open(result_file, "r") as csv_file:
-            csv_reader = csv.reader(csv_file)
-            for row in csv_reader:
-                image_filename = row[0]  # The image filename is in the first column
-                reasons = row[1:]  # Initialize the list of reasons
-                reasons_for_invalidity[image_filename] = reasons
-
-        context = {
-            "images_with_paths": images,
-            "reasons_for_invalidity": reasons_for_invalidity,
-        }
-
-        for filename in os.listdir(invalid_images_directory):
-            if (
-                filename.endswith(".jpg")
-                or filename.endswith(".jpeg")
-                or filename.endswith(".png")
-            ):
-                images.append(os.path.join(invalid_images_directory, filename))
-
-        return render(request, "api/image_gallery.html", context)
+        # Redirect back to gallery to show remaining invalid images
+        return redirect('image_gallery')
 
     return HttpResponse("Method not allowed", status=405)
 
@@ -356,7 +552,7 @@ def process_rejected_images(request):
             os.mkdir(invalidDirectory)
 
         invalid_images_directory = os.path.join(
-            settings.STATIC_ROOT, "api", "static", "api", "images", "invalid"
+            settings.BASE_DIR, "api", "static", "api", "images", "invalid"
         )
 
         # Get a list of all image files in invalid_images_directory
@@ -379,7 +575,7 @@ def process_rejected_images(request):
         newcsvFile = path + "/" + "results.csv"
         # newcsvFile = path + "/" + "results.csv"
         oldcsvFile = os.path.join(
-            settings.STATIC_ROOT, "api", "static", "api", "images", "result.csv"
+            settings.BASE_DIR, "api", "static", "api", "images", "result.csv"
         )
         rows = []
 
@@ -442,19 +638,65 @@ def delete_all(request):
 
 
 def download_and_delete_csv(request):
-    path = request.session.get("path") + "/" + "results.csv"
-    # path = request.session.get('path') + "/" + "results.csv"
-    folder_to_delete = os.path.join(settings.MEDIA_ROOT)
-
-    with open(path, "rb") as csv_file:
-        response = HttpResponse(csv_file.read(), content_type="text\\csv")
-        # response = HttpResponse(csv_file.read(), content_type='text/csv')
-        response["Content-Disposition"] = 'attachment; filename="results.csv"'
-
-    if os.path.exists(folder_to_delete) and os.path.isdir(folder_to_delete):
-        try:
-            shutil.rmtree(folder_to_delete)
-        except Exception as e:
-            print(f"Error deleting folder: {e}")
-
+    """Export comprehensive validation results including both valid and invalid images"""
+    path = request.session.get("path")
+    if not path:
+        return HttpResponse("No validation session found", status=400)
+    
+    valid_directory = os.path.join(path, "valid")
+    invalid_directory = os.path.join(
+        settings.BASE_DIR, "api", "static", "api", "images", "invalid"
+    )
+    result_file = os.path.join(
+        settings.BASE_DIR, "api", "static", "api", "images", "result.csv"
+    )
+    
+    # Create comprehensive results
+    import io
+    output = io.StringIO()
+    writer = csv.writer(output)
+    
+    # Write header
+    writer.writerow(['Image Name', 'Status', 'Validation Issues', 'User Action'])
+    
+    # Get valid images
+    valid_images = []
+    if os.path.exists(valid_directory):
+        valid_images = [f for f in os.listdir(valid_directory) 
+                       if f.lower().endswith(('.jpg', '.jpeg', '.png', '.gif'))]
+    
+    # Get invalid images and their issues
+    invalid_data = {}
+    if os.path.exists(result_file):
+        with open(result_file, "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if len(row) > 0 and not row[0].startswith('#'):
+                    image_filename = row[0]
+                    reasons = row[1:] if len(row) > 1 else []
+                    invalid_data[image_filename] = reasons
+    
+    # Write valid images
+    for image in valid_images:
+        writer.writerow([image, 'VALID', 'Passed all checks', 'Computer validated'])
+    
+    # Write invalid images
+    for image, reasons in invalid_data.items():
+        issues = ', '.join(reasons) if reasons else 'Unknown issues'
+        writer.writerow([image, 'INVALID', issues, 'Needs review'])
+    
+    # Create response
+    response = HttpResponse(output.getvalue(), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="validation_results.csv"'
+    
+    # Note: Media folder cleanup is commented out to preserve data for future use
+    # Uncomment the following lines if you want to clean up after export
+    # folder_to_delete = os.path.join(settings.MEDIA_ROOT)
+    # if os.path.exists(folder_to_delete) and os.path.isdir(folder_to_delete):
+    #     try:
+    #         shutil.rmtree(folder_to_delete)
+    #         logging.info("Cleaned up media folder after export")
+    #     except Exception as e:
+    #             logging.error(f"Error deleting folder: {e}")
+    
     return response
