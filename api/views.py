@@ -130,7 +130,7 @@ def process_image(request):
                 extracted_folder_name = os.path.splitext(folder.name)[0]
                 path = os.path.join(photos_dir, extracted_folder_name)
                 
-                # Check if the extracted path exists
+                # Check if the extracted path exists and has images
                 if not os.path.exists(path):
                     # Try to find the extracted content
                     for item in os.listdir(photos_dir):
@@ -139,8 +139,18 @@ def process_image(request):
                             path = item_path
                             break
                     else:
-                        # If still not found, create the directory
-                        os.makedirs(path, exist_ok=True)
+                        # If still not found, use the main photos directory
+                        path = photos_dir
+                
+                # Check if the target directory has any images
+                image_extensions = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
+                images_in_path = [f for f in os.listdir(path) if f.endswith(image_extensions)]
+                
+                # If no images in the target directory, but images exist in the main photos_dir, use that instead
+                if not images_in_path and path != photos_dir:
+                    images_in_main = [f for f in os.listdir(photos_dir) if f.endswith(image_extensions)]
+                    if images_in_main:
+                        path = photos_dir
                 
                 # Ensure the invalid images directory exists
                 invalid_images_dir = os.path.join(
