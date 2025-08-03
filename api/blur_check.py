@@ -1,26 +1,32 @@
 import cv2
 import numpy as np
 from .models import Config
-#import logging
+import logging
 from api.grey_black_and_white_check import is_grey
 
 def check_image_blurness(image, config=None):
     grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    return (check_if_pixaleted(grey, config) or check_if_blur(grey, config))
+    is_blur_result = check_if_blur(grey, config)
+    is_pixelated_result = check_if_pixaleted(grey, config)
+    
+    # Debug logging
+    logging.info(f"Blur check: {is_blur_result}, Pixelated check: {is_pixelated_result}")
+    
+    return (is_pixelated_result or is_blur_result)
 
 def check_if_blur(gray, config=None):
     try:
         if config is None:
             config = Config.objects.first()
         if not config:
-            blurness_threshold = 35  # default value
+            blurness_threshold = 25  # More conservative default value (was 35)
         else:
             blurness_threshold = config.blurness_threshold
         
         # compute the Laplacian of the image and then return the focus
         # measure, which is simply the variance of the Laplacian
         laplacianVar = cv2.Laplacian(gray, cv2.CV_64F).var()
-        #logging.info(" variance = "+ str(laplacianVar))
+        logging.info(f"Laplacian variance: {laplacianVar}, Threshold: {blurness_threshold}")
         return laplacianVar < blurness_threshold
     except Exception as e:
         print(f"Error in check_if_blur: {e}")
@@ -32,38 +38,95 @@ def check_if_pixaleted(gray, config=None):
         if config is None:
             config = Config.objects.first()
         if not config:
-            pixelated_threshold = 50  # default value
+            pixelated_threshold = 80  # More conservative default value (was 50)
         else:
             pixelated_threshold = config.pixelated_threshold
     except Exception:
-        pixelated_threshold = 50
+        pixelated_threshold = 80  # More conservative fallback
     
-    # Adaptive parameters based on image size
+    # Get image dimensions
     height, width = gray.shape
     image_area = height * width
     
-    # Scale parameters based on image size
-    scale_factor = min(1.0, image_area / (1920 * 1080))  # Normalize to 1080p
+    # More conservative adaptive parameters
+    # For smaller images, use higher thresholds (less sensitive)
+    # For larger images, use lower thresholds (more sensitive)
+    if image_area < 500000:  # Small images (< 500K pixels)
+        # Less sensitive for small images
+        low_threshold = 100  # Increased from 80
+        high_threshold = 250  # Increased from 200
+        minLineLength = 120   # Increased from 100
+        maxLineGap = 25       # Increased from 20
+        threshold = 180       # Increased from 150
+    elif image_area < 2000000:  # Medium images (< 2M pixels)
+        # Balanced sensitivity
+        low_threshold = 80    # Increased from 60
+        high_threshold = 220  # Increased from 180
+        minLineLength = 180   # Increased from 150
+        maxLineGap = 20       # Increased from 15
+        threshold = 150       # Increased from 120
+    else:  # Large images (>= 2M pixels)
+        # More sensitive for large images
+        low_threshold = 60    # Increased from 40
+        high_threshold = 200  # Increased from 160
+        minLineLength = 250   # Increased from 200
+        maxLineGap = 15       # Increased from 10
+        threshold = 130       # Increased from 100
     
-    # Adaptive Canny parameters
-    low_threshold = max(30, int(50 * scale_factor))
-    high_threshold = max(100, int(150 * scale_factor))
-    
-    #edge detection using canny with adaptive parameters
+    # Edge detection using canny with conservative parameters
     edges = cv2.Canny(gray, low_threshold, high_threshold, apertureSize=3)
     
-    # Adaptive line detection parameters
-    minLineLength = max(50, int(200 * scale_factor))
-    maxLineGap = max(5, int(10 * scale_factor))
-    threshold = max(50, int(100 * scale_factor))
-
-    #number of lines detection using hough
+    # Line detection using hough with conservative parameters
     lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold, minLineLength, maxLineGap)
 
     if(lines is None):
         lines = []
-    # else:
-    #     logging.info(" lines = "+ str(len(lines)))
+    
+    num_lines = len(lines)
+    logging.info(f"Image area: {image_area}, Lines detected: {num_lines}, Threshold: {pixelated_threshold}")
+    logging.info(f"Canny params: low={low_threshold}, high={high_threshold}, Hough params: threshold={threshold}, minLineLength={minLineLength}, maxLineGap={maxLineGap}")
         
-    return len(lines) > pixelated_threshold
+    return num_lines > pixelated_threshold
+
+def debug_blur_detection(image_path):
+    """
+    Debug function to test blur detection on a specific image
+    """
+    try:
+        # Load image
+        image = cv2.imread(image_path)
+        if image is None:
+            print(f"Failed to load image: {image_path}")
+            return
+        
+        # Convert to grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        
+        # Get image info
+        height, width = gray.shape
+        image_area = height * width
+        print(f"Image dimensions: {width}x{height} ({image_area} pixels)")
+        
+        # Test blur detection
+        laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+        print(f"Laplacian variance: {laplacian_var}")
+        
+        # Test pixelation detection
+        is_blur = check_if_blur(gray)
+        is_pixelated = check_if_pixaleted(gray)
+        
+        print(f"Blur detection result: {is_blur}")
+        print(f"Pixelation detection result: {is_pixelated}")
+        print(f"Overall blur check result: {is_blur or is_pixelated}")
+        
+        return {
+            'laplacian_variance': laplacian_var,
+            'is_blur': is_blur,
+            'is_pixelated': is_pixelated,
+            'overall_result': is_blur or is_pixelated
+        }
+        
+    except Exception as e:
+        print(f"Error in debug_blur_detection: {e}")
+        return None
 
