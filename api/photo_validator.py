@@ -17,7 +17,25 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(imgPath):
-    config = Config.objects.all()[0]
+    # Load config once to avoid multiple database calls
+    try:
+        config = Config.objects.first()
+        if not config:
+            config = Config.objects.create(
+                min_height=100,
+                max_height=2000,
+                min_width=100,
+                max_width=2000,
+                min_size=10,
+                max_size=5000,
+                is_jpg=True,
+                is_png=True,
+                is_jpeg=True
+            )
+    except Exception as e:
+        logging.error(f"Error loading config: {e}")
+        return "Configuration error"
+    
     initial = time.time()
     message = ""
 
@@ -77,14 +95,14 @@ def main(imgPath):
 
 
     if config.bypass_greyness_check==False:
-      message = message + "Greyscale check: " + ('Passed' if not grey_black_and_white_check.is_grey(img) else 'Failed') + "\n"
+      message = message + "Greyscale check: " + ('Passed' if not grey_black_and_white_check.is_grey(img, config) else 'Failed') + "\n"
       logging.info(message)
     else:
       message = message + "Bypassed greyness check\n"
 
     # Check image for blurness
     if config.bypass_blurness_check == False:
-      is_blur = blur_check.check_image_blurness(img)
+      is_blur = blur_check.check_image_blurness(img, config)
       message = message + "Blurness check: " + ('Passed' if not is_blur else 'Failed') + "\n"
       logging.info(message)
     else:
@@ -92,7 +110,7 @@ def main(imgPath):
 
     # Check the background of image
     if config.bypass_background_check==False:
-      is_background_ok = background_check.background_check(img)
+      is_background_ok = background_check.background_check(img, config)
       message = message + "Background check: " + ('Passed' if is_background_ok else 'Failed') + "\n"
       logging.info(message)
     else:
@@ -125,7 +143,7 @@ def main(imgPath):
 
     # Check for symmetry
     if config.bypass_symmetry_check==False:
-      is_symmetric = symmetry_check.issymmetric(img)
+      is_symmetric = symmetry_check.issymmetric(img, config)
       message = message + "Symmetry check: " + ('Passed' if is_symmetric else 'Failed') + "\n"
       logging.info(message)
     else:

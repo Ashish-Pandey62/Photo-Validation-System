@@ -1,9 +1,10 @@
 import numpy as np
 from .models import Config
 
-def background_check(image):
+def background_check(image, config=None):
     try:
-        config = Config.objects.first()
+        if config is None:
+            config = Config.objects.first()
         if not config:
             # Use default threshold if no config
             average_color_threshold = 50
@@ -15,25 +16,26 @@ def background_check(image):
 
     h, w, channels = image.shape
 
-    pixels_of_r = []
-    pixels_of_g = []
-    pixels_of_b = []
-
-    for height in range(0, h):
-        for width in range(0, w):
-            if (height <= 0.35 * h and (width <= 0.14 * w or width >= 0.86 * w)) or height <= 0.015*h:
-                r = image[height, width, 0]
-                g = image[height, width, 1]
-                b = image[height, width, 2]
-            
-                pixels_of_r.append(r)
-                pixels_of_g.append(g)
-                pixels_of_b.append(b)
-
-    average_r = np.mean(pixels_of_r)
-    average_g = np.mean(pixels_of_g)
-    average_b = np.mean(pixels_of_b)
-
-    average_color = (average_r+average_g+average_b)/3
-
-    return average_color>=average_color_threshold
+    # Define background regions more efficiently
+    # Top 1.5% of image
+    top_region = image[:int(0.015 * h), :, :]
+    
+    # Left and right edges (top 35% of image)
+    left_edge = image[:int(0.35 * h), :int(0.14 * w), :]
+    right_edge = image[:int(0.35 * h), int(0.86 * w):, :]
+    
+    # Combine all background regions
+    background_pixels = np.vstack([
+        top_region.reshape(-1, 3),
+        left_edge.reshape(-1, 3),
+        right_edge.reshape(-1, 3)
+    ])
+    
+    if len(background_pixels) == 0:
+        return True  # No background pixels to check
+    
+    # Calculate average color using vectorized operations
+    average_color = np.mean(background_pixels)
+    
+    # Check if background is too dark (average color below threshold)
+    return average_color >= average_color_threshold

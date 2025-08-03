@@ -189,7 +189,7 @@ def main(directory):
         # Check for grey image
         if config.bypass_greyness_check == False:
             try:
-                if grey_black_and_white_check.is_grey(img):
+                if grey_black_and_white_check.is_grey(img, config):
                     messages.append("GreyScale check failed")
             except Exception as e:
                 logging.error(f"Error in greyness check for {image}: {e}")
@@ -197,7 +197,7 @@ def main(directory):
         # Check image for blurness
         if config.bypass_blurness_check == False:
             try:
-                if blur_check.check_image_blurness(img):
+                if blur_check.check_image_blurness(img, config):
                     messages.append("Blurness check failed")
             except Exception as e:
                 logging.error(f"Error in blurness check for {image}: {e}")
@@ -205,7 +205,7 @@ def main(directory):
         # Check the background of image
         if config.bypass_background_check == False:
             try:
-                if not background_check.background_check(img):
+                if not background_check.background_check(img, config):
                     messages.append("Background check failed")
             except Exception as e:
                 logging.error(f"Error in background check for {image}: {e}")
@@ -236,7 +236,7 @@ def main(directory):
         # Check for symmetry
         if config.bypass_symmetry_check == False:
             try:
-                if not symmetry_check.issymmetric(img):
+                if not symmetry_check.issymmetric(img, config):
                     messages.append("Symmetry check failed")
             except Exception as e:
                 logging.error(f"Error in symmetry check for {image}: {e}")

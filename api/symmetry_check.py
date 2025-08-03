@@ -2,9 +2,10 @@ import cv2
 import numpy as np
 from .models import Config
 
-def check_symmetry_with_head(image):
+def check_symmetry_with_head(image, config=None):
     try:
-        config = Config.objects.first()
+        if config is None:
+            config = Config.objects.first()
         if not config:
             threshold = 20  # default symmetry threshold
         else:
@@ -14,16 +15,24 @@ def check_symmetry_with_head(image):
 
     # Perform symmetry check
     height, width, _ = image.shape
-    half_width = width // 2
+    
+    # Handle odd-width images properly
+    if width % 2 == 1:  # Odd width
+        half_width = width // 2
+        left_half = image[:, :half_width]
+        right_half = image[:, half_width + 1:]  # Skip middle column
+    else:  # Even width
+        half_width = width // 2
+        left_half = image[:, :half_width]
+        right_half = image[:, half_width:]
 
-    left_half = image[:, :half_width]
-    right_half = image[:, half_width - 1::-1]
-
-    # Check if the sizes of left_half and right_half are the same
-    if left_half.shape != right_half.shape:
-        raise ValueError("Size mismatch between left_half and right_half")
-
+    # Flip the right half horizontally for comparison
     flipped_right_half = cv2.flip(right_half, 1)
+    
+    # Ensure both halves have the same dimensions
+    min_width = min(left_half.shape[1], flipped_right_half.shape[1])
+    left_half = left_half[:, :min_width]
+    flipped_right_half = flipped_right_half[:, :min_width]
 
     # Calculate the absolute difference between the left and flipped right halves
     diff = cv2.absdiff(left_half, flipped_right_half)
@@ -39,9 +48,9 @@ def check_symmetry_with_head(image):
 
     return is_symmetric
 
-def issymmetric(image):
+def issymmetric(image, config=None):
     try:
-        is_symmetric = check_symmetry_with_head(image)
+        is_symmetric = check_symmetry_with_head(image, config)
         return is_symmetric
     except ValueError as e:
         print("Error:", str(e))
