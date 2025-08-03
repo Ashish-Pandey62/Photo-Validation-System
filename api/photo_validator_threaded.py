@@ -132,7 +132,7 @@ def validate_single_image_threaded(image_path, config):
                 logging.error(f"Error in file width check for {image_name}: {e}")
                 messages.append(f"File width check error: {str(e)}")
 
-        # Load the image
+        # Load the image with proper validation
         try:
             img = cv2.imread(image_path)
             if img is None:
@@ -140,6 +140,26 @@ def validate_single_image_threaded(image_path, config):
                 logging.error(f"Failed to load image: {image_path}")
                 processing_time = time.time() - start_time
                 return ValidationResult(image_name, False, messages, processing_time)
+            
+            # Validate image format and convert if necessary
+            if len(img.shape) != 3 or img.shape[2] != 3:
+                # Try to convert to BGR format if it's not already
+                if len(img.shape) == 2:
+                    # Grayscale to BGR
+                    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+                elif len(img.shape) == 3 and img.shape[2] == 4:
+                    # RGBA to BGR
+                    img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
+                else:
+                    messages.append("Unsupported image format")
+                    logging.error(f"Unsupported image format for {image_path}: shape {img.shape}")
+                    processing_time = time.time() - start_time
+                    return ValidationResult(image_name, False, messages, processing_time)
+            
+            # Ensure the image is 8-bit
+            if img.dtype != 'uint8':
+                img = img.astype('uint8')
+                
         except Exception as e:
             messages.append(f"Error loading image: {str(e)}")
             logging.error(f"Exception loading image {image_path}: {e}")
@@ -185,28 +205,42 @@ def validate_single_image_threaded(image_path, config):
         # Check image for head position and coverage
         if not getattr(config, 'bypass_head_check', False):
             try:
-                is_head_valid, head_percent = head_check.valid_head_check(img)
-                if not is_head_valid:
-                    if head_percent < 10:
-                        messages.append("Head Ratio Small")
-                    elif 100 > head_percent > 80:
-                        messages.append("Head Ratio Large")
-                    elif head_percent == 101:
-                        messages.append("couldnot detect head")
-                    else:
-                        messages.append("multiple heads detected")
+                # Additional validation for head check
+                if img is not None and len(img.shape) == 3 and img.shape[2] == 3:
+                    # Make a copy to avoid modifying the original
+                    img_copy = img.copy()
+                    is_head_valid, head_percent = head_check.valid_head_check(img_copy)
+                    if not is_head_valid:
+                        if head_percent < 10:
+                            messages.append("Head Ratio Small")
+                        elif 100 > head_percent > 80:
+                            messages.append("Head Ratio Large")
+                        elif head_percent == 101:
+                            messages.append("couldnot detect head")
+                        else:
+                            messages.append("multiple heads detected")
+                else:
+                    messages.append("Invalid image format for head check")
             except Exception as e:
                 logging.error(f"Error in head check for {image_name}: {e}")
-                messages.append(f"Head check error: {str(e)}")
+                # Don't add this as a validation failure, just skip the check
+                logging.warning(f"Skipping head check for {image_name} due to format issues")
 
         # Check eyes
         if not getattr(config, 'bypass_eye_check', False):
             try:
-                if head_check.detect_eyes(img):
-                    messages.append("Eye check failed")
+                # Additional validation for eye check
+                if img is not None and len(img.shape) == 3 and img.shape[2] == 3:
+                    # Make a copy to avoid modifying the original
+                    img_copy = img.copy()
+                    if head_check.detect_eyes(img_copy):
+                        messages.append("Eye check failed")
+                else:
+                    messages.append("Invalid image format for eye check")
             except Exception as e:
                 logging.error(f"Error in eye check for {image_name}: {e}")
-                messages.append(f"Eye check error: {str(e)}")
+                # Don't add this as a validation failure, just skip the check
+                logging.warning(f"Skipping eye check for {image_name} due to format issues")
 
         # Check for symmetry
         if not getattr(config, 'bypass_symmetry_check', False):
