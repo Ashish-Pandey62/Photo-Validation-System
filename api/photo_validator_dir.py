@@ -1,7 +1,7 @@
 import logging
 import os.path
 from django.http import HttpResponse
-from .photo_validator_parallel import main_parallel
+from .photo_validator_threaded import main_threaded
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,42 +18,39 @@ def moveToFolder(label, imagePath):
 
 def main(directory):
     """
-    Main validation function - now uses parallel processing for maximum speed!
-    This replaces the previous sequential approach with high-performance parallel validation.
+    Main validation function - now uses STABLE threaded parallel processing for maximum speed!
+    This replaces the previous sequential approach with high-performance threaded validation.
     """
     try:
         logging.info("=" * 60)
-        logging.info("STARTING PARALLEL PHOTO VALIDATION")
+        logging.info("🚀 STARTING THREADED PARALLEL PHOTO VALIDATION 🚀")
         logging.info("=" * 60)
         logging.info(f"Target directory: {directory}")
         
-        # Call the parallel validation function
-        results = main_parallel(directory)
+        # Call the threaded parallel validation function
+        results = main_threaded(directory)
         
         if results:
             logging.info("=" * 60)
-            logging.info("PARALLEL VALIDATION PERFORMANCE SUMMARY")
+            logging.info("🎯 THREADED VALIDATION PERFORMANCE SUMMARY 🎯")
             logging.info("=" * 60)
             logging.info(f"✅ Successfully processed {results['total_processed']} images")
             logging.info(f"✅ Valid images: {results['valid_count']}")
             logging.info(f"❌ Invalid images: {results['invalid_count']}")
             logging.info(f"⚡ Total time: {results['processing_time']:.2f} seconds")
             logging.info(f"⚡ Average per image: {results['avg_time_per_image']:.3f} seconds")
-            logging.info(f"🚀 Processing speed: {results['total_processed'] / results['processing_time']:.2f} images/second")
-            
-            # Calculate estimated speedup (conservative estimate vs sequential)
-            estimated_sequential_time = results['total_processed'] * 2.0  # Assume 2 seconds per image sequentially
-            speedup_factor = estimated_sequential_time / results['processing_time']
-            logging.info(f"🚀 Estimated speedup: {speedup_factor:.1f}x faster than sequential processing")
+            logging.info(f"🚀 Processing speed: {results['images_per_second']:.2f} images/second")
+            logging.info(f"🔥 Speedup factor: {results['speedup_factor']:.1f}x faster than sequential!")
+            logging.info(f"🛠️  Threads used: {results['workers_used']}")
         
         logging.info("=" * 60)
-        logging.info("PARALLEL VALIDATION COMPLETED SUCCESSFULLY! 🎉")
+        logging.info("🎉 THREADED PARALLEL VALIDATION COMPLETED SUCCESSFULLY! 🎉")
         logging.info("=" * 60)
         
-        return HttpResponse("Parallel validation completed successfully!")
+        return HttpResponse("Threaded parallel validation completed successfully!")
         
     except Exception as e:
-        logging.error(f"Error in parallel validation: {e}")
+        logging.error(f"Error in threaded parallel validation: {e}")
         import traceback
         logging.error(f"Traceback: {traceback.format_exc()}")
         return HttpResponse(f"Validation failed: {str(e)}", status=500)
