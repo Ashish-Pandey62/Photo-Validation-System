@@ -20,11 +20,17 @@
       href="{% static 'api/vendor/fontawesome-free/css/all.min.css' %}"
       rel="stylesheet"
     />
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
     <link rel="stylesheet" href="{% static 'api/css/style.css' %}" />
 
     <!-- Custom styles for this template -->
@@ -32,24 +38,25 @@
 
     <script src="{% static 'api/js/jquer.js' %}"></script>
     <style>
-      /* Modern Variables */
+      /* Minimal Variables */
       :root {
-        --primary-color: #3b82f6;
-        --primary-hover: #2563eb;
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --background-color: #ffffff;
+        --background-alt: #f8fafc;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --text-muted: #94a3b8;
+        --border-color: #e2e8f0;
+        --border-light: #f1f5f9;
         --success-color: #10b981;
-        --success-hover: #059669;
         --warning-color: #f59e0b;
-        --warning-hover: #d97706;
         --danger-color: #ef4444;
-        --danger-hover: #dc2626;
-        --dark-bg: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
-        --card-bg: rgba(255, 255, 255, 0.08);
-        --text-primary: #ffffff;
-        --text-secondary: rgba(255, 255, 255, 0.8);
-        --text-muted: rgba(255, 255, 255, 0.6);
-        --border-color: rgba(255, 255, 255, 0.1);
-        --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        --shadow-heavy: 0 20px 60px 0 rgba(0, 0, 0, 0.5);
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
       }
 
       * {
@@ -59,65 +66,101 @@
       }
 
       body {
-        font-family: 'Inter', sans-serif;
-        background: var(--dark-bg);
+        background: rgb(243, 242, 247);
         color: var(--text-primary);
-        min-height: 100vh;
-        overflow-x: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.5;
+        font-size: 14px;
+        padding-top: 80px; /* Add padding to prevent content from hiding under fixed header */
       }
 
-      /* Animated Background */
-      body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background:
-          radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
-          radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.1) 0%, transparent 50%);
-        z-index: -1;
-        animation: backgroundShift 12s ease-in-out infinite alternate;
-      }
-
-      @keyframes backgroundShift {
-        0% {
-          opacity: 0.2;
-          transform: scale(1);
-        }
-        100% {
-          opacity: 0.4;
-          transform: scale(1.05);
-        }
-      }
-
-      /* Header Styles */
+      /* Clean Header with Blue Accent */
       .header {
         text-align: center;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+        padding: 1rem 2rem 1rem;
+        background: var(--background-color);
+        display: block;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
       }
 
       .header h1 {
-        font-family: 'Poppins', sans-serif;
-        font-size: 3.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.025em;
+      }
+
+      .header h1 .highlight {
+        color: var(--primary-color);
+        background: linear-gradient(
+          135deg,
+          var(--primary-color) 0%,
+          #1e40af 100%
+        );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        margin-bottom: 1rem;
-        text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
       }
 
       .header p {
-        font-size: 1.2rem;
+        font-size: 1.25rem;
         color: var(--text-secondary);
+        font-weight: 400;
         max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
+      }
+
+      .header-features {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .header-feature {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .header-feature i {
+        color: var(--primary-color);
+        font-size: 1rem;
+      }
+
+      /* Minimal Container */
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 1rem;
+      }
+
+      /* Clean Card */
+      .card {
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin: 1rem 0;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+      }
+
+      .card:hover {
+        border-color: var(--border-light);
+        box-shadow: var(--shadow-md);
       }
 
       /* Glassmorphism Card */
@@ -139,46 +182,31 @@
         border-color: rgba(255, 255, 255, 0.2);
       }
 
-      /* Modern File Upload */
+      /* Minimal File Upload */
       .file-upload-area {
-        border: 2px dashed rgba(255, 255, 255, 0.3);
-        border-radius: 15px;
-        padding: 3rem 2rem;
+        background: rgb(243, 242, 247);
+        border: 4px dashed var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 2.5rem 1.5rem;
         text-align: center;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.02);
+        transition: all 0.2s ease;
+        cursor: pointer;
         position: relative;
-        overflow: hidden;
-      }
-
-      .file-upload-area::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transition: left 0.5s;
-      }
-
-      .file-upload-area:hover::before {
-        left: 100%;
       }
 
       .file-upload-area:hover {
-        border-color: rgba(255, 255, 255, 0.6);
-        background: rgba(255, 255, 255, 0.05);
+        border-color: var(rgb(243, 242, 247));
+        background: #f8fafc;
       }
 
       .file-upload-area.dragover {
         border-color: var(--primary-color);
-        background: rgba(59, 130, 246, 0.1);
+        background: rgba(37, 99, 235, 0.05);
       }
 
       .upload-icon {
-        font-size: 3rem;
-        color: var(--text-secondary);
+        font-size: 2rem;
+        color: var(--text-muted);
         margin-bottom: 1rem;
         display: block;
       }
@@ -189,166 +217,234 @@
 
       .file-upload-label {
         display: inline-block;
-        padding: 1rem 2rem;
+        padding: 0.75rem 1.5rem;
         background: var(--primary-color);
         color: white;
-        border-radius: 50px;
+        border-radius: var(--radius-md);
         cursor: pointer;
         font-weight: 500;
-        transition: all 0.3s ease;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
         border: none;
-        font-size: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
       }
 
-      .file-upload-label:hover {
+      /* .file-upload-label:hover {
         background: var(--primary-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+      } */
+
+      .file-upload-text {
+        margin-top: 0.75rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
       }
 
       .file-name-display {
         margin-top: 1rem;
-        padding: 0.75rem 1.5rem;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0.75rem 1rem;
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        color: var(--text-primary);
       }
 
-      /* Modern Buttons */
-      .btn-modern {
-        padding: 1rem 2.5rem;
-        border: none;
-        border-radius: 50px;
+      /* Clean Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        border: 1px solid transparent;
+        border-radius: var(--radius-md);
         font-weight: 500;
-        font-size: 1rem;
+        font-size: 0.875rem;
         cursor: pointer;
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        position: relative;
-        overflow: hidden;
-        margin: 0.5rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        background: transparent;
       }
 
       .btn-primary {
         background: var(--primary-color);
         color: white;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        border-color: var(--primary-color);
       }
 
       .btn-primary:hover {
         background: var(--primary-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        border-color: var(--primary-hover);
+        color: white;
+        text-decoration: none;
+      }
+
+      .btn-secondary {
+        background: var(--background-color);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        background: var(--background-alt);
+        border-color: var(--text-muted);
+        color: var(--text-primary);
+        text-decoration: none;
       }
 
       .btn-success {
-        background: var(--success-color);
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
         color: white;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        border: none;
       }
 
       .btn-success:hover {
-        background: var(--success-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        background: #059669;
+        border-color: #059669;
+        color: white;
+        text-decoration: none;
       }
 
       .btn-warning {
         background: var(--warning-color);
         color: white;
-        box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        border-color: var(--warning-color);
       }
 
       .btn-warning:hover {
-        background: var(--warning-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        background: #d97706;
+        border-color: #d97706;
+        color: white;
+        text-decoration: none;
       }
 
       .btn-danger {
         background: var(--danger-color);
         color: white;
-        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        border-color: var(--danger-color);
       }
 
       .btn-danger:hover {
-        background: var(--danger-hover);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        background: #dc2626;
+        border-color: #dc2626;
+        color: white;
+        text-decoration: none;
       }
 
-      .btn-modern:disabled {
-        background: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.3);
+      .btn:disabled {
+        opacity: 0.5;
         cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
+        pointer-events: none;
       }
 
-      /* Results Display */
-      .result-display {
-        margin: 2rem 0;
-        padding: 2rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
+      /* Sidebar and Hamburger Menu */
+      .hamburger-menu {
+        position: fixed;
+        right: 20px;
+        top: 20px;
+        z-index: 1001;
+        cursor: pointer;
+        background: var(--primary-color);
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 5px;
+        padding-top: 5px;
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+      }
+
+      .hamburger-menu:hover {
+        background: var(--primary-hover);
+      }
+
+      .hamburger-menu i {
+        color: white;
         font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        min-height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
 
-      /* Button Container */
+      .sidebar {
+        position: fixed;
+        right: -300px;
+        top: 0;
+        width: 300px;
+        height: 100vh;
+        background: var(--background-color);
+        box-shadow: var(--shadow-md);
+        transition: right 0.3s ease;
+        z-index: 1000;
+        padding: 80px 20px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .sidebar.active {
+        right: 0;
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 999;
+      }
+
+      .sidebar-overlay.active {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      /* Button Grid (now in sidebar) */
       .button-grid {
         display: flex;
-        justify-content: center;
-        align-items: stretch;
-        gap: 1.5rem;
-        margin-top: 2rem;
-        padding: 1rem 0;
-        flex-wrap: nowrap; /* Keep in single row on desktop */
+        flex-direction: column;
+        gap: 0.5rem;
       }
 
-      /* Enhanced Action Buttons */
+      /* Sidebar title */
+      .sidebar-title {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      /* Action Buttons for Validation Results */
       .action-btn {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: 0.75rem;
-        padding: 1.25rem 2rem;
+        padding: 0.75rem 1rem;
         border: none;
-        border-radius: 15px;
+        border-radius: 6px;
         font-weight: 500;
-        font-size: 1rem;
+        font-size: 0.875rem;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         text-decoration: none;
-        position: relative;
-        overflow: hidden;
-        min-height: 60px;
-        background: var(--card-bg);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid var(--border-color);
+        background: var(--background-color);
         color: var(--text-primary);
-        box-shadow: var(--shadow-light);
-        flex: 1; /* Equal width for all buttons */
-        max-width: 280px; /* Prevent buttons from becoming too wide */
-        min-width: 220px; /* Minimum width for readability */
+        width: 100%;
+        text-align: left;
+        border-left-width: 4px;
+        border-left-style: solid;
       }
 
       .action-btn::before {
-        content: '';
+        content: "";
         position: absolute;
         top: 0;
         left: 0;
@@ -394,288 +490,190 @@
 
       /* Specific button styles */
       .btn-view-invalid {
-        border-left: 4px solid var(--warning-color);
+        border-left-color: var(--warning-color);
       }
 
       .btn-view-invalid:hover {
-        border-left-color: var(--warning-hover);
-        background: rgba(245, 158, 11, 0.1);
+        background: var(--background-alt);
       }
 
       .btn-clear-data {
-        border-left: 4px solid var(--danger-color);
+        border-left-color: var(--danger-color);
       }
 
       .btn-clear-data:hover {
-        border-left-color: var(--danger-hover);
-        background: rgba(239, 68, 68, 0.1);
+        background: var(--background-alt);
       }
 
       .btn-admin-panel {
-        border-left: 4px solid var(--success-color);
+        border-left-color: var(--success-color);
       }
 
       .btn-admin-panel:hover {
-        border-left-color: var(--success-hover);
-        background: rgba(16, 185, 129, 0.1);
+        background: var(--background-alt);
       }
 
-      /* Button text styling */
-      .action-btn .btn-text {
+      /* Button text styles */
+      .btn-text {
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
         gap: 0.25rem;
       }
 
-      .action-btn .btn-title {
+      .btn-title {
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .btn-subtitle {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      /* Results Display */
+      .result-display {
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        background: var(--background-alt);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        text-align: center;
+        font-size: 1.125rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Validation Results Section */
+      .validation-results {
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        margin: 2rem 0;
+        text-align: center;
+      }
+
+      .validation-results h2 {
+        font-size: 1.5rem;
         font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .validation-results h2 i {
+        color: var(--primary-color);
+      }
+
+      .validation-prompt {
+        color: var(--text-secondary);
         font-size: 1rem;
+        margin-bottom: 2rem;
       }
 
-      .action-btn .btn-subtitle {
-        font-size: 0.85rem;
-        color: var(--text-muted);
-        font-weight: 400;
+      .validation-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        align-items: center;
       }
 
-      /* Loading Animation */
-      .loading {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border: 3px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: #fff;
-        animation: spin 1s ease-in-out infinite;
-        margin-right: 0.5rem;
-      }
-
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-
-      /* Progress Bar */
-      .progress-container {
-        width: 100%;
-        height: 8px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-        margin: 1rem 0;
-        overflow: hidden;
-      }
-
-      .progress-bar {
-        height: 100%;
-        background: var(--success-color);
-        border-radius: 4px;
-        width: 0%;
-        transition: width 0.3s ease;
-        position: relative;
-      }
-
-      .progress-bar::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        background-image: linear-gradient(
-          -45deg,
-          rgba(255, 255, 255, 0.2) 25%,
-          transparent 25%,
-          transparent 50%,
-          rgba(255, 255, 255, 0.2) 50%,
-          rgba(255, 255, 255, 0.2) 75%,
-          transparent 75%,
-          transparent
-        );
-        background-size: 50px 50px;
-        animation: progressMove 1s linear infinite;
-      }
-
-      @keyframes progressMove {
-        0% { background-position: 0 0; }
-        100% { background-position: 50px 50px; }
-      }
-
-      /* Configuration Styles */
+      /* Configuration Sections */
       .config-section {
-        margin-bottom: 3rem;
-        padding: 2.5rem;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .config-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 0;
-      }
-
-      .config-section:hover::before {
-        opacity: 1;
-      }
-
-      .config-section:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.3);
-        border-color: rgba(255, 255, 255, 0.15);
-      }
-
-      .config-section > * {
-        position: relative;
-        z-index: 1;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
       }
 
       .config-title {
         color: var(--text-primary);
-        font-size: 1.3rem;
+        font-size: 1.125rem;
         font-weight: 600;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
       }
 
       .config-row {
-        margin-bottom: 1.5rem;
-      }
-
-      .config-group {
-        width: 100%;
+        margin-bottom: 1rem;
       }
 
       .config-label {
         display: block;
-        color: var(--text-secondary);
         font-weight: 500;
-        margin-bottom: 1rem;
-        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
       }
 
       .input-group {
-        display: grid;
-        grid-template-columns: auto 1fr auto 1fr;
-        gap: 1.5rem;
+        display: flex;
+        gap: 1rem;
         align-items: center;
-        background: rgba(255, 255, 255, 0.03);
-        padding: 2rem;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow:
-          0 8px 32px rgba(0, 0, 0, 0.1),
-          inset 0 1px 1px rgba(255, 255, 255, 0.05);
-        transition: all 0.3s ease;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-      }
-
-      .input-group:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.12);
-        transform: translateY(-1px);
-        box-shadow:
-          0 12px 40px rgba(0, 0, 0, 0.15),
-          inset 0 1px 1px rgba(255, 255, 255, 0.08);
+        flex-wrap: wrap;
       }
 
       .input-label {
         color: var(--text-primary);
-        font-weight: 600;
-        font-size: 1rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.5rem 1rem;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        min-width: 80px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-      }
-
-      .input-label:hover {
-        background: rgba(255, 255, 255, 0.15);
-        transform: scale(1.02);
+        font-weight: 500;
+        font-size: 0.875rem;
+        min-width: 60px;
+        text-align: right;
       }
 
       .config-input {
-        padding: 1.2rem 1.5rem;
-        background: rgba(255, 255, 255, 0.12);
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        border-radius: 15px;
+        padding: 0.625rem 0.75rem;
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
         color: var(--text-primary);
-        font-size: 1.1rem;
-        font-weight: 600;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        text-align: center;
-        box-shadow:
-          0 4px 15px rgba(0, 0, 0, 0.1),
-          inset 0 1px 1px rgba(255, 255, 255, 0.1);
-        position: relative;
-        overflow: hidden;
-      }
-
-      .config-input::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transition: left 0.5s;
-      }
-
-      .config-input:hover::before {
-        left: 100%;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        width: 120px;
       }
 
       .config-input:focus {
         outline: none;
         border-color: var(--primary-color);
-        background: rgba(255, 255, 255, 0.18);
-        box-shadow:
-          0 0 0 4px rgba(59, 130, 246, 0.2),
-          0 8px 25px rgba(59, 130, 246, 0.15),
-          inset 0 1px 1px rgba(255, 255, 255, 0.15);
-        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
       }
 
       .config-input:hover {
-        background: rgba(255, 255, 255, 0.15);
-        border-color: rgba(255, 255, 255, 0.3);
-        transform: translateY(-1px);
-        box-shadow:
-          0 6px 20px rgba(0, 0, 0, 0.15),
-          inset 0 1px 1px rgba(255, 255, 255, 0.12);
+        border-color: var(--text-muted);
+      }
+      .btnSaveConfig {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1rem;
+        border: 1px solid transparent;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        background: transparent;
       }
 
       /* Format Selection */
       .format-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.75rem;
+        margin-top: 0.75rem;
       }
 
       .format-option {
@@ -690,156 +688,266 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 1.5rem 1rem;
-        background: rgba(255, 255, 255, 0.05);
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
+        padding: 1rem 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         color: var(--text-secondary);
         font-weight: 500;
+        font-size: 0.75rem;
       }
 
       .format-label i {
-        font-size: 2rem;
+        font-size: 1.5rem;
         margin-bottom: 0.5rem;
-        transition: all 0.3s ease;
-      }
-
-      .format-label span {
-        font-size: 1rem;
+        transition: all 0.2s ease;
       }
 
       .format-checkbox:checked + .format-label {
-        background: rgba(59, 130, 246, 0.2);
+        background: rgba(37, 99, 235, 0.05);
         border-color: var(--primary-color);
-        color: var(--text-primary);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        color: var(--primary-color);
       }
 
       .format-checkbox:checked + .format-label i {
         color: var(--primary-color);
-        transform: scale(1.1);
       }
 
       .format-label:hover {
-        transform: translateY(-2px);
-        border-color: rgba(255, 255, 255, 0.3);
-        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--text-muted);
+        background: var(--background-alt);
       }
 
-      /* Navigation Tabs Modern Style */
+      /* Navigation Tabs */
       .nav-tabs {
-        border: none;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        padding: 0.5rem;
-        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border-color);
+        background: transparent;
+        margin-bottom: 1.5rem;
+        display: flex;
+        gap: 0;
       }
 
       .nav-tabs .nav-link {
         border: none;
         color: var(--text-secondary);
         background: transparent;
-        border-radius: 10px;
-        padding: 1rem 2rem;
-        margin: 0 0.25rem;
-        transition: all 0.3s ease;
+        padding: 0.75rem 1rem;
+        transition: all 0.2s ease;
         font-weight: 500;
+        font-size: 0.875rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        border-bottom: 2px solid transparent;
+        text-decoration: none;
       }
 
       .nav-tabs .nav-link:hover {
         color: var(--text-primary);
-        background: rgba(255, 255, 255, 0.1);
+        border-bottom-color: var(--border-color);
+        text-decoration: none;
       }
 
       .nav-tabs .nav-link.active {
-        color: var(--text-primary);
+        color: var(--primary-color);
+        background: transparent;
+        border-bottom-color: var(--primary-color);
+      }
+
+      /* Loading Animation */
+      .loading {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border-color);
+        border-radius: 50%;
+        border-top-color: var(--primary-color);
+        animation: spin 1s linear infinite;
+        margin-right: 0.5rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Progress Bar */
+      .progress-container {
+        width: 100%;
+        height: 6px;
+        background: var(--border-light);
+        border-radius: 3px;
+        margin: 1rem 0;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 100%;
         background: var(--primary-color);
-        border: none;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        border-radius: 3px;
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      /* Status Indicators */
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      .status-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+      }
+
+      .status-warning {
+        background: rgba(245, 158, 11, 0.1);
+        color: var(--warning-color);
+      }
+
+      .status-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
       }
 
       /* Responsive Design */
       @media (max-width: 768px) {
+        .header {
+          padding: 3rem 1rem 2rem;
+        }
+
         .header h1 {
-          font-size: 2.5rem;
+          font-size: 2.25rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: 0.75rem;
+          letter-spacing: -0.025em;
         }
 
         .header p {
           font-size: 1rem;
         }
 
-        .glass-card {
-          margin: 0.5rem;
+        .header-features {
+          gap: 1rem;
+        }
+
+        .card {
           padding: 1.5rem;
+          margin: 0.5rem 0;
+        }
+
+        .config-section {
+          padding: 1rem;
         }
 
         .input-group {
-          grid-template-columns: 1fr;
-          gap: 1rem;
-          padding: 1.5rem;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 0.5rem;
         }
 
         .input-label {
-          justify-self: center;
-          min-width: 120px;
-          margin-bottom: 0.5rem;
+          text-align: left;
+          min-width: auto;
         }
 
         .config-input {
           width: 100%;
-          max-width: 280px;
-          justify-self: center;
-        }
-
-        .config-section {
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-        }
-
-        /* Stack min/max inputs vertically on mobile */
-        .input-group {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-        }
-
-        .input-group > * {
-          width: 100%;
-          max-width: 280px;
+          max-width: 200px;
         }
 
         .format-grid {
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+          gap: 0.5rem;
         }
 
         .button-grid {
           flex-direction: column;
-          gap: 1rem;
+          gap: 0.5rem;
+        }
+
+        .validation-results {
+          padding: 1.5rem;
+        }
+
+        .validation-results h2 {
+          font-size: 1.25rem;
+        }
+
+        .validation-actions {
+          flex-direction: column;
+          gap: 0.75rem;
         }
 
         .action-btn {
-          padding: 1rem 1.5rem;
-          min-height: 70px;
+          width: 100%;
+          max-width: 300px;
         }
 
-        .action-btn .btn-text {
-          align-items: center;
-          text-align: center;
+        .nav-tabs {
+          flex-wrap: wrap;
         }
 
-        .action-btn .btn-title {
-          font-size: 0.95rem;
+        .file-upload-area {
+          padding: 2rem 1rem;
         }
+      }
 
-        .action-btn .btn-subtitle {
-          font-size: 0.8rem;
-        }
+      /* Utility Classes */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .mb-0 {
+        margin-bottom: 0;
+      }
+      .mb-1 {
+        margin-bottom: 0.25rem;
+      }
+      .mb-2 {
+        margin-bottom: 0.5rem;
+      }
+      .mb-3 {
+        margin-bottom: 0.75rem;
+      }
+      .mb-4 {
+        margin-bottom: 1rem;
+      }
+
+      .mt-0 {
+        margin-top: 0;
+      }
+      .mt-1 {
+        margin-top: 0.25rem;
+      }
+      .mt-2 {
+        margin-top: 0.5rem;
+      }
+      .mt-3 {
+        margin-top: 0.75rem;
+      }
+      .mt-4 {
+        margin-top: 1rem;
       }
     </style>
     <script>
@@ -849,6 +957,8 @@
         const uploadArea = document.querySelector(".file-upload-area");
         const uploadButton = document.getElementById("uploadZip");
         const resultDisplay = document.getElementById("result");
+        const startValidationContainer =
+          document.getElementById("startValidationBtn");
 
         // File input change handler
         fileInput.addEventListener("change", function () {
@@ -858,68 +968,167 @@
             fileNameDisplay.style.display = "block";
             uploadButton.disabled = false;
             uploadArea.style.borderColor = "#3b82f6";
+            startValidationContainer.style.display = "block";
           } else {
             fileNameDisplay.style.display = "none";
             uploadButton.disabled = true;
             uploadArea.style.borderColor = "rgba(255, 255, 255, 0.3)";
+            startValidationContainer.style.display = "none";
           }
         });
 
         // Drag and drop functionality
-        uploadArea.addEventListener("dragover", function(e) {
+        uploadArea.addEventListener("dragover", function (e) {
           e.preventDefault();
           uploadArea.classList.add("dragover");
         });
 
-        uploadArea.addEventListener("dragleave", function(e) {
+        uploadArea.addEventListener("dragleave", function (e) {
           e.preventDefault();
           uploadArea.classList.remove("dragover");
         });
 
-        uploadArea.addEventListener("drop", function(e) {
+        uploadArea.addEventListener("drop", function (e) {
           e.preventDefault();
           uploadArea.classList.remove("dragover");
-          
+
           const files = e.dataTransfer.files;
           if (files.length > 0) {
             fileInput.files = files;
-            fileInput.dispatchEvent(new Event('change'));
+            fileInput.dispatchEvent(new Event("change"));
           }
         });
 
-        // Form submission with loading state
-        document.getElementById("fileUploadForm").addEventListener("submit", function(e) {
-          uploadButton.innerHTML = '<span class="loading"></span>Processing...';
-          uploadButton.disabled = true;
-          
-          // Show progress simulation
-          const progressContainer = document.createElement('div');
-          progressContainer.className = 'progress-container';
-          progressContainer.innerHTML = '<div class="progress-bar"></div>';
-          uploadButton.parentNode.insertBefore(progressContainer, uploadButton.nextSibling);
-          
-          let progress = 0;
-          const progressBar = progressContainer.querySelector('.progress-bar');
-          const progressInterval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress > 90) progress = 90;
-            progressBar.style.width = progress + '%';
-          }, 500);
-          
-          // Clean up on page unload (when form actually submits)
-          window.addEventListener('beforeunload', () => {
-            clearInterval(progressInterval);
+        // Form submission with loading state and AJAX
+        document
+          .getElementById("fileUploadForm")
+          .addEventListener("submit", function (e) {
+            e.preventDefault();
+            uploadButton.innerHTML =
+              '<span class="loading"></span>Processing...';
+            uploadButton.disabled = true;
+
+            // Show progress simulation
+            const progressContainer = document.createElement("div");
+            progressContainer.className = "progress-container";
+            progressContainer.innerHTML = '<div class="progress-bar"></div>';
+            uploadButton.parentNode.insertBefore(
+              progressContainer,
+              uploadButton.nextSibling
+            );
+
+            let progress = 0;
+            const progressBar =
+              progressContainer.querySelector(".progress-bar");
+            const progressInterval = setInterval(() => {
+              progress += Math.random() * 15;
+              if (progress > 90) progress = 90;
+              progressBar.style.width = progress + "%";
+            }, 500);
+
+            // Submit form with AJAX
+            const formData = new FormData(this);
+            fetch(this.action, {
+              method: "POST",
+              body: formData,
+              headers: {
+                "X-CSRFToken": document.querySelector(
+                  "[name=csrfmiddlewaretoken]"
+                ).value,
+              },
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                clearInterval(progressInterval);
+                progressBar.style.width = "100%";
+
+                // Enable all view buttons
+                document.getElementById("showValid").disabled = false;
+                document.getElementById("showInvalid").disabled = false;
+
+                // Enable buttons in the results section
+                const viewValidBtn = document.getElementById("viewValidBtn");
+                const viewInvalidBtn =
+                  document.getElementById("viewInvalidBtn");
+                if (viewValidBtn) viewValidBtn.disabled = false;
+                if (viewInvalidBtn) viewInvalidBtn.disabled = false;
+
+                // Update result display
+                document.getElementById("result").innerHTML = `
+                <div style="text-align: center;">
+                  <div style="font-size: 1.25rem; margin-bottom: 1rem;">
+                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Validation Complete
+                  </div>
+                  <div style="color: var(--text-secondary);">
+                    Valid Images: <span style="color: var(--success-color); font-weight: 600;">${
+                      data.valid_count || 0
+                    }</span> &nbsp;|&nbsp;
+                    Invalid Images: <span style="color: var(--warning-color); font-weight: 600;">${
+                      data.invalid_count || 0
+                    }</span>
+                  </div>
+                </div>
+              `;
+
+                // Reset upload button
+                setTimeout(() => {
+                  uploadButton.innerHTML =
+                    '<i class="fas fa-play"></i> Start New Validation';
+                  uploadButton.disabled = false;
+                  progressContainer.remove();
+                }, 2000);
+              })
+              .catch((error) => {
+                clearInterval(progressInterval);
+                console.error("Error:", error);
+                document.getElementById("result").innerHTML = `
+                <div style="color: var(--danger-color);">
+                  <i class="fas fa-exclamation-triangle"></i> An error occurred during validation
+                </div>
+              `;
+                uploadButton.innerHTML =
+                  '<i class="fas fa-play"></i> Retry Validation';
+                uploadButton.disabled = false;
+                progressContainer.remove();
+              });
+
+            // Clean up on page unload
+            window.addEventListener("beforeunload", () => {
+              clearInterval(progressInterval);
+            });
           });
-        });
       });
 
       $(document).ready(function () {
+        // Sidebar functionality
+        const hamburgerMenu = $(".hamburger-menu");
+        const sidebar = $(".sidebar");
+        const overlay = $(".sidebar-overlay");
+
+        hamburgerMenu.click(function () {
+          sidebar.toggleClass("active");
+          overlay.toggleClass("active");
+        });
+
+        overlay.click(function () {
+          sidebar.removeClass("active");
+          overlay.removeClass("active");
+        });
+
+        // Close sidebar with escape key
+        $(document).keyup(function (e) {
+          if (e.key === "Escape") {
+            sidebar.removeClass("active");
+            overlay.removeClass("active");
+          }
+        });
+
         // Button animations and styling
         $(".btn-modern").hover(
-          function() {
+          function () {
             $(this).css("transform", "translateY(-2px)");
           },
-          function() {
+          function () {
             if (!$(this).is(":disabled")) {
               $(this).css("transform", "translateY(0)");
             }
@@ -928,12 +1137,12 @@
 
         // Enhanced action button hover effects
         $(".action-btn").hover(
-          function() {
+          function () {
             if (!$(this).is(":disabled")) {
               $(this).find("i").css("transform", "scale(1.1)");
             }
           },
-          function() {
+          function () {
             if (!$(this).is(":disabled")) {
               $(this).find("i").css("transform", "scale(1)");
             }
@@ -941,22 +1150,31 @@
         );
 
         // Navigation handlers with enhanced feedback
-        $("#showInvalid").click(function (event) {
-          event.preventDefault();
-          if (!$(this).is(":disabled")) {
-            const originalContent = $(this).html();
-            $(this).html(`
+        $("#showInvalid, #showValid, #viewInvalidBtn, #viewValidBtn").click(
+          function (event) {
+            event.preventDefault();
+            const button = $(this);
+            if (!button.is(":disabled")) {
+              const isInvalid =
+                button.attr("id") === "showInvalid" ||
+                button.attr("id") === "viewInvalidBtn";
+              const originalContent = button.html();
+              button.html(`
               <span class="loading"></span>
               <div class="btn-text">
                 <span class="btn-title">Loading...</span>
-                <span class="btn-subtitle">Fetching invalid images</span>
+                <span class="btn-subtitle">Fetching ${
+                  isInvalid ? "invalid" : "valid"
+                } images</span>
               </div>
             `);
-            setTimeout(() => {
-              window.location.href = "{% url 'image_gallery' %}";
-            }, 500);
+              const targetUrl = isInvalid
+                ? "/image_gallery/"
+                : "/valid_images_gallery/";
+              window.location.href = targetUrl;
+            }
           }
-        });
+        );
 
         $("#adminButton").click(function (event) {
           event.preventDefault();
@@ -975,7 +1193,11 @@
 
         $("#deleteData").click(function (event) {
           event.preventDefault();
-          if (confirm("Are you sure you want to delete all data? This action cannot be undone.")) {
+          if (
+            confirm(
+              "Are you sure you want to delete all data? This action cannot be undone."
+            )
+          ) {
             const originalContent = $(this).html();
             $(this).html(`
               <span class="loading"></span>
@@ -984,7 +1206,7 @@
                 <span class="btn-subtitle">Clearing all data</span>
               </div>
             `);
-            $(this).prop('disabled', true);
+            $(this).prop("disabled", true);
             setTimeout(() => {
               window.location.href = "{% url 'delete_all' %}";
             }, 1000);
@@ -992,45 +1214,51 @@
         });
 
         // Configuration form handling
-        $("#btnSaveConfig").click(function(e) {
+        $("#btnSaveConfig").click(function (e) {
           e.preventDefault();
           $(this).html('<span class="loading"></span>Saving...');
-          $(this).prop('disabled', true);
-          
+          $(this).prop("disabled", true);
+
           // Collect form data
           const formData = {
-            'csrfmiddlewaretoken': $('[name=csrfmiddlewaretoken]').val(),
-            'minHeight': $('#minHeight').val(),
-            'maxHeight': $('#maxHeight').val(),
-            'minWidth': $('#minWidth').val(),
-            'maxWidth': $('#maxWidth').val(),
-            'minSize': $('#minSize').val(),
-            'maxSize': $('#maxSize').val(),
-            'jpgchecked': $('#jpgchecked').is(':checked') ? 'on' : '',
-            'pngchecked': $('#pngchecked').is(':checked') ? 'on' : '',
-            'jpegchecked': $('#jpegchecked').is(':checked') ? 'on' : ''
+            csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),
+            minHeight: $("#minHeight").val(),
+            maxHeight: $("#maxHeight").val(),
+            minWidth: $("#minWidth").val(),
+            maxWidth: $("#maxWidth").val(),
+            minSize: $("#minSize").val(),
+            maxSize: $("#maxSize").val(),
+            jpgchecked: $("#jpgchecked").is(":checked") ? "on" : "",
+            pngchecked: $("#pngchecked").is(":checked") ? "on" : "",
+            jpegchecked: $("#jpegchecked").is(":checked") ? "on" : "",
           };
-          
+
           // Submit configuration
           $.ajax({
             url: "{% url 'save_config' %}",
-            type: 'POST',
+            type: "POST",
             data: formData,
-            success: function(response) {
+            success: function (response) {
               $("#btnSaveConfig").html('<i class="fas fa-check"></i> Saved!');
               setTimeout(() => {
-                $("#btnSaveConfig").html('<i class="fas fa-save"></i> Save Configuration');
-                $("#btnSaveConfig").prop('disabled', false);
+                $("#btnSaveConfig").html(
+                  '<i class="fas fa-save"></i> Save Configuration'
+                );
+                $("#btnSaveConfig").prop("disabled", false);
               }, 2000);
             },
-            error: function(xhr, status, error) {
-              $("#btnSaveConfig").html('<i class="fas fa-exclamation-triangle"></i> Error');
-              console.error('Save error:', error);
+            error: function (xhr, status, error) {
+              $("#btnSaveConfig").html(
+                '<i class="fas fa-exclamation-triangle"></i> Error'
+              );
+              console.error("Save error:", error);
               setTimeout(() => {
-                $("#btnSaveConfig").html('<i class="fas fa-save"></i> Save Configuration');
-                $("#btnSaveConfig").prop('disabled', false);
+                $("#btnSaveConfig").html(
+                  '<i class="fas fa-save"></i> Save Configuration'
+                );
+                $("#btnSaveConfig").prop("disabled", false);
               }, 2000);
-            }
+            },
           });
         });
       });
@@ -1040,8 +1268,40 @@
   <body>
     <!-- Header Section -->
     <div class="header">
-      <h1><i class="fas fa-camera"></i> Photo Validator</h1>
+      <h1>
+        <i class="fas fa-camera"></i>
+        <span class="highlight">Photo</span>Validator
+      </h1>
     </div>
+
+    <!-- Hamburger Menu -->
+    <div class="hamburger-menu">
+      <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+
+        <button id="deleteData" class="action-btn btn-clear-data">
+          <i class="fas fa-trash-alt"></i>
+          <div class="btn-text">
+            <span class="btn-title">Clear All Data</span>
+            <span class="btn-subtitle">Remove validation history</span>
+          </div>
+        </button>
+
+        <button id="adminButton" class="action-btn btn-admin-panel">
+          <i class="fas fa-user-shield"></i>
+          <div class="btn-text">
+            <span class="btn-title">Admin Panel</span>
+            <span class="btn-subtitle">System management</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay"></div>
 
     <div class="container">
       <!-- Navigation Tabs -->
@@ -1056,7 +1316,8 @@
               role="tab"
               aria-controls="nav-home"
               aria-selected="true"
-            ><i class="fas fa-upload"></i> Upload & Validate</a>
+              ><i class="fas fa-upload"></i> Upload & Validate</a
+            >
             <a
               class="nav-item nav-link"
               id="nav-config-tab"
@@ -1065,7 +1326,8 @@
               role="tab"
               aria-controls="nav-configuration"
               aria-selected="false"
-            ><i class="fas fa-cog"></i> Configuration</a>
+              ><i class="fas fa-cog"></i> Configuration</a
+            >
           </div>
         </nav>
 
@@ -1079,36 +1341,55 @@
           >
             <!-- File Upload Section -->
             <div class="glass-card">
-              <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
-                <i class="fas fa-cloud-upload-alt"></i> Upload Photos for Validation
+              <h3
+                style="
+                  text-align: center;
+                  margin-bottom: 2rem;
+                  color: var(--text-primary);
+                "
+              >
+                <i class="fas fa-cloud-upload-alt"></i> Upload Photos for
+                Validation
               </h3>
-              
-              <form method="post" enctype="multipart/form-data" id="fileUploadForm">
+
+              <form
+                method="post"
+                enctype="multipart/form-data"
+                id="fileUploadForm"
+              >
                 {% csrf_token %}
-                
+
                 <div class="file-upload-area">
                   <i class="fas fa-file-archive upload-icon"></i>
-                  <h4 style="margin-bottom: 1rem; color: var(--text-secondary);">
+                  <h4 style="margin-bottom: 1rem; color: var(--text-secondary)">
                     Drag & Drop or Click to Upload
                   </h4>
-                  <p style="margin-bottom: 1.5rem; color: var(--text-muted);">
+                  <p style="margin-bottom: 1.5rem; color: var(--text-muted)">
                     Select a ZIP file containing photos to validate
                   </p>
-                  
+
                   <div class="file-upload-wrapper">
                     <label for="id_folder" class="file-upload-label">
                       <i class="fas fa-folder-open"></i> Choose ZIP File
                     </label>
                     {{ form.folder }}
                   </div>
-                  
-                  <div class="file-name-display" style="display: none;">
+
+                  <div class="file-name-display" style="display: none">
                     No file selected
                   </div>
                 </div>
 
-                <div style="text-align: center; margin-top: 2rem;">
-                  <button type="submit" id="uploadZip" class="btn-modern btn-primary" disabled>
+                <div
+                  id="startValidationBtn"
+                  style="text-align: center; margin-top: 2rem; display: none"
+                >
+                  <button
+                    type="submit"
+                    id="uploadZip"
+                    class="file-upload-label"
+                    disabled
+                  >
                     <i class="fas fa-play"></i> Start Validation
                   </button>
                 </div>
@@ -1117,40 +1398,43 @@
 
             <!-- Results Section -->
             <div class="glass-card">
-              <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
+              <h3
+                style="
+                  text-align: center;
+                  margin-bottom: 2rem;
+                  color: var(--text-primary);
+                "
+              >
                 <i class="fas fa-chart-line"></i> Validation Results
               </h3>
-              
+
               <div id="result" class="result-display">
                 Upload a ZIP file to see validation results
               </div>
-
-              <!-- Action Buttons -->
-              <div class="button-grid">
-                <button id="showInvalid" class="action-btn btn-view-invalid" disabled>
-                  <i class="fas fa-exclamation-triangle"></i>
-                  <div class="btn-text">
-                    <span class="btn-title">View Invalid Images</span>
-                    <span class="btn-subtitle">Review failed validations</span>
-                  </div>
-                </button>
-                
-                <button id="deleteData" class="action-btn btn-clear-data">
-                  <i class="fas fa-trash-alt"></i>
-                  <div class="btn-text">
-                    <span class="btn-title">Clear All Data</span>
-                    <span class="btn-subtitle">Remove validation history</span>
-                  </div>
-                </button>
-                
-                <button id="adminButton" class="action-btn btn-admin-panel">
-                  <i class="fas fa-user-shield"></i>
-                  <div class="btn-text">
-                    <span class="btn-title">Admin Panel</span>
-                    <span class="btn-subtitle">System management</span>
-                  </div>
-                </button>
-              </div>
+              <button
+                id="showInvalid"
+                class="action-btn btn-view-invalid"
+                disabled
+              >
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="btn-text">
+                  <span class="btn-title">View Invalid Images</span>
+                  <span class="btn-subtitle">Review failed validations</span>
+                </div>
+              </button>
+              <br />
+              <!-- <button
+                id="showValid"
+                class="action-btn btn-admin-panel"
+                disabled
+              >
+                <i class="fas fa-check-circle"></i>
+                <div class="btn-text">
+                  <span class="btn-title">View Valid Images</span>
+                  <span class="btn-subtitle">Review failed validations</span>
+                </div>
+              </button> -->
+              <!-- Action Buttons moved to sidebar -->
             </div>
           </div>
           <!-- Configuration Tab -->
@@ -1161,11 +1445,22 @@
             aria-labelledby="nav-config-tab"
           >
             <div class="glass-card">
-              <h3 style="text-align: center; margin-bottom: 2rem; color: var(--text-primary);">
+              <h3
+                style="
+                  text-align: center;
+                  margin-bottom: 2rem;
+                  color: var(--text-primary);
+                "
+              >
                 <i class="fas fa-sliders-h"></i> Validation Configuration
               </h3>
-              
-              <form method="POST" action="{% url 'save_config' %}" enctype="multipart/form-data" id="configForm">
+
+              <form
+                method="POST"
+                action="{% url 'save_config' %}"
+                enctype="multipart/form-data"
+                id="configForm"
+              >
                 {% csrf_token %}
 
                 <!-- Image Dimensions -->
@@ -1173,34 +1468,32 @@
                   <h4 class="config-title">
                     <i class="fas fa-expand-arrows-alt"></i> Image Dimensions
                   </h4>
-                  
+
                   <div class="config-row">
-                    <div class="config-group">
-                      <label class="config-label">Height (pixels)</label>
-                      <div class="input-group">
-                        <label class="input-label">Min:</label>
-                        <input
-                          type="number"
-                          value="{{config.min_height}}"
-                          min="0"
-                          max="100000"
-                          step="10"
-                          id="minHeight"
-                          name="minHeight"
-                          class="config-input"
-                        />
-                        <label class="input-label">Max:</label>
-                        <input
-                          type="number"
-                          value="{{config.max_height}}"
-                          min="0"
-                          max="100000"
-                          step="10"
-                          id="maxHeight"
-                          name="maxHeight"
-                          class="config-input"
-                        />
-                      </div>
+                    <label class="config-label">Height (pixels)</label>
+                    <div class="input-group">
+                      <label class="input-label">Min:</label>
+                      <input
+                        type="number"
+                        value="{{config.min_height}}"
+                        min="0"
+                        max="100000"
+                        step="10"
+                        id="minHeight"
+                        name="minHeight"
+                        class="config-input"
+                      />
+                      <label class="input-label">Max:</label>
+                      <input
+                        type="number"
+                        value="{{config.max_height}}"
+                        min="0"
+                        max="100000"
+                        step="10"
+                        id="maxHeight"
+                        name="maxHeight"
+                        class="config-input"
+                      />
                     </div>
                   </div>
 
@@ -1240,7 +1533,7 @@
                   <h4 class="config-title">
                     <i class="fas fa-hdd"></i> File Size
                   </h4>
-                  
+
                   <div class="config-row">
                     <div class="config-group">
                       <label class="config-label">Size (KB)</label>
@@ -1277,7 +1570,7 @@
                   <h4 class="config-title">
                     <i class="fas fa-file-image"></i> Allowed File Formats
                   </h4>
-                  
+
                   <div class="format-grid">
                     <div class="format-option">
                       <input
@@ -1285,7 +1578,12 @@
                         class="format-checkbox"
                         id="jpgchecked"
                         name="jpgchecked"
-                        {% if config.is_jpg %}checked{% endif %}
+                        {%
+                        if
+                        config.is_jpg
+                        %}checked{%
+                        endif
+                        %}
                       />
                       <label for="jpgchecked" class="format-label">
                         <i class="fas fa-image"></i>
@@ -1299,7 +1597,12 @@
                         class="format-checkbox"
                         id="pngchecked"
                         name="pngchecked"
-                        {% if config.is_png %}checked{% endif %}
+                        {%
+                        if
+                        config.is_png
+                        %}checked{%
+                        endif
+                        %}
                       />
                       <label for="pngchecked" class="format-label">
                         <i class="fas fa-image"></i>
@@ -1313,7 +1616,12 @@
                         class="format-checkbox"
                         id="jpegchecked"
                         name="jpegchecked"
-                        {% if config.is_jpeg %}checked{% endif %}
+                        {%
+                        if
+                        config.is_jpeg
+                        %}checked{%
+                        endif
+                        %}
                       />
                       <label for="jpegchecked" class="format-label">
                         <i class="fas fa-image"></i>
@@ -1323,8 +1631,12 @@
                   </div>
                 </div>
 
-                <div style="text-align: center; margin-top: 3rem;">
-                  <button type="button" id="btnSaveConfig" class="btn-modern btn-success">
+                <div style="text-align: center; margin-top: 3rem">
+                  <button
+                    type="button"
+                    id="btnSaveConfig"
+                    class="btn-modern btn-success"
+                  >
                     <i class="fas fa-save"></i> Save Configuration
                   </button>
                 </div>

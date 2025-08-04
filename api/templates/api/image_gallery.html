@@ -1,592 +1,728 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <title>Invalid Images Gallery - Photo Validation System</title>
-    {% load static %}
-    {% load custom_filters %}
-    
+    {% load static %} {% load custom_filters %}
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% csrf_token %}
     <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            --dark-bg: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
-            --card-bg: rgba(255, 255, 255, 0.08);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.8);
-            --text-muted: rgba(255, 255, 255, 0.6);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            --shadow-heavy: 0 20px 60px 0 rgba(0, 0, 0, 0.5);
-        }
+      :root {
+        --primary-color: #2563eb;
+        --secondary-color: #0f172a;
+        --background-color: #ffffff;
+        --surface-color: #f8fafc;
+        --error-color: #ef4444;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --border-color: #e2e8f0;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
+      body {
+        background: rgb(243, 242, 247);
+        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.5;
+        font-size: 14px;
+        padding-top: 80px; /* Add padding to prevent content from hiding under fixed header */
+      }
+
+      /* Header */
+      .header {
+        text-align: center;
+        padding: 1rem 2rem 1rem;
+        background: var(--background-color);
+        display: block;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+      }
+
+      .header h1 {
+        font-family: "Poppins", sans-serif;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      .header h1 i {
+        color: var(--warning-color);
+      }
+
+      .header p {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        margin-top: 8px;
+      }
+      /* Navigation Bar */
+      .nav-bar {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 1rem 2rem;
+        margin: 1rem 0 2rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: var(--shadow-md);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+
+      .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        padding: 0.75rem 1.25rem;
+        border-radius: var(--radius-md);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 16px;
+      }
+
+      .nav-link:hover {
+        color: var(--primary-color);
+        background: var(--background-alt);
+      }
+
+      .nav-link.active {
+        color: var(--primary-color);
+        background: var(--background-alt);
+        font-weight: 600;
+      }
+
+      /*Stats Card*/
+
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border-color);
+        transition: all 0.2s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      /* Enhanced Professional Buttons */
+      .btn-action {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        font-size: 0.9375rem;
+        letter-spacing: 0.025em;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        text-decoration: none;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-action:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: transparent;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-action:hover:after {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-export {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+      }
+
+      .btn-export:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      }
+
+      .btn-delete {
+        background: var(--error-color);
+        color: white;
+        border: none;
+      }
+
+      .btn-delete:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
+      }
+
+      .btn-back {
+        background: var(--background-color);
+        color: var(--text-primary);
+        border: 2px solid var(--border-color);
+        font-weight: 600;
+        padding: 0.7rem 1.5rem;
+      }
+
+      .btn-back:hover {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+      }
+
+      /* Action buttons container */
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin: 1.5rem 0 2.5rem 0;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      /* Disabled State */
+      .btn-action:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+      }
+
+      .btn-action:disabled:after {
+        display: none;
+      }
+
+      /* Active/Pressed State */
+      .btn-action:active {
+        transform: translateY(1px) !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+      }
+
+      /* Loading State */
+      .btn-action .loading {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 0.8s linear infinite;
+        margin-right: 0.5rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Image Grid */
+      .image-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .image-card {
+        background: var(--background-color);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s;
+      }
+
+      .image-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+      }
+
+      .image-container {
+        position: relative;
+        padding-top: 75%;
+      }
+
+      .image-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .image-checkbox {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        accent-color: var(--primary-color);
+      }
+
+      .image-card.selected {
+        outline: 3px solid var(--primary-color);
+      }
+
+      .image-info {
+        padding: 1rem;
+      }
+
+      .image-filename {
+        font-weight: 500;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+
+      .validation-issues {
+        background: #fef2f2;
+        border: 1px solid #fee2e2;
+        border-radius: 6px;
+        padding: 1rem;
+      }
+
+      .issues-title {
+        color: var(--error-color);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      .issues-list li {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--background-color);
+        border-radius: 8px;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        color: var(--success-color);
+        margin-bottom: 1rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
         body {
-            font-family: 'Inter', sans-serif;
-            background: var(--dark-bg);
-            color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        /* Animated Background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-            z-index: -1;
-            animation: backgroundShift 10s ease-in-out infinite alternate;
-        }
-
-        @keyframes backgroundShift {
-            0% { opacity: 0.3; }
-            100% { opacity: 0.6; }
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            padding: 2rem 0;
-            margin-bottom: 2rem;
-        }
-
-        .header h1 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 3rem;
-            font-weight: 700;
-            background: var(--warning-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 600px;
-            margin: 0 auto;
+          padding-top: 120px;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            position: relative;
+          padding: 0 1rem;
         }
 
-        /* Navigation Bar */
         .nav-bar {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            padding: 1rem 2rem;
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
+          flex-direction: column;
+          gap: 1rem;
         }
 
-        .nav-actions {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
+        .nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
         }
 
-        .nav-info {
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .image-count {
-            background: var(--warning-gradient);
-            padding: 0.5rem 1rem;
-            border-radius: 25px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .btn-back {
-            padding: 0.75rem 1.5rem;
-            background: var(--primary-gradient);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-back:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-            color: white;
-            text-decoration: none;
-        }
-
-        /* Image Grid */
         .image-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
+          grid-template-columns: 1fr;
         }
 
-        .image-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-light);
-            position: relative;
-        }
-
-        .image-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-heavy);
-            border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .image-container {
-            position: relative;
-            height: 250px;
-            background: rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .image-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .image-card:hover .image-container img {
-            transform: scale(1.05);
-        }
-
-        .image-checkbox {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .image-info {
-            padding: 1.5rem;
-        }
-
-        .image-filename {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-            word-break: break-word;
-        }
-
-        .validation-issues {
-            background: rgba(255, 82, 82, 0.1);
-            border: 1px solid rgba(255, 82, 82, 0.3);
-            border-radius: 10px;
-            padding: 1rem;
-        }
-
-        .issues-title {
-            color: #ff5252;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .issues-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .issues-list li {
-            color: var(--text-secondary);
-            padding: 0.25rem 0;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-
-        .issues-list li::before {
-            content: '•';
-            color: #ff5252;
-            position: absolute;
-            left: 0;
-            font-weight: bold;
-        }
-
-        /* Action Buttons */
         .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
-            flex-wrap: wrap;
+          flex-direction: column;
+          width: 100%;
         }
 
         .btn-action {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+          width: 100%;
+          justify-content: center;
         }
-
-        .btn-delete {
-            background: var(--secondary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
-        }
-
-        .btn-delete:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
-        }
-
-        .btn-export {
-            background: var(--success-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
-        }
-
-        .btn-export:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            margin: 2rem 0;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h3 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state p {
-            color: var(--text-secondary);
-        }
-
-        /* Loading Animation */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 0.5rem;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .container {
-                padding: 0 1rem;
-            }
-
-            .header h1 {
-                font-size: 2rem;
-            }
-
-            .nav-bar {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .image-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .btn-action {
-                width: 100%;
-                max-width: 300px;
-                justify-content: center;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- Header Section -->
     <div class="header">
-        <h1><i class="fas fa-exclamation-triangle"></i> Invalid Images Gallery</h1>
-        <p>Review and manage images that failed validation checks</p>
+      <h1>
+        <i class="fas fa-exclamation-triangle"></i> Invalid Images Gallery
+      </h1>
+      <p>Review and manage images that failed validation checks</p>
     </div>
 
     <div class="container">
-        <!-- Navigation Bar -->
-        <div class="nav-bar">
-            <div class="nav-info">
-                <div class="image-count">
-                    <i class="fas fa-images"></i>
-                    {{ invalid_images|length }} Invalid Images Found
-                </div>
-            </div>
-            <div class="nav-actions">
-                <a href="{% url 'valid_images_gallery' %}" class="btn-action btn-export">
-                    <i class="fas fa-check-circle"></i>
-                    View Valid Images
-                </a>
-                <a href="{% url 'startPage' %}" class="btn-back">
-                    <i class="fas fa-arrow-left"></i>
-                    Back to Home
-                </a>
-            </div>
+      <!-- Navigation -->
+      <nav class="nav-bar">
+        <div class="nav-links">
+          <a href="{% url 'startPage' %}" class="nav-link">
+            <i class="fas fa-home"></i> Home
+          </a>
+          <a href="{% url 'image_gallery' %}" class="nav-link active">
+            <i class="fas fa-exclamation-triangle"></i> Invalid Images
+          </a>
+          <a href="{% url 'valid_images_gallery' %}" class="nav-link">
+            <i class="fas fa-check-circle"></i> Valid Images
+          </a>
         </div>
+        <div class="nav-actions">
+          <a href="{% url 'download_csv' %}" class="btn-action btn-export">
+            <i class="fas fa-download"></i> Export Results
+          </a>
+        </div>
+      </nav>
 
-        {% if invalid_images %}
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button id="deleteSelectedBtn" class="btn-action btn-delete">
-                    <i class="fas fa-trash-alt"></i>
-                    Delete Selected
-                </button>
-                <button id="exportResultsBtn" class="btn-action btn-export">
-                    <i class="fas fa-download"></i>
-                    Export Results
-                </button>
+      <!-- Status Info -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-number">{{ invalid_images|length }}</div>
+          <div class="stat-label">Invalid Images</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ total_images }}</div>
+          <div class="stat-label">Total Images</div>
+        </div>
+      </div>
+
+      {% if invalid_images %}
+      <!-- Action Buttons -->
+      <div
+        class="action-buttons"
+        style="justify-content: flex-start; gap: 1rem"
+      >
+        <button
+          id="selectAllBtn"
+          class="btn-action btn-export"
+          style="min-width: 130px"
+        >
+          <i class="fas fa-check-square"></i>
+          Select All
+        </button>
+        <button
+          id="deleteSelectedBtn"
+          class="btn-action btn-delete"
+          style="min-width: 150px"
+        >
+          <i class="fas fa-trash-alt"></i>
+          Delete Selected
+        </button>
+      </div>
+
+      <!-- Image Grid -->
+      <div class="image-grid">
+        {% for image in invalid_images %}
+        <div class="image-card">
+          <div class="image-container">
+            <input
+              type="checkbox"
+              class="image-checkbox"
+              value="{{ image.id }}"
+            />
+            <img
+              src="{{ image.photo.url }}"
+              alt="{{ image.filename }}"
+              loading="lazy"
+              onerror="this.src='/static/api/images/placeholder.png';"
+            />
+          </div>
+          <div class="image-info">
+            <div class="image-filename">
+              <i class="fas fa-file-image"></i>
+              {{ image.filename }}
             </div>
-
-            <!-- Image Grid -->
-            <div class="image-grid">
-                {% for image in invalid_images %}
-                <div class="image-card">
-                    <div class="image-container">
-                        <input type="checkbox" class="image-checkbox" value="{{ image.id }}" />
-                        <img src="{{ image.photo.url }}" alt="{{ image.filename }}" 
-                             loading="lazy" onerror="this.src='/static/api/images/placeholder.png';" />
-                    </div>
-                    <div class="image-info">
-                        <div class="image-filename">
-                            <i class="fas fa-file-image"></i>
-                            {{ image.filename }}
-                        </div>
-                        <div class="validation-issues">
-                            <div class="issues-title">
-                                <i class="fas fa-exclamation-circle"></i>
-                                Validation Issues
-                            </div>
-                            <ul class="issues-list">
-                                {% for reason in image.reason_array %}
-                                    <li>{{ reason }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+            <div class="validation-issues">
+              <div class="issues-title">
+                <i class="fas fa-exclamation-circle"></i>
+                Validation Issues
+              </div>
+              <ul class="issues-list">
+                {% for reason in image.reason_array %}
+                <li>{{ reason }}</li>
                 {% endfor %}
+              </ul>
             </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
 
-            <!-- Bottom Actions -->
-            <div class="action-buttons">
-                <button id="selectAllBtn" class="btn-action btn-export">
-                    <i class="fas fa-check-square"></i>
-                    Select All
-                </button>
-                <button id="deselectAllBtn" class="btn-action btn-delete">
-                    <i class="fas fa-square"></i>
-                    Deselect All
-                </button>
-            </div>
-        {% else %}
-            <!-- Empty State -->
-            <div class="empty-state">
-                <i class="fas fa-check-circle"></i>
-                <h3>No Invalid Images Found!</h3>
-                <p>All images in your upload passed the validation checks. Great job!</p>
-                <a href="{% url 'startPage' %}" class="btn-back" style="margin-top: 1rem;">
-                    <i class="fas fa-arrow-left"></i>
-                    Back to Home
-                </a>
-            </div>
-        {% endif %}
+      <!-- Bottom Actions -->
+      <div class="action-buttons">
+        <a href="{% url 'download_csv' %}" class="btn-action btn-export">
+          <i class="fas fa-download"></i> Export All Results
+        </a>
+        <a href="{% url 'startPage' %}" class="btn-action btn-back">
+          <i class="fas fa-arrow-left"></i> Back to Home
+        </a>
+      </div>
+      <!-- <div class="action-buttons">
+        <button id="selectAllBtn" class="btn-action btn-export">
+          <i class="fas fa-check-square"></i>
+          Select All
+        </button>
+        <button id="deselectAllBtn" class="btn-action btn-delete">
+          <i class="fas fa-square"></i>
+          Deselect All
+        </button>
+      </div> -->
+      {% else %}
+      <!-- Empty State -->
+      <div class="empty-state">
+        <i class="fas fa-check-circle"></i>
+        <h3>No Invalid Images Found!</h3>
+        <p>
+          All images in your upload passed the validation checks. Great job!
+        </p>
+        <a
+          href="{% url 'startPage' %}"
+          class="btn-back"
+          style="margin-top: 1rem"
+        >
+          <i class="fas fa-arrow-left"></i>
+          Back to Home
+        </a>
+      </div>
+      {% endif %}
     </div>
 
     <script>
-        $(document).ready(function() {
-            // Select/Deselect All functionality
-            $('#selectAllBtn').click(function() {
-                $('.image-checkbox').prop('checked', true);
-                updateDeleteButton();
+      $(document).ready(function () {
+        // Toggle Select/Deselect All functionality
+        let isAllSelected = false;
+        $("#selectAllBtn").click(function () {
+          isAllSelected = !isAllSelected;
+          $(".image-checkbox").prop("checked", isAllSelected);
+          updateCardSelection();
+
+          // Update button text and icon
+          updateSelectAllButton();
+          updateDeleteButton();
+        });
+
+        // Handle individual image selection
+        $(".image-checkbox").change(function () {
+          const $card = $(this).closest(".image-card");
+          if ($(this).is(":checked")) {
+            $card.addClass("selected");
+          } else {
+            $card.removeClass("selected");
+          }
+
+          // Check if all images are selected
+          const totalImages = $(".image-checkbox").length;
+          const selectedImages = $(".image-checkbox:checked").length;
+          isAllSelected = totalImages === selectedImages;
+
+          updateSelectAllButton();
+          updateDeleteButton();
+        });
+
+        // Update card selection visual state
+        function updateCardSelection() {
+          $(".image-card").each(function () {
+            const isChecked = $(this).find(".image-checkbox").is(":checked");
+            $(this).toggleClass("selected", isChecked);
+          });
+        }
+
+        // Update Select All button state
+        function updateSelectAllButton() {
+          const $selectAllBtn = $("#selectAllBtn");
+          if (isAllSelected) {
+            $selectAllBtn.html('<i class="fas fa-square"></i> Deselect All');
+            $selectAllBtn.removeClass("btn-export").addClass("btn-delete");
+          } else {
+            $selectAllBtn.html(
+              '<i class="fas fa-check-square"></i> Select All'
+            );
+            $selectAllBtn.removeClass("btn-delete").addClass("btn-export");
+          }
+        }
+
+        // Update delete button state
+        $(".image-checkbox").change(function () {
+          updateDeleteButton();
+        });
+
+        function updateDeleteButton() {
+          const selectedCount = $(".image-checkbox:checked").length;
+          const deleteBtn = $("#deleteSelectedBtn");
+
+          if (selectedCount > 0) {
+            deleteBtn.prop("disabled", false);
+            deleteBtn.html(
+              `<i class="fas fa-trash-alt"></i> Delete Selected (${selectedCount})`
+            );
+          } else {
+            deleteBtn.prop("disabled", true);
+            deleteBtn.html('<i class="fas fa-trash-alt"></i> Delete Selected');
+          }
+        }
+
+        // Delete selected images (revalidate them)
+        $("#deleteSelectedBtn").click(function () {
+          const selectedImages = $(".image-checkbox:checked");
+
+          if (selectedImages.length === 0) {
+            alert("Please select at least one image to revalidate.");
+            return;
+          }
+
+          const confirmMessage = `Are you sure you want to revalidate ${selectedImages.length} selected image(s)? This will move them from invalid to valid folder.`;
+
+          if (confirm(confirmMessage)) {
+            $(this).html('<span class="loading"></span>Revalidating...');
+            $(this).prop("disabled", true);
+
+            // Create form and submit to backend
+            const form = $("<form>", {
+              method: "POST",
+              action: "{% url 'process_selected_images' %}",
             });
 
-            $('#deselectAllBtn').click(function() {
-                $('.image-checkbox').prop('checked', false);
-                updateDeleteButton();
+            // Add CSRF token
+            form.append(
+              $("<input>", {
+                type: "hidden",
+                name: "csrfmiddlewaretoken",
+                value: $("[name=csrfmiddlewaretoken]").val(),
+              })
+            );
+
+            // Add selected images
+            selectedImages.each(function () {
+              const imageName = $(this).val();
+              form.append(
+                $("<input>", {
+                  type: "hidden",
+                  name: "selected_images",
+                  value: imageName,
+                })
+              );
             });
 
-            // Update delete button state
-            $('.image-checkbox').change(function() {
-                updateDeleteButton();
-            });
+            // Submit form
+            $("body").append(form);
+            form.submit();
+          }
+        });
 
-            function updateDeleteButton() {
-                const selectedCount = $('.image-checkbox:checked').length;
-                const deleteBtn = $('#deleteSelectedBtn');
-                
-                if (selectedCount > 0) {
-                    deleteBtn.prop('disabled', false);
-                    deleteBtn.html(`<i class="fas fa-trash-alt"></i> Delete Selected (${selectedCount})`);
-                } else {
-                    deleteBtn.prop('disabled', true);
-                    deleteBtn.html('<i class="fas fa-trash-alt"></i> Delete Selected');
-                }
-            }
+        // Export results
+        $("#exportResultsBtn").click(function () {
+          const $btn = $(this);
+          $btn.html('<span class="loading"></span>Exporting...');
+          $btn.prop("disabled", true);
 
-            // Delete selected images (revalidate them)
-            $('#deleteSelectedBtn').click(function() {
-                const selectedImages = $('.image-checkbox:checked');
-                
-                if (selectedImages.length === 0) {
-                    alert('Please select at least one image to revalidate.');
-                    return;
-                }
+          // Create a temporary link element for download
+          const link = document.createElement("a");
+          link.href = "{% url 'download_csv' %}";
+          link.download = "validation_results.csv";
+          link.style.display = "none";
 
-                const confirmMessage = `Are you sure you want to revalidate ${selectedImages.length} selected image(s)? This will move them from invalid to valid folder.`;
-                
-                if (confirm(confirmMessage)) {
-                    $(this).html('<span class="loading"></span>Revalidating...');
-                    $(this).prop('disabled', true);
-                    
-                    // Create form and submit to backend
-                    const form = $('<form>', {
-                        'method': 'POST',
-                        'action': "{% url 'process_selected_images' %}"
-                    });
-                    
-                    // Add CSRF token
-                    form.append($('<input>', {
-                        'type': 'hidden',
-                        'name': 'csrfmiddlewaretoken',
-                        'value': $('[name=csrfmiddlewaretoken]').val()
-                    }));
-                    
-                    // Add selected images
-                    selectedImages.each(function() {
-                        const imageName = $(this).val();
-                        form.append($('<input>', {
-                            'type': 'hidden',
-                            'name': 'selected_images',
-                            'value': imageName
-                        }));
-                    });
-                    
-                    // Submit form
-                    $('body').append(form);
-                    form.submit();
-                }
-            });
+          // Add link to body and trigger download
+          document.body.appendChild(link);
+          link.click();
 
-            // Export results
-            $('#exportResultsBtn').click(function() {
-                const $btn = $(this);
-                $btn.html('<span class="loading"></span>Exporting...');
-                $btn.prop('disabled', true);
-                
-                // Create a temporary link element for download
-                const link = document.createElement('a');
-                link.href = "{% url 'download_csv' %}";
-                link.download = 'validation_results.csv';
-                link.style.display = 'none';
-                
-                // Add link to body and trigger download
-                document.body.appendChild(link);
-                link.click();
-                
-                // Remove the link element
-                document.body.removeChild(link);
-                
-                // Reset button after download starts
-                setTimeout(function() {
-                    $btn.html('<i class="fas fa-download"></i> Export Results');
-                    $btn.prop('disabled', false);
-                }, 2000);
-            });
+          // Remove the link element
+          document.body.removeChild(link);
 
-            function updateImageCount() {
-                const remainingCount = $('.image-card').length;
-                $('.image-count').html(`<i class="fas fa-images"></i> ${remainingCount} Invalid Images Found`);
-                
-                if (remainingCount === 0) {
-                    $('.container').html(`
+          // Reset button after download starts
+          setTimeout(function () {
+            $btn.html('<i class="fas fa-download"></i> Export Results');
+            $btn.prop("disabled", false);
+          }, 2000);
+        });
+
+        function updateImageCount() {
+          const remainingCount = $(".image-card").length;
+          $(".image-count").html(
+            `<i class="fas fa-images"></i> ${remainingCount} Invalid Images Found`
+          );
+
+          if (remainingCount === 0) {
+            $(".container").html(`
                         <div class="empty-state">
                             <i class="fas fa-check-circle"></i>
                             <h3>All invalid images have been processed!</h3>
@@ -597,22 +733,22 @@
                             </a>
                         </div>
                     `);
-                }
-            }
+          }
+        }
 
-            // Initialize delete button state
-            updateDeleteButton();
+        // Initialize delete button state
+        updateDeleteButton();
 
-            // Add hover effects for image cards
-            $('.image-card').hover(
-                function() {
-                    $(this).css('transform', 'translateY(-5px)');
-                },
-                function() {
-                    $(this).css('transform', 'translateY(0)');
-                }
-            );
-        });
+        // Add hover effects for image cards
+        $(".image-card").hover(
+          function () {
+            $(this).css("transform", "translateY(-5px)");
+          },
+          function () {
+            $(this).css("transform", "translateY(0)");
+          }
+        );
+      });
     </script>
-</body>
+  </body>
 </html>
