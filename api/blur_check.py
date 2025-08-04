@@ -19,7 +19,7 @@ def check_if_blur(gray, config=None):
         if config is None:
             config = Config.objects.first()
         if not config:
-            blurness_threshold = 25  # More conservative default value (was 35)
+            blurness_threshold = 20  # More sensitive threshold
         else:
             blurness_threshold = config.blurness_threshold
         
@@ -27,7 +27,13 @@ def check_if_blur(gray, config=None):
         # measure, which is simply the variance of the Laplacian
         laplacianVar = cv2.Laplacian(gray, cv2.CV_64F).var()
         logging.info(f"Laplacian variance: {laplacianVar}, Threshold: {blurness_threshold}")
-        return laplacianVar < blurness_threshold
+        
+        # More sensitive blur detection
+        # Also check for very low variance which indicates extreme blur
+        is_blur = laplacianVar < blurness_threshold
+        is_extremely_blur = laplacianVar < 5  # Very blurry images
+        
+        return is_blur or is_extremely_blur
     except Exception as e:
         print(f"Error in check_if_blur: {e}")
         return False
@@ -38,11 +44,11 @@ def check_if_pixaleted(gray, config=None):
         if config is None:
             config = Config.objects.first()
         if not config:
-            pixelated_threshold = 80  # More conservative default value (was 50)
+            pixelated_threshold = 100  # Updated to match new model default (was 80)
         else:
             pixelated_threshold = config.pixelated_threshold
     except Exception:
-        pixelated_threshold = 80  # More conservative fallback
+        pixelated_threshold = 100  # Updated fallback value
     
     # Get image dimensions
     height, width = gray.shape

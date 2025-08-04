@@ -38,10 +38,16 @@ class ValidationResult:
         self.processing_time = processing_time
 
 def get_optimal_worker_count():
-    """Determine optimal number of workers based on system resources"""
+    """Determine optimal number of workers optimized for Lenovo Legion 5 Pro with i7-13620H"""
     cpu_cores = cpu_count()
-    # Use 80% of available cores, minimum 2, maximum 16
-    optimal_workers = max(2, min(16, int(cpu_cores * 0.8)))
+    
+    if cpu_cores >= 16:  # High-end systems 
+        optimal_workers = 12
+    elif cpu_cores >= 8:  # Mid-range systems
+        optimal_workers = max(4, min(cpu_cores - 2, 6))
+    else:  # Lower-end systems
+        optimal_workers = max(2, min(cpu_cores - 1, 4))
+    
     logging.info(f"Using {optimal_workers} workers for parallel processing (detected {cpu_cores} CPU cores)")
     return optimal_workers
 

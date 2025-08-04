@@ -6,7 +6,7 @@ def is_grey(img, config=None):
         if config is None:
             config = Config.objects.first()
         if not config:
-            greyness_threshold = 0  # default value
+            greyness_threshold = 15  # More sensitive threshold
         else:
             greyness_threshold = config.greyness_threshold
         
@@ -22,8 +22,13 @@ def is_grey(img, config=None):
         # Check if any pixel exceeds the threshold
         max_diff = np.maximum(np.maximum(diff_rg, diff_rb), diff_gb)
         
-        # Return True if image is grey (all differences within threshold)
-        return np.all(max_diff <= greyness_threshold)
+        # Calculate percentage of pixels that are grey
+        grey_pixels = np.sum(max_diff <= greyness_threshold)
+        total_pixels = max_diff.size
+        grey_percentage = (grey_pixels / total_pixels) * 100
+        
+        # Return True if more than 90% of pixels are grey (indicating a mostly grey image)
+        return grey_percentage > 90
         
     except Exception as e:
         print(f"Error in is_grey: {e}")

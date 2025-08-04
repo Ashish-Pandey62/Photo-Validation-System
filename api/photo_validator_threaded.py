@@ -72,11 +72,17 @@ class ProgressTracker:
                 self.last_update = current_time
 
 def get_optimal_thread_count():
-    """Get optimal thread count for I/O bound tasks"""
+    """Get optimal thread count optimized for Lenovo Legion 5 Pro with i7-13620H"""
     cpu_cores = cpu_count()
-    # For I/O bound tasks, we can use more threads than CPU cores
-    # Use 2-3x CPU cores, but cap at reasonable limits
-    optimal_threads = min(max(4, cpu_cores * 2), 20)
+    
+    
+    if cpu_cores >= 16:  # High-end systems 
+        optimal_threads = 16
+    elif cpu_cores >= 8:  # Mid-range systems
+        optimal_threads = min(cpu_cores - 2, 10)
+    else:  # Lower-end systems
+        optimal_threads = min(max(4, cpu_cores * 2), 8)
+    
     logging.info(f"⚡ Using {optimal_threads} threads for parallel processing (detected {cpu_cores} CPU cores)")
     return optimal_threads
 

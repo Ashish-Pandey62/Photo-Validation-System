@@ -105,11 +105,9 @@ valid_png.png,Blurness check failed,Background check failed,couldnot detect head
 2078-1220.jpg,Blurness check failed
 2078-1259.jpg,Blurness check failed
 2078-1288.jpg,Blurness check failed
-2078-1293.png,Blurness check failed
 2078-1356.png,Background check failed,Head Ratio Small
 2078-1375.jpg,Eye check failed
 2078-1380.jpg,Blurness check failed
-2078-1406.jpg,Head Ratio Small
 2078-1474.jpg,Blurness check failed
 2078-1499.jpg,Blurness check failed
 2078-1707.jpg,Blurness check failed,Eye check failed
@@ -126,11 +124,9 @@ valid_png.png,Blurness check failed,Background check failed,couldnot detect head
 2078-1220.jpg,Blurness check failed
 2078-1259.jpg,Blurness check failed
 2078-1288.jpg,Blurness check failed
-2078-1293.png,Blurness check failed
 2078-1356.png,Background check failed,Head Ratio Small
 2078-1375.jpg,Eye check failed
 2078-1380.jpg,Blurness check failed
-2078-1406.jpg,Head Ratio Small
 2078-1474.jpg,Blurness check failed
 2078-1499.jpg,Blurness check failed
 2078-1707.jpg,Blurness check failed,Eye check failed
@@ -167,10 +163,8 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-1272.jpg,Blurness check failed,Symmetry check failed
 2078-1274.jpg,Blurness check failed
 2078-1288.jpg,Blurness check failed
-2078-1293.png,Blurness check failed
 2078-1295.jpg,Blurness check failed
 2078-1311.jpg,File size check failed
-2078-1325.jpg,Symmetry check failed
 2078-1329.jpg,Blurness check failed
 2078-1340.jpg,Blurness check failed
 2078-1349.jpg,Symmetry check failed
@@ -180,12 +174,9 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-1375.jpg,File size check failed,Eye check failed
 2078-1380.jpg,Blurness check failed
 2078-1395.jpg,Blurness check failed,Symmetry check failed
-2078-1403.jpg,Symmetry check failed
-2078-1406.jpg,Head Ratio Small
 2078-1410.jpg,Blurness check failed,Symmetry check failed
 2078-1411.jpg,Blurness check failed
 2078-1421.jpg,Blurness check failed,Symmetry check failed
-2078-1431.jpg,Blurness check failed,Symmetry check failed
 2078-1439.jpg,Blurness check failed,Symmetry check failed
 2078-1440.jpg,Blurness check failed,Symmetry check failed
 2078-1450.jpg,Symmetry check failed
@@ -332,7 +323,6 @@ Scan_20211123.jpg,Symmetry check failed
 2078-1046.jpg,Blurness check failed,Symmetry check failed
 2078-105.jpg,Blurness check failed,Symmetry check failed
 2078-1061.jpg,Blurness check failed
-2078-1065.jpg,Blurness check failed,Symmetry check failed
 2078-1081.jpg,Symmetry check failed
 2078-1087.jpg,Blurness check failed,Symmetry check failed
 2078-1096.jpg,Blurness check failed,Symmetry check failed
@@ -354,10 +344,8 @@ Scan_20211123.jpg,Symmetry check failed
 2078-1272.jpg,Blurness check failed,Symmetry check failed
 2078-1274.jpg,Blurness check failed
 2078-1288.jpg,Blurness check failed
-2078-1293.png,Blurness check failed
 2078-1295.jpg,Blurness check failed
 2078-1311.jpg,File size check failed
-2078-1325.jpg,Symmetry check failed
 2078-1329.jpg,Blurness check failed
 2078-1340.jpg,Blurness check failed
 2078-1349.jpg,Symmetry check failed
@@ -367,12 +355,9 @@ Scan_20211123.jpg,Symmetry check failed
 2078-1375.jpg,File size check failed,Eye check failed
 2078-1380.jpg,Blurness check failed
 2078-1395.jpg,Blurness check failed,Symmetry check failed
-2078-1403.jpg,Symmetry check failed
-2078-1406.jpg,Head Ratio Small
 2078-1410.jpg,Blurness check failed,Symmetry check failed
 2078-1411.jpg,Blurness check failed
 2078-1421.jpg,Blurness check failed,Symmetry check failed
-2078-1431.jpg,Blurness check failed,Symmetry check failed
 2078-1439.jpg,Blurness check failed,Symmetry check failed
 2078-1440.jpg,Blurness check failed,Symmetry check failed
 2078-1450.jpg,Symmetry check failed
@@ -524,7 +509,6 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-1046.jpg,Symmetry check failed
 2078-105.jpg,Symmetry check failed
 2078-1061.jpg,Blurness check failed
-2078-1065.jpg,Symmetry check failed
 2078-1081.jpg,Symmetry check failed
 2078-1087.jpg,Symmetry check failed
 2078-1096.jpg,Symmetry check failed
@@ -544,8 +528,6 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-127.jpg,Symmetry check failed
 2078-1272.jpg,Symmetry check failed
 2078-1288.jpg,Blurness check failed
-2078-1293.png,Blurness check failed
-2078-1325.jpg,Symmetry check failed
 2078-1349.jpg,Symmetry check failed
 2078-1356.png,Background check failed,Head Ratio Small
 2078-1367.jpg,Symmetry check failed
@@ -553,11 +535,8 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-1375.jpg,Eye check failed
 2078-1380.jpg,Blurness check failed
 2078-1395.jpg,Symmetry check failed
-2078-1403.jpg,Symmetry check failed
-2078-1406.jpg,Head Ratio Small
 2078-1410.jpg,Symmetry check failed
 2078-1421.jpg,Symmetry check failed
-2078-1431.jpg,Symmetry check failed
 2078-1439.jpg,Symmetry check failed
 2078-1440.jpg,Symmetry check failed
 2078-1450.jpg,Symmetry check failed
@@ -688,7 +667,6 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-1046.jpg,Symmetry check failed
 2078-105.jpg,Symmetry check failed
 2078-1061.jpg,Blurness check failed
-2078-1065.jpg,Symmetry check failed
 2078-1081.jpg,Symmetry check failed
 2078-1087.jpg,Symmetry check failed
 2078-1096.jpg,Symmetry check failed
@@ -708,8 +686,6 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-127.jpg,Symmetry check failed
 2078-1272.jpg,Symmetry check failed
 2078-1288.jpg,Blurness check failed
-2078-1293.png,Blurness check failed
-2078-1325.jpg,Symmetry check failed
 2078-1349.jpg,Symmetry check failed
 2078-1356.png,Background check failed,Head Ratio Small
 2078-1367.jpg,Symmetry check failed
@@ -717,11 +693,8 @@ Pasted image (6).png,File size check failed,File height check failed,File width 
 2078-1375.jpg,Eye check failed
 2078-1380.jpg,Blurness check failed
 2078-1395.jpg,Symmetry check failed
-2078-1403.jpg,Symmetry check failed
-2078-1406.jpg,Head Ratio Small
 2078-1410.jpg,Symmetry check failed
 2078-1421.jpg,Symmetry check failed
-2078-1431.jpg,Symmetry check failed
 2078-1439.jpg,Symmetry check failed
 2078-1440.jpg,Symmetry check failed
 2078-1450.jpg,Symmetry check failed
@@ -850,7 +823,6 @@ Scan_20211123.jpg,Symmetry check failed
 2078-1046.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-105.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1061.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
-2078-1065.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1081.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1087.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1096.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
@@ -872,10 +844,8 @@ Scan_20211123.jpg,Symmetry check failed
 2078-1272.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1274.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1288.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
-2078-1293.png,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1295.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1311.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
-2078-1325.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1329.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1340.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1349.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
@@ -887,12 +857,9 @@ Scan_20211123.jpg,Symmetry check failed
 2078-1380.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1394.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1395.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
-2078-1403.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
-2078-1406.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1410.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1411.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1421.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
-2078-1431.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1439.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1440.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
 2078-1450.jpg,Processing error: A process in the process pool was terminated abruptly while the future was running or pending.
@@ -1066,7 +1033,6 @@ Pasted image (5).png,File size check failed,File height check failed,File width 
 2078-105.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
 2078-1046.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1061.jpg,Blurness check failed,Head check error: Unsupported image type, must be 8bit gray or RGB image.
-2078-1065.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1081.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1087.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1096.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
@@ -1088,11 +1054,9 @@ Pasted image (5).png,File size check failed,File height check failed,File width 
 2078-127.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1272.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1288.jpg,Blurness check failed,Head check error: Unsupported image type, must be 8bit gray or RGB image.
-2078-1293.png,Blurness check failed,Head check error: Unsupported image type, must be 8bit gray or RGB image.
 2078-1295.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
 2078-1340.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
 2078-1311.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
-2078-1325.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1349.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1329.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
 2078-1356.png,Background check failed,Head check error: Unsupported image type, must be 8bit gray or RGB image.
@@ -1103,12 +1067,9 @@ Pasted image (5).png,File size check failed,File height check failed,File width 
 2078-1375.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Eye check failed
 2078-1380.jpg,Blurness check failed,Head check error: Unsupported image type, must be 8bit gray or RGB image.
 2078-1395.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
-2078-1406.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
-2078-1403.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1410.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1421.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1411.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
-2078-1431.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1439.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1440.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.,Symmetry check failed
 2078-1451.jpg,Head check error: Unsupported image type, must be 8bit gray or RGB image.
@@ -1280,7 +1241,6 @@ Pasted image (5).png,File size check failed,File height check failed,File width 
 2078-1015.jpg,Symmetry check failed
 2078-1019.jpg,Symmetry check failed
 2078-1046.jpg,Symmetry check failed
-2078-1065.jpg,Symmetry check failed
 2078-1081.jpg,Symmetry check failed
 2078-1087.jpg,Symmetry check failed
 2078-1096.jpg,Symmetry check failed
@@ -1299,8 +1259,6 @@ Pasted image (5).png,File size check failed,File height check failed,File width 
 2078-127.jpg,Symmetry check failed
 2078-1272.jpg,Symmetry check failed
 2078-1288.jpg,Blurness check failed
-2078-1293.png,Blurness check failed
-2078-1325.jpg,Symmetry check failed
 2078-1356.png,Background check failed
 2078-1349.jpg,Symmetry check failed
 2078-1367.jpg,Symmetry check failed
@@ -1308,10 +1266,8 @@ Pasted image (5).png,File size check failed,File height check failed,File width 
 2078-1375.jpg,Eye check failed
 2078-1380.jpg,Blurness check failed
 2078-1395.jpg,Symmetry check failed
-2078-1403.jpg,Symmetry check failed
 2078-1410.jpg,Symmetry check failed
 2078-1421.jpg,Symmetry check failed
-2078-1431.jpg,Symmetry check failed
 2078-1439.jpg,Symmetry check failed
 2078-1450.jpg,Symmetry check failed
 2078-1440.jpg,Symmetry check failed
@@ -1418,3 +1374,719 @@ Pasted image (5).png,File size check failed,File height check failed,File width 
 2078-950.jpg,Eye check failed,Symmetry check failed
 2078-957.jpg,Symmetry check failed
 2078-987.jpg,Symmetry check failed
+Pasted image (6).png,File height check failed,File width check failed,Blurness check failed,Head Ratio Small,Symmetry check failed
+Pasted image (5).png,File height check failed,File width check failed,Blurness check failed,Symmetry check failed
+2078-1061.jpg,Blurness check failed
+2078-1046.jpg,Symmetry check failed
+2078-1002.png,Eye check failed,Symmetry check failed
+2078-1015.jpg,Symmetry check failed
+2078-1087.jpg,Symmetry check failed
+2078-1138.jpg,Symmetry check failed
+2078-1161.jpg,Symmetry check failed
+2078-1157.jpg,Symmetry check failed
+2078-1042.jpg,Symmetry check failed
+2078-1081.jpg,Symmetry check failed
+2078-1019.jpg,Symmetry check failed
+2078-1174.jpg,Symmetry check failed
+2078-1177.jpg,Symmetry check failed
+2078-1028.jpg,Symmetry check failed
+2078-1181.jpg,Symmetry check failed
+2078-1178.jpg,Symmetry check failed
+2078-1259.jpg,Blurness check failed
+2078-1098.jpg,Symmetry check failed
+2078-1096.jpg,Symmetry check failed
+2078-1220.jpg,Blurness check failed,Symmetry check failed
+2078-1253.jpg,Symmetry check failed
+2078-1201.jpg,Symmetry check failed
+2078-1288.jpg,Blurness check failed
+2078-127.jpg,Symmetry check failed
+2078-1349.jpg,Symmetry check failed
+2078-1272.jpg,Symmetry check failed
+2078-1356.png,Background check failed,Head Ratio Small
+2078-1380.jpg,Blurness check failed
+2078-1367.jpg,Symmetry check failed
+2078-1374.jpg,Symmetry check failed
+2078-1395.jpg,Symmetry check failed
+2078-1440.jpg,Symmetry check failed
+2078-1375.jpg,Eye check failed
+2078-1439.jpg,Symmetry check failed
+2078-1410.jpg,Symmetry check failed
+2078-1450.jpg,Symmetry check failed
+2078-1461.jpg,Symmetry check failed
+2078-1474.jpg,Blurness check failed
+2078-148.png,Symmetry check failed
+2078-1468.jpg,Symmetry check failed
+2078-1421.jpg,Symmetry check failed
+2078-1459.jpg,Symmetry check failed
+2078-1514.jpg,Symmetry check failed
+2078-1499.jpg,Blurness check failed,Symmetry check failed
+2078-1507.jpg,Symmetry check failed
+2078-1492.jpg,Symmetry check failed
+2078-1516.jpg,Symmetry check failed
+2078-1515.jpg,Symmetry check failed
+2078-1535.jpg,Symmetry check failed
+2078-162.jpg,Symmetry check failed
+2078-1608.jpg,Symmetry check failed
+2078-1623.jpg,Symmetry check failed
+2078-1662.png,Symmetry check failed
+2078-1626.jpg,Symmetry check failed
+2078-1621.jpg,Symmetry check failed
+2078-1647.jpg,Symmetry check failed
+2078-1690.jpg,Symmetry check failed
+2078-167.jpg,Symmetry check failed
+2078-1707.jpg,Blurness check failed
+2078-1705.jpg,Symmetry check failed
+2078-172.png,Symmetry check failed
+2078-1753.jpg,Head Ratio Small,Symmetry check failed
+2078-1746.jpg,Symmetry check failed
+2078-178.jpg,Symmetry check failed
+2078-1717.jpg,Symmetry check failed
+2078-204.jpg,Symmetry check failed
+2078-195.jpg,Symmetry check failed
+2078-1724.jpg,Symmetry check failed
+2078-223.jpg,Symmetry check failed
+2078-1768.jpg,Symmetry check failed
+2078-221.jpg,Symmetry check failed
+2078-255.jpg,Symmetry check failed
+2078-258.jpg,Symmetry check failed
+2078-285.jpg,Symmetry check failed
+2078-277.jpg,Symmetry check failed
+2078-30.jpg,Symmetry check failed
+2078-306.jpg,Symmetry check failed
+2078-296.jpg,Symmetry check failed
+2078-310.jpg,Symmetry check failed
+2078-340.jpg,Blurness check failed,Background check failed
+2078-332.jpg,Symmetry check failed
+2078-365.jpg,Symmetry check failed
+2078-382.jpg,Symmetry check failed
+2078-383.jpg,Symmetry check failed
+2078-385.jpg,Symmetry check failed
+2078-399.png,Blurness check failed
+2078-441.jpg,Symmetry check failed
+2078-410.png,Head Ratio Small
+2078-467.jpg,Symmetry check failed
+2078-509.jpg,Symmetry check failed
+2078-494.jpg,Symmetry check failed
+2078-496.jpg,Symmetry check failed
+2078-528.jpg,Symmetry check failed
+2078-531.jpg,Symmetry check failed
+2078-544.jpg,Symmetry check failed
+2078-528(1).jpg,Symmetry check failed
+2078-574.png,Symmetry check failed
+2078-532.jpg,Blurness check failed
+2078-588.jpg,Eye check failed
+2078-629.jpg,Symmetry check failed
+2078-58.jpg,Symmetry check failed
+2078-586.jpg,Symmetry check failed
+2078-611.jpg,Symmetry check failed
+2078-602.jpg,Symmetry check failed
+2078-608.jpg,Symmetry check failed
+2078-612.jpg,Symmetry check failed
+2078-652.jpg,couldnot detect head,Symmetry check failed
+2078-674.jpg,Symmetry check failed
+2078-669.jpg,Symmetry check failed
+2078-679.jpg,Symmetry check failed
+2078-757.jpg,Symmetry check failed
+2078-739.jpg,Symmetry check failed
+2078-724.jpg,Symmetry check failed
+2078-737.jpg,Symmetry check failed
+2078-759.png,Symmetry check failed
+2078-746.jpg,Symmetry check failed
+2078-675.jpg,Symmetry check failed
+2078-726.jpg,Symmetry check failed
+2078-765.PNG,Blurness check failed,Symmetry check failed
+2078-794.jpg,Symmetry check failed
+2078-800.jpg,Symmetry check failed
+2078-807.jpg,Symmetry check failed
+2078-779.jpg,Symmetry check failed
+2078-826.jpg,Symmetry check failed
+2078-846.JPG,Symmetry check failed
+2078-848.jpg,Symmetry check failed
+2078-883.jpg,Symmetry check failed
+2078-867.jpg,Symmetry check failed
+2078-878.jpg,Symmetry check failed
+2078-856.jpg,Symmetry check failed
+2078-893.png,Symmetry check failed
+2078-871.jpg,Head Ratio Small
+2078-890.jpg,Symmetry check failed
+2078-929.jpg,Symmetry check failed
+2078-903.jpg,Symmetry check failed
+2078-906.jpg,Symmetry check failed
+2078-936.jpg,Symmetry check failed
+2078-91.jpg,Symmetry check failed
+2078-940.jpg,Symmetry check failed
+2078-950.jpg,Eye check failed,Symmetry check failed
+2078-957.jpg,Symmetry check failed
+2078-987.jpg,Symmetry check failed
+2078-1019.jpg,Symmetry check failed
+2078-1177.jpg,Symmetry check failed
+2078-1098.jpg,Symmetry check failed
+2078-1087.jpg,Symmetry check failed
+2078-1015.jpg,Symmetry check failed
+2078-1161.jpg,Symmetry check failed
+2078-1061.jpg,Blurness check failed
+2078-1042.jpg,Symmetry check failed
+2078-1174.jpg,Symmetry check failed
+2078-1081.jpg,Symmetry check failed
+2078-1138.jpg,Symmetry check failed
+2078-1002.png,Eye check failed,Symmetry check failed
+2078-1096.jpg,Symmetry check failed
+2078-1178.jpg,Symmetry check failed
+2078-1220.jpg,Blurness check failed,Symmetry check failed
+2078-1201.jpg,Symmetry check failed
+2078-1157.jpg,Symmetry check failed
+2078-1046.jpg,Symmetry check failed
+2078-1028.jpg,Symmetry check failed
+2078-1253.jpg,Symmetry check failed
+2078-127.jpg,Symmetry check failed
+2078-1181.jpg,Symmetry check failed
+2078-1272.jpg,Symmetry check failed
+2078-1288.jpg,Blurness check failed
+2078-1259.jpg,Blurness check failed
+2078-1349.jpg,Symmetry check failed
+2078-1367.jpg,Symmetry check failed
+2078-1356.png,Background check failed,Head Ratio Small
+2078-1374.jpg,Symmetry check failed
+2078-1421.jpg,Symmetry check failed
+2078-1375.jpg,Eye check failed
+2078-1380.jpg,Blurness check failed
+2078-1439.jpg,Symmetry check failed
+2078-1395.jpg,Symmetry check failed
+2078-1410.jpg,Symmetry check failed
+2078-1461.jpg,Symmetry check failed
+2078-1440.jpg,Symmetry check failed
+2078-1450.jpg,Symmetry check failed
+2078-1459.jpg,Symmetry check failed
+2078-1474.jpg,Blurness check failed
+2078-1468.jpg,Symmetry check failed
+2078-1499.jpg,Blurness check failed,Symmetry check failed
+2078-148.png,Symmetry check failed
+2078-1514.jpg,Symmetry check failed
+2078-1507.jpg,Symmetry check failed
+2078-1515.jpg,Symmetry check failed
+2078-1492.jpg,Symmetry check failed
+2078-1516.jpg,Symmetry check failed
+2078-162.jpg,Symmetry check failed
+2078-1535.jpg,Symmetry check failed
+2078-1647.jpg,Symmetry check failed
+2078-1623.jpg,Symmetry check failed
+2078-1608.jpg,Symmetry check failed
+2078-1662.png,Symmetry check failed
+2078-1621.jpg,Symmetry check failed
+2078-1690.jpg,Symmetry check failed
+2078-1626.jpg,Symmetry check failed
+2078-167.jpg,Symmetry check failed
+2078-1705.jpg,Symmetry check failed
+2078-1707.jpg,Blurness check failed
+2078-1717.jpg,Symmetry check failed
+2078-1724.jpg,Symmetry check failed
+2078-1753.jpg,Head Ratio Small,Symmetry check failed
+2078-172.png,Symmetry check failed
+2078-1746.jpg,Symmetry check failed
+2078-1768.jpg,Symmetry check failed
+2078-195.jpg,Symmetry check failed
+2078-204.jpg,Symmetry check failed
+2078-178.jpg,Symmetry check failed
+2078-223.jpg,Symmetry check failed
+2078-285.jpg,Symmetry check failed
+2078-221.jpg,Symmetry check failed
+2078-255.jpg,Symmetry check failed
+2078-258.jpg,Symmetry check failed
+2078-277.jpg,Symmetry check failed
+2078-296.jpg,Symmetry check failed
+2078-30.jpg,Symmetry check failed
+2078-306.jpg,Symmetry check failed
+2078-310.jpg,Symmetry check failed
+2078-340.jpg,Blurness check failed,Background check failed
+2078-365.jpg,Symmetry check failed
+2078-385.jpg,Symmetry check failed
+2078-332.jpg,Symmetry check failed
+2078-383.jpg,Symmetry check failed
+2078-382.jpg,Symmetry check failed
+2078-441.jpg,Symmetry check failed
+2078-399.png,Blurness check failed
+2078-467.jpg,Symmetry check failed
+2078-509.jpg,Symmetry check failed
+2078-494.jpg,Symmetry check failed
+2078-496.jpg,Symmetry check failed
+2078-410.png,Head Ratio Small
+2078-531.jpg,Symmetry check failed
+2078-532.jpg,Blurness check failed
+2078-528.jpg,Symmetry check failed
+2078-528(1).jpg,Symmetry check failed
+2078-544.jpg,Symmetry check failed
+2078-586.jpg,Symmetry check failed
+2078-574.png,Symmetry check failed
+2078-58.jpg,Symmetry check failed
+2078-588.jpg,Eye check failed
+2078-608.jpg,Symmetry check failed
+2078-611.jpg,Symmetry check failed
+2078-602.jpg,Symmetry check failed
+2078-612.jpg,Symmetry check failed
+2078-629.jpg,Symmetry check failed
+2078-669.jpg,Symmetry check failed
+2078-675.jpg,Symmetry check failed
+2078-674.jpg,Symmetry check failed
+2078-652.jpg,couldnot detect head,Symmetry check failed
+2078-724.jpg,Symmetry check failed
+2078-737.jpg,Symmetry check failed
+2078-679.jpg,Symmetry check failed
+2078-726.jpg,Symmetry check failed
+2078-739.jpg,Symmetry check failed
+2078-746.jpg,Symmetry check failed
+2078-757.jpg,Symmetry check failed
+2078-779.jpg,Symmetry check failed
+2078-759.png,Symmetry check failed
+2078-765.PNG,Blurness check failed,Symmetry check failed
+2078-800.jpg,Symmetry check failed
+2078-848.jpg,Symmetry check failed
+2078-794.jpg,Symmetry check failed
+2078-807.jpg,Symmetry check failed
+2078-826.jpg,Symmetry check failed
+2078-871.jpg,Head Ratio Small
+2078-867.jpg,Symmetry check failed
+2078-856.jpg,Symmetry check failed
+2078-878.jpg,Symmetry check failed
+2078-846.JPG,Symmetry check failed
+2078-883.jpg,Symmetry check failed
+2078-890.jpg,Symmetry check failed
+2078-906.jpg,Symmetry check failed
+2078-893.png,Symmetry check failed
+2078-91.jpg,Symmetry check failed
+2078-903.jpg,Symmetry check failed
+2078-936.jpg,Symmetry check failed
+2078-929.jpg,Symmetry check failed
+2078-950.jpg,Eye check failed,Symmetry check failed
+2078-940.jpg,Symmetry check failed
+2078-957.jpg,Symmetry check failed
+2078-987.jpg,Symmetry check failed
+2078-1046.jpg,Symmetry check failed
+2078-1002.png,Eye check failed,Symmetry check failed
+2078-1015.jpg,Symmetry check failed
+2078-1081.jpg,Symmetry check failed
+2078-1019.jpg,Symmetry check failed
+2078-1061.jpg,Blurness check failed
+2078-1096.jpg,Symmetry check failed
+2078-1042.jpg,Symmetry check failed
+2078-1028.jpg,Symmetry check failed
+2078-1087.jpg,Symmetry check failed
+2078-1138.jpg,Symmetry check failed
+2078-1098.jpg,Symmetry check failed
+2078-1157.jpg,Symmetry check failed
+2078-1161.jpg,Symmetry check failed
+2078-1174.jpg,Symmetry check failed
+2078-1178.jpg,Symmetry check failed
+2078-1181.jpg,Symmetry check failed
+2078-1177.jpg,Symmetry check failed
+2078-1253.jpg,Symmetry check failed
+2078-1201.jpg,Symmetry check failed
+2078-127.jpg,Symmetry check failed
+2078-1272.jpg,Symmetry check failed
+2078-1259.jpg,Blurness check failed
+2078-1288.jpg,Blurness check failed
+2078-1220.jpg,Blurness check failed,Symmetry check failed
+2078-1349.jpg,Symmetry check failed
+2078-1374.jpg,Symmetry check failed
+2078-1367.jpg,Symmetry check failed
+2078-1356.png,Background check failed,Head Ratio Small
+2078-1375.jpg,Eye check failed
+2078-1380.jpg,Blurness check failed
+2078-1410.jpg,Symmetry check failed
+2078-1395.jpg,Symmetry check failed
+2078-1421.jpg,Symmetry check failed
+2078-1439.jpg,Symmetry check failed
+2078-1440.jpg,Symmetry check failed
+2078-1450.jpg,Symmetry check failed
+2078-1459.jpg,Symmetry check failed
+2078-1474.jpg,Blurness check failed
+2078-1468.jpg,Symmetry check failed
+2078-148.png,Symmetry check failed
+2078-1461.jpg,Symmetry check failed
+2078-1492.jpg,Symmetry check failed
+2078-1499.jpg,Blurness check failed,Symmetry check failed
+2078-1514.jpg,Symmetry check failed
+2078-1507.jpg,Symmetry check failed
+2078-1516.jpg,Symmetry check failed
+2078-1515.jpg,Symmetry check failed
+2078-1535.jpg,Symmetry check failed
+2078-1608.jpg,Symmetry check failed
+2078-162.jpg,Symmetry check failed
+2078-1623.jpg,Symmetry check failed
+2078-1621.jpg,Symmetry check failed
+2078-1626.jpg,Symmetry check failed
+2078-1662.png,Symmetry check failed
+2078-1647.jpg,Symmetry check failed
+2078-167.jpg,Symmetry check failed
+2078-1690.jpg,Symmetry check failed
+2078-1705.jpg,Symmetry check failed
+2078-1707.jpg,Blurness check failed
+2078-172.png,Symmetry check failed
+2078-1717.jpg,Symmetry check failed
+2078-1746.jpg,Symmetry check failed
+2078-1724.jpg,Symmetry check failed
+2078-1753.jpg,Head Ratio Small,Symmetry check failed
+2078-1768.jpg,Symmetry check failed
+2078-195.jpg,Symmetry check failed
+2078-178.jpg,Symmetry check failed
+2078-204.jpg,Symmetry check failed
+2078-221.jpg,Symmetry check failed
+2078-258.jpg,Symmetry check failed
+2078-223.jpg,Symmetry check failed
+2078-255.jpg,Symmetry check failed
+2078-296.jpg,Symmetry check failed
+2078-285.jpg,Symmetry check failed
+2078-277.jpg,Symmetry check failed
+2078-30.jpg,Symmetry check failed
+2078-310.jpg,Symmetry check failed
+2078-340.jpg,Blurness check failed,Background check failed
+2078-306.jpg,Symmetry check failed
+2078-365.jpg,Symmetry check failed
+2078-332.jpg,Symmetry check failed
+2078-382.jpg,Symmetry check failed
+2078-399.png,Blurness check failed
+2078-385.jpg,Symmetry check failed
+2078-410.png,Head Ratio Small
+2078-383.jpg,Symmetry check failed
+2078-441.jpg,Symmetry check failed
+2078-467.jpg,Symmetry check failed
+2078-509.jpg,Symmetry check failed
+2078-494.jpg,Symmetry check failed
+2078-496.jpg,Symmetry check failed
+2078-528(1).jpg,Symmetry check failed
+2078-544.jpg,Symmetry check failed
+2078-532.jpg,Blurness check failed
+2078-531.jpg,Symmetry check failed
+2078-528.jpg,Symmetry check failed
+2078-574.png,Symmetry check failed
+2078-58.jpg,Symmetry check failed
+2078-586.jpg,Symmetry check failed
+2078-588.jpg,Eye check failed
+2078-602.jpg,Symmetry check failed
+2078-608.jpg,Symmetry check failed
+2078-612.jpg,Symmetry check failed
+2078-629.jpg,Symmetry check failed
+2078-652.jpg,couldnot detect head,Symmetry check failed
+2078-674.jpg,Symmetry check failed
+2078-611.jpg,Symmetry check failed
+2078-669.jpg,Symmetry check failed
+2078-675.jpg,Symmetry check failed
+2078-737.jpg,Symmetry check failed
+2078-726.jpg,Symmetry check failed
+2078-724.jpg,Symmetry check failed
+2078-679.jpg,Symmetry check failed
+2078-746.jpg,Symmetry check failed
+2078-739.jpg,Symmetry check failed
+2078-757.jpg,Symmetry check failed
+2078-765.PNG,Blurness check failed,Symmetry check failed
+2078-759.png,Symmetry check failed
+2078-779.jpg,Symmetry check failed
+2078-794.jpg,Symmetry check failed
+2078-800.jpg,Symmetry check failed
+2078-807.jpg,Symmetry check failed
+2078-826.jpg,Symmetry check failed
+2078-848.jpg,Symmetry check failed
+2078-856.jpg,Symmetry check failed
+2078-846.JPG,Symmetry check failed
+2078-867.jpg,Symmetry check failed
+2078-871.jpg,Head Ratio Small
+2078-878.jpg,Symmetry check failed
+2078-883.jpg,Symmetry check failed
+2078-893.png,Symmetry check failed
+2078-890.jpg,Symmetry check failed
+2078-929.jpg,Symmetry check failed
+2078-906.jpg,Symmetry check failed
+2078-903.jpg,Symmetry check failed
+2078-91.jpg,Symmetry check failed
+2078-940.jpg,Symmetry check failed
+2078-936.jpg,Symmetry check failed
+2078-957.jpg,Symmetry check failed
+2078-950.jpg,Eye check failed,Symmetry check failed
+2078-987.jpg,Symmetry check failed
+Pasted image (6).png,File size check failed,File height check failed,File width check failed,Blurness check failed,Head Ratio Small,Symmetry check failed
+Pasted image (5).png,File size check failed,File height check failed,File width check failed,Blurness check failed,Symmetry check failed
+2078-1019.jpg,Symmetry check failed
+2078-1061.jpg,Blurness check failed
+2078-1087.jpg,Symmetry check failed
+2078-1096.jpg,Symmetry check failed
+2078-1028.jpg,Symmetry check failed
+2078-1046.jpg,Symmetry check failed
+2078-1002.png,Eye check failed,Symmetry check failed
+2078-1081.jpg,Symmetry check failed
+2078-1042.jpg,Symmetry check failed
+2078-1015.jpg,Symmetry check failed
+2078-1157.jpg,Symmetry check failed
+2078-1098.jpg,Symmetry check failed
+2078-1138.jpg,Symmetry check failed
+2078-1161.jpg,Symmetry check failed
+2078-1178.jpg,Symmetry check failed
+2078-1174.jpg,Symmetry check failed
+2078-1201.jpg,Symmetry check failed
+2078-1177.jpg,Symmetry check failed
+2078-1181.jpg,Symmetry check failed
+2078-1259.jpg,Blurness check failed
+2078-1220.jpg,Blurness check failed,Symmetry check failed
+2078-1272.jpg,Symmetry check failed
+2078-1253.jpg,Symmetry check failed
+2078-127.jpg,Symmetry check failed
+2078-1288.jpg,Blurness check failed
+2078-1349.jpg,Symmetry check failed
+2078-1367.jpg,Symmetry check failed
+2078-1356.png,Background check failed,Head Ratio Small
+2078-1380.jpg,Blurness check failed
+2078-1374.jpg,Symmetry check failed
+2078-1375.jpg,Eye check failed
+2078-1410.jpg,Symmetry check failed
+2078-1395.jpg,Symmetry check failed
+2078-1421.jpg,Symmetry check failed
+2078-1439.jpg,Symmetry check failed
+2078-1440.jpg,Symmetry check failed
+2078-1459.jpg,Symmetry check failed
+2078-1461.jpg,Symmetry check failed
+2078-1450.jpg,Symmetry check failed
+2078-1468.jpg,Symmetry check failed
+2078-148.png,Symmetry check failed
+2078-1474.jpg,Blurness check failed
+2078-1492.jpg,Symmetry check failed
+2078-1499.jpg,Blurness check failed,Symmetry check failed
+2078-1514.jpg,Symmetry check failed
+2078-1507.jpg,Symmetry check failed
+2078-1515.jpg,Symmetry check failed
+2078-1516.jpg,Symmetry check failed
+2078-1608.jpg,Symmetry check failed
+2078-1535.jpg,Symmetry check failed
+2078-1621.jpg,Symmetry check failed
+2078-162.jpg,Symmetry check failed
+2078-1626.jpg,Symmetry check failed
+2078-1623.jpg,Symmetry check failed
+2078-1647.jpg,Symmetry check failed
+2078-1690.jpg,Symmetry check failed
+2078-1662.png,Symmetry check failed
+2078-1705.jpg,Symmetry check failed
+2078-1707.jpg,Blurness check failed
+2078-167.jpg,Symmetry check failed
+2078-172.png,Symmetry check failed
+2078-1717.jpg,Symmetry check failed
+2078-1746.jpg,Symmetry check failed
+2078-1724.jpg,Symmetry check failed
+2078-1753.jpg,Head Ratio Small,Symmetry check failed
+2078-1768.jpg,Symmetry check failed
+2078-178.jpg,Symmetry check failed
+2078-195.jpg,Symmetry check failed
+2078-221.jpg,Symmetry check failed
+2078-204.jpg,Symmetry check failed
+2078-223.jpg,Symmetry check failed
+2078-258.jpg,Symmetry check failed
+2078-277.jpg,Symmetry check failed
+2078-285.jpg,Symmetry check failed
+2078-255.jpg,Symmetry check failed
+2078-296.jpg,Symmetry check failed
+2078-30.jpg,Symmetry check failed
+2078-310.jpg,Symmetry check failed
+2078-306.jpg,Symmetry check failed
+2078-332.jpg,Background check failed,Symmetry check failed
+2078-340.jpg,Blurness check failed,Background check failed
+2078-365.jpg,Symmetry check failed
+2078-399.png,Blurness check failed
+2078-383.jpg,Symmetry check failed
+2078-385.jpg,Symmetry check failed
+2078-382.jpg,Symmetry check failed
+2078-410.png,Head Ratio Small
+2078-467.jpg,Symmetry check failed
+2078-441.jpg,Symmetry check failed
+2078-496.jpg,Symmetry check failed
+2078-494.jpg,Symmetry check failed
+2078-509.jpg,Symmetry check failed
+2078-528(1).jpg,Symmetry check failed
+2078-528.jpg,Symmetry check failed
+2078-532.jpg,Blurness check failed
+2078-544.jpg,Symmetry check failed
+2078-531.jpg,Symmetry check failed
+2078-58.jpg,Symmetry check failed
+2078-588.jpg,Eye check failed
+2078-574.png,Symmetry check failed
+2078-586.jpg,Symmetry check failed
+2078-602.jpg,Symmetry check failed
+2078-608.jpg,Symmetry check failed
+2078-629.jpg,Symmetry check failed
+2078-652.jpg,couldnot detect head,Symmetry check failed
+2078-612.jpg,Symmetry check failed
+2078-611.jpg,Symmetry check failed
+2078-669.jpg,Symmetry check failed
+2078-674.jpg,Symmetry check failed
+2078-726.jpg,Symmetry check failed
+2078-675.jpg,Symmetry check failed
+2078-679.jpg,Symmetry check failed
+2078-724.jpg,Symmetry check failed
+2078-737.jpg,Symmetry check failed
+2078-739.jpg,Symmetry check failed
+2078-757.jpg,Symmetry check failed
+2078-746.jpg,Symmetry check failed
+2078-759.png,Symmetry check failed
+2078-794.jpg,Symmetry check failed
+2078-765.PNG,Blurness check failed,Symmetry check failed
+2078-779.jpg,Symmetry check failed
+2078-800.jpg,Symmetry check failed
+2078-807.jpg,Symmetry check failed
+2078-846.JPG,Symmetry check failed
+2078-826.jpg,Symmetry check failed
+2078-848.jpg,Symmetry check failed
+2078-871.jpg,Head Ratio Small
+2078-856.jpg,Symmetry check failed
+2078-867.jpg,Symmetry check failed
+2078-878.jpg,Symmetry check failed
+2078-883.jpg,Symmetry check failed
+2078-893.png,Symmetry check failed
+2078-906.jpg,Symmetry check failed
+2078-903.jpg,Symmetry check failed
+2078-890.jpg,Symmetry check failed
+2078-91.jpg,Symmetry check failed
+2078-936.jpg,Symmetry check failed
+2078-929.jpg,Symmetry check failed
+2078-950.jpg,Eye check failed,Symmetry check failed
+2078-940.jpg,Symmetry check failed
+2078-957.jpg,Symmetry check failed
+2078-987.jpg,Symmetry check failed
+Pasted image (6).png,File size check failed,File height check failed,File width check failed,Blurness check failed,Head Ratio Small,Symmetry check failed
+Pasted image (5).png,File size check failed,File height check failed,File width check failed,Blurness check failed,Symmetry check failed
+2078-1015.jpg,Symmetry check failed
+2078-1157.jpg,Symmetry check failed
+2078-1002.png,Eye check failed,Symmetry check failed
+2078-1042.jpg,Symmetry check failed
+2078-1028.jpg,Symmetry check failed
+2078-1046.jpg,Symmetry check failed
+2078-1061.jpg,Blurness check failed
+2078-1081.jpg,Symmetry check failed
+2078-1019.jpg,Symmetry check failed
+2078-1098.jpg,Symmetry check failed
+2078-1096.jpg,Symmetry check failed
+2078-1138.jpg,Symmetry check failed
+2078-1087.jpg,Symmetry check failed
+2078-1161.jpg,Symmetry check failed
+2078-1181.jpg,Symmetry check failed
+2078-1177.jpg,Symmetry check failed
+2078-1178.jpg,Symmetry check failed
+2078-1174.jpg,Symmetry check failed
+2078-1253.jpg,Symmetry check failed
+2078-1201.jpg,Symmetry check failed
+2078-1220.jpg,Blurness check failed,Symmetry check failed
+2078-1288.jpg,Blurness check failed
+2078-1272.jpg,Symmetry check failed
+2078-1259.jpg,Blurness check failed
+2078-1349.jpg,Symmetry check failed
+2078-1356.png,Background check failed,Head Ratio Small
+2078-127.jpg,Symmetry check failed
+2078-1380.jpg,Blurness check failed
+2078-1367.jpg,Symmetry check failed
+2078-1375.jpg,Eye check failed
+2078-1374.jpg,Symmetry check failed
+2078-1395.jpg,Symmetry check failed
+2078-1410.jpg,Symmetry check failed
+2078-1421.jpg,Symmetry check failed
+2078-1440.jpg,Symmetry check failed
+2078-1439.jpg,Symmetry check failed
+2078-1450.jpg,Symmetry check failed
+2078-148.png,Symmetry check failed
+2078-1468.jpg,Symmetry check failed
+2078-1459.jpg,Symmetry check failed
+2078-1461.jpg,Symmetry check failed
+2078-1474.jpg,Blurness check failed
+2078-1499.jpg,Blurness check failed,Symmetry check failed
+2078-1507.jpg,Symmetry check failed
+2078-1514.jpg,Symmetry check failed
+2078-1492.jpg,Symmetry check failed
+2078-1516.jpg,Symmetry check failed
+2078-1515.jpg,Symmetry check failed
+2078-162.jpg,Symmetry check failed
+2078-1535.jpg,Symmetry check failed
+2078-1623.jpg,Symmetry check failed
+2078-1608.jpg,Symmetry check failed
+2078-1621.jpg,Symmetry check failed
+2078-1626.jpg,Symmetry check failed
+2078-1662.png,Symmetry check failed
+2078-167.jpg,Symmetry check failed
+2078-1647.jpg,Symmetry check failed
+2078-1705.jpg,Symmetry check failed
+2078-1690.jpg,Symmetry check failed
+2078-1707.jpg,Blurness check failed
+2078-1717.jpg,Symmetry check failed
+2078-172.png,Symmetry check failed
+2078-1746.jpg,Symmetry check failed
+2078-1724.jpg,Symmetry check failed
+2078-1753.jpg,Head Ratio Small,Symmetry check failed
+2078-1768.jpg,Symmetry check failed
+2078-178.jpg,Symmetry check failed
+2078-221.jpg,Symmetry check failed
+2078-195.jpg,Symmetry check failed
+2078-204.jpg,Symmetry check failed
+2078-223.jpg,Symmetry check failed
+2078-277.jpg,Symmetry check failed
+2078-296.jpg,Symmetry check failed
+2078-258.jpg,Symmetry check failed
+2078-255.jpg,Symmetry check failed
+2078-30.jpg,Symmetry check failed
+2078-285.jpg,Symmetry check failed
+2078-310.jpg,Symmetry check failed
+2078-306.jpg,Symmetry check failed
+2078-332.jpg,Background check failed,Symmetry check failed
+2078-340.jpg,Blurness check failed,Background check failed
+2078-365.jpg,Symmetry check failed
+2078-399.png,Blurness check failed
+2078-382.jpg,Symmetry check failed
+2078-385.jpg,Symmetry check failed
+2078-410.png,Head Ratio Small
+2078-383.jpg,Symmetry check failed
+2078-494.jpg,Symmetry check failed
+2078-441.jpg,Symmetry check failed
+2078-467.jpg,Symmetry check failed
+2078-509.jpg,Symmetry check failed
+2078-496.jpg,Symmetry check failed
+2078-544.jpg,Symmetry check failed
+2078-528(1).jpg,Symmetry check failed
+2078-532.jpg,Blurness check failed
+2078-528.jpg,Symmetry check failed
+2078-574.png,Symmetry check failed
+2078-531.jpg,Symmetry check failed
+2078-602.jpg,Symmetry check failed
+2078-58.jpg,Symmetry check failed
+2078-586.jpg,Symmetry check failed
+2078-608.jpg,Symmetry check failed
+2078-588.jpg,Eye check failed
+2078-611.jpg,Symmetry check failed
+2078-652.jpg,couldnot detect head,Symmetry check failed
+2078-612.jpg,Symmetry check failed
+2078-629.jpg,Symmetry check failed
+2078-669.jpg,Symmetry check failed
+2078-674.jpg,Symmetry check failed
+2078-679.jpg,Symmetry check failed
+2078-726.jpg,Symmetry check failed
+2078-724.jpg,Symmetry check failed
+2078-675.jpg,Symmetry check failed
+2078-739.jpg,Symmetry check failed
+2078-737.jpg,Symmetry check failed
+2078-746.jpg,Symmetry check failed
+2078-757.jpg,Symmetry check failed
+2078-794.jpg,Symmetry check failed
+2078-779.jpg,Symmetry check failed
+2078-765.PNG,Blurness check failed,Symmetry check failed
+2078-759.png,Symmetry check failed
+2078-807.jpg,Symmetry check failed
+2078-800.jpg,Symmetry check failed
+2078-846.JPG,Symmetry check failed
+2078-826.jpg,Symmetry check failed
+2078-856.jpg,Symmetry check failed
+2078-871.jpg,Head Ratio Small
+2078-848.jpg,Symmetry check failed
+2078-867.jpg,Symmetry check failed
+2078-878.jpg,Symmetry check failed
+2078-883.jpg,Symmetry check failed
+2078-91.jpg,Symmetry check failed
+2078-893.png,Symmetry check failed
+2078-929.jpg,Symmetry check failed
+2078-890.jpg,Symmetry check failed
+2078-906.jpg,Symmetry check failed
+2078-936.jpg,Symmetry check failed
+2078-903.jpg,Symmetry check failed
+2078-940.jpg,Symmetry check failed
+2078-950.jpg,Eye check failed,Symmetry check failed
+2078-987.jpg,Symmetry check failed
+2078-957.jpg,Symmetry check failed

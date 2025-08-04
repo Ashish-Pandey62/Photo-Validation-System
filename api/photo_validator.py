@@ -128,7 +128,8 @@ def main(imgPath):
           message = message + "Head check: " + ('Couldnot detect head') + "\n"
         else:
           message = message + "Head check: multiple heads detected"+ "\n"
-              
+      else:
+        message = message + "Head check: Passed\n"
       logging.info(message)
     else:
       message = message + "Bypassed head check\n"
@@ -136,7 +137,10 @@ def main(imgPath):
     # Check Eye Covered
     if(config.bypass_eye_check==False):
       is_eye_covered = head_check.detect_eyes(img)
-      message = message + "Eye check: " + ('Passed' if not is_eye_covered else 'Failed') + "\n"
+      if is_eye_covered:
+        message = message + "Eye check: Failed (eyes covered/not visible)\n"
+      else:
+        message = message + "Eye check: Passed\n"
       logging.info(message)
     else:
       message = message + "Bypassed eye check\n"
