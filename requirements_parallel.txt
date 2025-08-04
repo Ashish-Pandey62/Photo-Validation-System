@@ -1,0 +1,9 @@
+# Additional requirements for parallel processing features
+# These are optional - basic parallel processing will work without them
+
+# For advanced system resource monitoring (optional but recommended)
+psutil>=5.8.0
+
+# Already required by Django project
+opencv-python>=4.5.0
+Django>=3.2.0
