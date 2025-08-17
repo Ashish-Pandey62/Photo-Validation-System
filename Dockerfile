@@ -4,7 +4,7 @@ WORKDIR /usr/src/app/
 
 RUN apt-get clean && apt-get -y update && apt-get install -y build-essential cmake libopenblas-dev liblapack-dev libopenblas-dev liblapack-dev
 
-RUN apt-get install ffmpeg libsm6 libxext6  -y
+RUN apt-get install ffmpeg libsm6 libxext6 wget curl -y
 
 
 COPY requirements_new.txt .
