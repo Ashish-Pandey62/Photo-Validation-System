@@ -63,7 +63,17 @@ def startPage(request):
         )
         config.save()
     
-    return render(request, 'api/index1.html', {'config': config, 'form': form})
+    # views.py
+    bypass_list = [
+        'bypass_height_check', 'bypass_width_check', 'bypass_size_check',
+        'bypass_format_check', 'bypass_background_check', 'bypass_blurness_check',
+        'bypass_greyness_check', 'bypass_symmetry_check', 'bypass_head_check',
+        'bypass_eye_check', 'bypass_corrupted_check'
+    ]
+
+
+
+    return render(request, 'api/index1.html', {'bypass_list': bypass_list,'config': config, 'form': form})
 
 # def dialogueBox(request):
 
