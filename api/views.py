@@ -18,6 +18,9 @@ from .models import Config, PhotoFolder
 # import urllib.parse
 import shutil
 import zipfile
+
+def health_check(request):
+    return HttpResponse("OK")
 import csv
 
 
