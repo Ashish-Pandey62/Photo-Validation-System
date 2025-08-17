@@ -24,6 +24,7 @@ urlpatterns = [
     path('invalid_image/<str:filename>/', views.serve_invalid_image, name='serve_invalid_image'),
     path('valid_image/<str:filename>/', views.serve_valid_image, name='serve_valid_image'),
     path('valid_images/', views.valid_images_gallery, name='valid_images_gallery'),
+    path('test_config_image/', views.test_config_image, name='test_config_image'),
     # path('image_gallery/<str:pathQuery>/', views.image_gallery, name='image_gallery'),
     # path('process_selected_images/<str:pathQueryTwo>/', views.process_selected_images, name='process_selected_images'),
     # re_path(r'^image_gallery/$', views.image_gallery, name='image_gallery'),

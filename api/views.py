@@ -8,6 +8,9 @@ from django.shortcuts import render, redirect
 import api.photo_validator as photo_validator
 import api.photo_validator_dir as photo_validator_dir
 from api.forms import PhotoFolderUploadForm
+from api.blur_check import check_image_blurness
+from api.symmetry_check import check_symmetry_with_head
+from api.file_format_check import is_corrupted_image
 
 # import api.tinkerdirectory as tinker
 from .models import Config, PhotoFolder
@@ -710,3 +713,69 @@ def download_and_delete_csv(request):
     #             logging.error(f"Error deleting folder: {e}")
     
     return response
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from PIL import Image
+import io
+
+@csrf_exempt
+def test_config_image(request):
+    """
+    Test configuration by uploading a single image and returning its validation result.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    image_file = request.FILES.get("image")
+    if not image_file:
+        return JsonResponse({"error": "No image uploaded"}, status=400)
+
+    # Load config (example: from DB or settings, here using request.POST for demo)
+    min_height = int(request.POST.get("minHeight", 0))
+    max_height = int(request.POST.get("maxHeight", 100000))
+    min_width = int(request.POST.get("minWidth", 0))
+    max_width = int(request.POST.get("maxWidth", 100000))
+    min_size = int(request.POST.get("minSize", 0))
+    max_size = int(request.POST.get("maxSize", 100000))
+    allowed_formats = []
+    if request.POST.get("jpgchecked") == "on":
+        allowed_formats.append("JPEG")
+    if request.POST.get("pngchecked") == "on":
+        allowed_formats.append("PNG")
+    if request.POST.get("jpegchecked") == "on":
+        allowed_formats.append("JPEG")
+
+    # Save uploaded image to a temporary file
+    import tempfile
+    from api.photo_validator_optimized import main_optimized
+
+    with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
+        for chunk in image_file.chunks():
+            tmp.write(chunk)
+        temp_path = tmp.name
+
+    # Run validation using main_optimized
+    result_message = main_optimized(temp_path)
+
+    # Parse result_message for display
+    lines = result_message.split('\n')
+    checks_html = ""
+    status = "PASS"
+    for line in lines:
+        if "Failed" in line or "Corrupted image detected" in line or "Failed to load image" in line:
+            status = "FAIL"
+        if line.strip():
+            checks_html += f"{line}<br>"
+
+    if status == "PASS":
+        result_html = (
+            f"<span class='status-success'><i class='fas fa-check'></i> PASS</span><br>"
+            f"{checks_html}"
+        )
+    else:
+        result_html = (
+            f"<span class='status-error'><i class='fas fa-times'></i> FAIL</span><br>"
+            f"{checks_html}"
+        )
+
+    return JsonResponse({"result_html": result_html})

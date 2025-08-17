@@ -7,11 +7,11 @@ RUN apt-get clean && apt-get -y update && apt-get install -y build-essential cma
 RUN apt-get install ffmpeg libsm6 libxext6  -y
 
 
-COPY requirements.txt .
+COPY requirements_new.txt .
 
 RUN pip install --upgrade pip setuptools
 
-RUN pip install -r requirements.txt
+RUN pip install --pre -r requirements_new.txt
 
 
 COPY . .
@@ -21,4 +21,4 @@ RUN python3 manage.py makemigrations && python3 manage.py migrate
 CMD [ "python3","manage.py","runserver", "0.0.0.0:3000" ]
 
 
-EXPOSE 8000
+EXPOSE 3000
