@@ -26,7 +26,7 @@ SECRET_KEY = '*5gbl+xa_@tu65rcsgdlmab#@blby1=-=l*k(sfnl(8q)#@njs'
 DEBUG = True
 
 # ALLOWED_HOSTS = [os.environ.get("hostname")]
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
