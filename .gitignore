@@ -1,3 +1,26 @@
-media
-invalid
-venv
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environments
+venv/
+ENV/
+env/
+myenv
+# IDE files
+.vscode/
+.idea/
+
+# Django/Flask media & invalid dirs
+media/
+invalid/
+
+# Specific project cache
+api/__pycache__/
+onlinePhotoValidator/__pycache__/
