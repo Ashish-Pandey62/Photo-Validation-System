@@ -1,2 +1,7 @@
+<<<<<<< HEAD
 Pasted image (6).png,Symmetry check failed (77.4% symmetric, min required: 86.3%)
 Pasted image (5).png,Blurness check failed (5.1% sharpness, min required: 6.0%)
+=======
+Pasted image (6).png,Head check failed (8.5% head coverage, min required: 10%)
+Pasted image (5).png,Blurness check failed (5.1% sharpness, min required: 14.0%)
+>>>>>>> b15e45978da78ec7ff1805084e47cbd6fc26258c

@@ -9,6 +9,14 @@ def clear_data(request):
             except Exception as e:
                 logging.error(f"Error deleting media/photos: {e}")
 
+        # Remove media/photo_folder (contains uploaded ZIP files)
+        media_photo_folder = os.path.join(settings.MEDIA_ROOT, "photo_folder")
+        if os.path.exists(media_photo_folder):
+            try:
+                shutil.rmtree(media_photo_folder)
+            except Exception as e:
+                logging.error(f"Error deleting media/photo_folder: {e}")
+
         # Remove api/static/api/images/invalid and result.csv
         invalid_folder = os.path.join(settings.BASE_DIR, "api", "static", "api", "images", "invalid")
         result_file = os.path.join(settings.BASE_DIR, "api", "static", "api", "images", "result.csv")
@@ -445,9 +453,33 @@ def image_gallery(request):
         })()
         invalid_images.append(image_obj)
 
+    # Calculate total images count
+    invalid_count = len(invalid_images)
+    
+    # Get total count from session (stored during initial processing)
+    total_images = request.session.get("total_images_count", 0)
+    
+    # If session doesn't have the count, calculate from current state
+    if total_images == 0:
+        # Count valid images from the session path if available
+        valid_count = 0
+        path = request.session.get("path")
+        if path:
+            valid_directory = os.path.join(path, "valid")
+            if os.path.exists(valid_directory):
+                for filename in os.listdir(valid_directory):
+                    if filename.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp")):
+                        valid_count += 1
+        total_images = valid_count + invalid_count
+    
+    # Add logging for debugging
+    logging.info(f"Invalid images count: {invalid_count}")
+    logging.info(f"Total images count from session: {total_images}")
+
     context = {
         "invalid_images": invalid_images,
         "reasons_for_invalidity": reasons_for_invalidity,
+        "total_images": total_images,
     }
 
     logging.info(f"Final context - invalid_images count: {len(invalid_images)}")
