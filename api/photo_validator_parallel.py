@@ -191,7 +191,8 @@ def validate_single_image(image_path, config_data, directories):
         # Check for symmetry
         if not config.bypass_symmetry_check:
             try:
-                if not symmetry_check.issymmetric(img, config):
+                is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.issymmetric(img, config)
+                if not is_symmetric:
                     messages.append("Symmetry check failed")
             except Exception as e:
                 logging.error(f"Error in symmetry check for {image_name}: {e}")

@@ -43,18 +43,27 @@ def check_symmetry_with_head(image, config=None):
     # Calculate the average pixel intensity difference as a symmetry score
     symmetry_score = np.mean(diff_gray)
 
+    # Convert symmetry score to percentage (lower score = more symmetric)
+    # Invert the score so higher percentage means more symmetric
+    max_possible_diff = 255  # Maximum possible pixel difference
+    symmetry_percentage = max(0, 100 - (symmetry_score / max_possible_diff * 100))
+    
+    # Convert threshold to percentage for comparison
+    threshold_percentage = max(0, 100 - (threshold / max_possible_diff * 100))
+
     # Compare the symmetry score with the threshold
     is_symmetric = symmetry_score < threshold
 
-    return is_symmetric
+    # Return boolean result, actual percentage, and threshold percentage
+    return is_symmetric, symmetry_percentage, threshold_percentage
 
 def issymmetric(image, config=None):
     try:
-        is_symmetric = check_symmetry_with_head(image, config)
-        return is_symmetric
+        is_symmetric, symmetry_percentage, threshold_percentage = check_symmetry_with_head(image, config)
+        return is_symmetric, symmetry_percentage, threshold_percentage
     except ValueError as e:
         print("Error:", str(e))
-        return False
+        return False, 0, 0
     except Exception as e:
         print(f"Error in issymmetric: {e}")
-        return False
+        return False, 0, 0

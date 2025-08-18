@@ -147,7 +147,7 @@ def main(imgPath):
 
     # Check for symmetry
     if config.bypass_symmetry_check==False:
-      is_symmetric = symmetry_check.issymmetric(img, config)
+      is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.issymmetric(img, config)
       message = message + "Symmetry check: " + ('Passed' if is_symmetric else 'Failed') + "\n"
       logging.info(message)
     else:
