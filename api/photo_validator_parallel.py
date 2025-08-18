@@ -146,7 +146,8 @@ def validate_single_image(image_path, config_data, directories):
         # Check image for blurness
         if not config.bypass_blurness_check:
             try:
-                if blur_check.check_image_blurness(img, config):
+                is_blur, blur_details = blur_check.check_image_blurness(img, config)
+                if is_blur:
                     messages.append("Blurness check failed")
             except Exception as e:
                 logging.error(f"Error in blurness check for {image_name}: {e}")

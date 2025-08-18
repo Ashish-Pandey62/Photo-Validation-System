@@ -224,17 +224,23 @@ def validate_single_image_threaded(image_path, config):
         # Check image for blurness
         if not getattr(config, 'bypass_blurness_check', False):
             try:
-                if blur_check.check_image_blurness(img, config):
-                    # Get detailed blur info for enhanced message
-                    try:
-                        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                        laplacian_var = cv2.Laplacian(grey, cv2.CV_64F).var()
-                        sharpness_percentage = min(100, (laplacian_var / 500) * 100)
-                        blurness_threshold = getattr(config, 'blurness_threshold', 20)
-                        min_sharpness_percent = ((blurness_threshold/500)*100)
+                is_blur, blur_details = blur_check.check_image_blurness(img, config)
+                if is_blur:
+                    # Use the actual blur values from the check
+                    blur_value = blur_details['blur_value']
+                    blur_threshold = blur_details['blur_threshold']
+                    pixelated_value = blur_details['pixelated_value']
+                    pixelated_threshold = blur_details['pixelated_threshold']
+                    
+                    # Convert blur value to percentage (higher laplacian variance = sharper image)
+                    sharpness_percentage = min(100, (blur_value / 500) * 100)
+                    min_sharpness_percent = (blur_threshold / 500) * 100
+                    
+                    # Create detailed message based on which check failed
+                    if blur_details['is_blur']:
                         messages.append(f"Blurness check failed ({sharpness_percentage:.1f}% sharpness, min required: {min_sharpness_percent:.1f}%)")
-                    except:
-                        messages.append("Blurness check failed")
+                    if blur_details['is_pixelated']:
+                        messages.append(f"Pixelation check failed ({pixelated_value} lines detected, max allowed: {pixelated_threshold})")
             except Exception as e:
                 logging.error(f"Error in blurness check for {image_name}: {e}")
                 messages.append(f"Blurness check error: {str(e)}")

@@ -102,7 +102,7 @@ def main(imgPath):
 
     # Check image for blurness
     if config.bypass_blurness_check == False:
-      is_blur = blur_check.check_image_blurness(img, config)
+      is_blur, blur_details = blur_check.check_image_blurness(img, config)
       message = message + "Blurness check: " + ('Passed' if not is_blur else 'Failed') + "\n"
       logging.info(message)
     else:

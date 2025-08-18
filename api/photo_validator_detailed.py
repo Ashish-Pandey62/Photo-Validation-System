@@ -16,30 +16,30 @@ logging.basicConfig(level=logging.INFO)
 def get_detailed_blur_info(image, config=None):
     """Get detailed blur information with percentages"""
     try:
-        grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        # Use the updated blur_check function that returns detailed values
+        is_blur, blur_details = blur_check.check_image_blurness(image, config)
         
-        if config is None:
-            config = Config.objects.first()
-        blurness_threshold = config.blurness_threshold if config else 20
+        # Extract the detailed information
+        blur_value = blur_details['blur_value']
+        blur_threshold = blur_details['blur_threshold']
+        pixelated_value = blur_details['pixelated_value']
+        pixelated_threshold = blur_details['pixelated_threshold']
         
-        # Calculate Laplacian variance (sharpness measure)
-        laplacian_var = cv2.Laplacian(grey, cv2.CV_64F).var()
-        
-        # Convert to percentage (higher variance = sharper image)
-        # Normalize based on typical range of 0-500 for Laplacian variance
-        sharpness_percentage = min(100, (laplacian_var / 500) * 100)
-        
-        is_blur = laplacian_var < blurness_threshold
+        # Convert blur value to percentage (higher laplacian variance = sharper image)
+        sharpness_percentage = min(100, (blur_value / 500) * 100)
         
         return {
             'is_blur': is_blur,
             'sharpness_percentage': round(sharpness_percentage, 1),
-            'laplacian_variance': round(laplacian_var, 2),
-            'threshold': blurness_threshold
+            'laplacian_variance': round(blur_value, 2),
+            'threshold': blur_threshold,
+            'is_pixelated': blur_details['is_pixelated'],
+            'pixelated_lines': pixelated_value,
+            'pixelated_threshold': pixelated_threshold
         }
     except Exception as e:
         logging.error(f"Error in get_detailed_blur_info: {e}")
-        return {'is_blur': False, 'sharpness_percentage': 0, 'laplacian_variance': 0, 'threshold': 20}
+        return {'is_blur': False, 'sharpness_percentage': 0, 'laplacian_variance': 0, 'threshold': 20, 'is_pixelated': False, 'pixelated_lines': 0, 'pixelated_threshold': 100}
 
 def get_detailed_background_info(image, config=None):
     """Get detailed background information with percentages"""
@@ -205,7 +205,8 @@ def main_detailed(imgPath):
     if not config.bypass_blurness_check:
         blur_info = get_detailed_blur_info(img, config)
         if blur_info['is_blur']:
-            detailed_failures.append(f"Blurness check failed ({blur_info['sharpness_percentage']}% sharpness, min required: {((blur_info['threshold']/500)*100):.1f}%)")
+            min_sharpness_percent = (blur_info['threshold'] / 500) * 100
+            detailed_failures.append(f"Blurness check failed ({blur_info['sharpness_percentage']}% sharpness, min required: {min_sharpness_percent:.1f}%)")
 
     # Background check
     if not config.bypass_background_check:

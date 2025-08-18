@@ -6,13 +6,22 @@ from api.grey_black_and_white_check import is_grey
 
 def check_image_blurness(image, config=None):
     grey = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    is_blur_result = check_if_blur(grey, config)
-    is_pixelated_result = check_if_pixaleted(grey, config)
+    is_blur_result, blur_value, blur_threshold = check_if_blur(grey, config)
+    is_pixelated_result, pixelated_value, pixelated_threshold = check_if_pixaleted(grey, config)
     
     # Debug logging
     logging.info(f"Blur check: {is_blur_result}, Pixelated check: {is_pixelated_result}")
     
-    return (is_pixelated_result or is_blur_result)
+    # Return overall result and detailed values
+    overall_is_blur = (is_pixelated_result or is_blur_result)
+    return overall_is_blur, {
+        'blur_value': blur_value,
+        'blur_threshold': blur_threshold,
+        'pixelated_value': pixelated_value,
+        'pixelated_threshold': pixelated_threshold,
+        'is_blur': is_blur_result,
+        'is_pixelated': is_pixelated_result
+    }
 
 def check_if_blur(gray, config=None):
     try:
@@ -33,10 +42,11 @@ def check_if_blur(gray, config=None):
         is_blur = laplacianVar < blurness_threshold
         is_extremely_blur = laplacianVar < 5  # Very blurry images
         
-        return is_blur or is_extremely_blur
+        # Return boolean result, actual value, and threshold
+        return (is_blur or is_extremely_blur), laplacianVar, blurness_threshold
     except Exception as e:
         print(f"Error in check_if_blur: {e}")
-        return False
+        return False, 0, 20
 
 
 def check_if_pixaleted(gray, config=None):
@@ -92,7 +102,8 @@ def check_if_pixaleted(gray, config=None):
     logging.info(f"Image area: {image_area}, Lines detected: {num_lines}, Threshold: {pixelated_threshold}")
     logging.info(f"Canny params: low={low_threshold}, high={high_threshold}, Hough params: threshold={threshold}, minLineLength={minLineLength}, maxLineGap={maxLineGap}")
         
-    return num_lines > pixelated_threshold
+    # Return boolean result, actual value, and threshold
+    return num_lines > pixelated_threshold, num_lines, pixelated_threshold
 
 def debug_blur_detection(image_path):
     """
@@ -118,17 +129,21 @@ def debug_blur_detection(image_path):
         print(f"Laplacian variance: {laplacian_var}")
         
         # Test pixelation detection
-        is_blur = check_if_blur(gray)
-        is_pixelated = check_if_pixaleted(gray)
+        is_blur, blur_value, blur_threshold = check_if_blur(gray)
+        is_pixelated, pixelated_value, pixelated_threshold = check_if_pixaleted(gray)
         
-        print(f"Blur detection result: {is_blur}")
-        print(f"Pixelation detection result: {is_pixelated}")
+        print(f"Blur detection result: {is_blur} (value: {blur_value}, threshold: {blur_threshold})")
+        print(f"Pixelation detection result: {is_pixelated} (lines: {pixelated_value}, threshold: {pixelated_threshold})")
         print(f"Overall blur check result: {is_blur or is_pixelated}")
         
         return {
             'laplacian_variance': laplacian_var,
             'is_blur': is_blur,
+            'blur_value': blur_value,
+            'blur_threshold': blur_threshold,
             'is_pixelated': is_pixelated,
+            'pixelated_value': pixelated_value,
+            'pixelated_threshold': pixelated_threshold,
             'overall_result': is_blur or is_pixelated
         }
         

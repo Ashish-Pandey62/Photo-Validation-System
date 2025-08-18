@@ -1245,18 +1245,38 @@
         $(this).html('<span class="loading"></span>Saving...');
         $(this).prop("disabled", true);
 
-        // Collect form data
+        // Collect all form data
         const formData = {
           csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),
+          // Basic dimensions and size
           minHeight: $("#minHeight").val(),
           maxHeight: $("#maxHeight").val(),
           minWidth: $("#minWidth").val(),
           maxWidth: $("#maxWidth").val(),
           minSize: $("#minSize").val(),
           maxSize: $("#maxSize").val(),
+          // File format checkboxes
           jpgchecked: $("#jpgchecked").is(":checked") ? "on" : "",
           pngchecked: $("#pngchecked").is(":checked") ? "on" : "",
           jpegchecked: $("#jpegchecked").is(":checked") ? "on" : "",
+          // Threshold values
+          bgcolorThreshold: $("#bgcolorThreshold").val(),
+          blurnessThreshold: $("#blurnessThreshold").val(),
+          pixelatedThreshold: $("#pixelatedThreshold").val(),
+          greynessThreshold: $("#greynessThreshold").val(),
+          symmetryThreshold: $("#symmetryThreshold").val(),
+          // Bypass checkboxes
+          bypass_height_check: $("#bypass_height_check").is(":checked") ? "on" : "",
+          bypass_width_check: $("#bypass_width_check").is(":checked") ? "on" : "",
+          bypass_size_check: $("#bypass_size_check").is(":checked") ? "on" : "",
+          bypass_format_check: $("#bypass_format_check").is(":checked") ? "on" : "",
+          bypass_background_check: $("#bypass_background_check").is(":checked") ? "on" : "",
+          bypass_blurness_check: $("#bypass_blurness_check").is(":checked") ? "on" : "",
+          bypass_greyness_check: $("#bypass_greyness_check").is(":checked") ? "on" : "",
+          bypass_symmetry_check: $("#bypass_symmetry_check").is(":checked") ? "on" : "",
+          bypass_head_check: $("#bypass_head_check").is(":checked") ? "on" : "",
+          bypass_eye_check: $("#bypass_eye_check").is(":checked") ? "on" : "",
+          bypass_corrupted_check: $("#bypass_corrupted_check").is(":checked") ? "on" : ""
         };
 
         // Submit configuration
@@ -1264,6 +1284,9 @@
           url: "{% url 'save_config' %}",
           type: "POST",
           data: formData,
+          headers: {
+            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val()
+          },
           success: function (response) {
             $("#btnSaveConfig").html('<i class="fas fa-check"></i> Saved!');
             setTimeout(() => {
@@ -1278,6 +1301,7 @@
               '<i class="fas fa-exclamation-triangle"></i> Error'
             );
             console.error("Save error:", error);
+            console.error("Response:", xhr.responseText);
             setTimeout(() => {
               $("#btnSaveConfig").html(
                 '<i class="fas fa-save"></i> Save Configuration'
@@ -1561,7 +1585,72 @@
                   </div>
                 </div>
               </div>
-            </form>
+
+              <!-- Bypass Options -->
+              <div class="config-section">
+                <h4 class="config-title">
+                  <i class="fas fa-toggle-off"></i> Bypass Options
+                </h4>
+
+                <div class="bypass-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_height_check" name="bypass_height_check" {% if config.bypass_height_check %}checked{% endif %} />
+                    <label for="bypass_height_check">Bypass Height Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_width_check" name="bypass_width_check" {% if config.bypass_width_check %}checked{% endif %} />
+                    <label for="bypass_width_check">Bypass Width Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_size_check" name="bypass_size_check" {% if config.bypass_size_check %}checked{% endif %} />
+                    <label for="bypass_size_check">Bypass Size Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_format_check" name="bypass_format_check" {% if config.bypass_format_check %}checked{% endif %} />
+                    <label for="bypass_format_check">Bypass Format Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_background_check" name="bypass_background_check" {% if config.bypass_background_check %}checked{% endif %} />
+                    <label for="bypass_background_check">Bypass Background Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_blurness_check" name="bypass_blurness_check" {% if config.bypass_blurness_check %}checked{% endif %} />
+                    <label for="bypass_blurness_check">Bypass Blurness Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_greyness_check" name="bypass_greyness_check" {% if config.bypass_greyness_check %}checked{% endif %} />
+                    <label for="bypass_greyness_check">Bypass Greyness Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_symmetry_check" name="bypass_symmetry_check" {% if config.bypass_symmetry_check %}checked{% endif %} />
+                    <label for="bypass_symmetry_check">Bypass Symmetry Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_head_check" name="bypass_head_check" {% if config.bypass_head_check %}checked{% endif %} />
+                    <label for="bypass_head_check">Bypass Head Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_eye_check" name="bypass_eye_check" {% if config.bypass_eye_check %}checked{% endif %} />
+                    <label for="bypass_eye_check">Bypass Eye Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_corrupted_check" name="bypass_corrupted_check" {% if config.bypass_corrupted_check %}checked{% endif %} />
+                    <label for="bypass_corrupted_check">Bypass Corrupted Check</label>
+                  </div>
+                </div>
+              </div>
+
+              </div>
 
             
 <!-- Compact Test Configuration Section -->
@@ -1710,6 +1799,7 @@ document.addEventListener("DOMContentLoaded", function () {
                   <i class="fas fa-save"></i> Save Configuration
                 </button>
               </div>
+            </form>
             </form>
           </div>
         </div>
