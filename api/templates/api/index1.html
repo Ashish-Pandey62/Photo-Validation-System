@@ -1381,6 +1381,16 @@
               </div>
             </button>
             <br />
+            <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" id="clearDataBtn" class="action-btn btn-delete" style="margin-left: 1rem;">
+                <i class="fas fa-broom"></i>
+                <div class="btn-text">
+                  <span class="btn-title">Clear Data</span>
+                  <span class="btn-subtitle">Remove all uploaded & tested images</span>
+                </div>
+              </button>
+            </form>
             <!-- <button
                 id="showValid"
                 class="action-btn btn-admin-panel"

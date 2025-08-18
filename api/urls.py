@@ -22,6 +22,7 @@ urlpatterns = [
     path('process_rejected_images/', views.process_rejected_images, name='process_rejected_images'),
     path('download_csv/', views.download_and_delete_csv, name='download_csv'),
     path('delete_all/', views.delete_all, name='delete_all'),
+    path('clear_data/', views.clear_data, name='clear_data'),
     path('invalid_image/<str:filename>/', views.serve_invalid_image, name='serve_invalid_image'),
     path('valid_image/<str:filename>/', views.serve_valid_image, name='serve_valid_image'),
     path('valid_images/', views.valid_images_gallery, name='valid_images_gallery'),

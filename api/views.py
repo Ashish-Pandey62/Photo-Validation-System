@@ -1,3 +1,45 @@
+def clear_data(request):
+    """Clear all uploaded and tested images and cache for a fresh start."""
+    if request.method == "POST":
+        # Remove media/photos and media/photos/valid
+        media_photos = os.path.join(settings.MEDIA_ROOT, "photos")
+        if os.path.exists(media_photos):
+            try:
+                shutil.rmtree(media_photos)
+            except Exception as e:
+                logging.error(f"Error deleting media/photos: {e}")
+
+        # Remove api/static/api/images/invalid and result.csv
+        invalid_folder = os.path.join(settings.BASE_DIR, "api", "static", "api", "images", "invalid")
+        result_file = os.path.join(settings.BASE_DIR, "api", "static", "api", "images", "result.csv")
+        if os.path.exists(invalid_folder):
+            try:
+                shutil.rmtree(invalid_folder)
+            except Exception as e:
+                logging.error(f"Error deleting invalid images folder: {e}")
+        if not os.path.exists(invalid_folder):
+            os.makedirs(invalid_folder, exist_ok=True)
+        if os.path.exists(result_file):
+            try:
+                os.remove(result_file)
+            except Exception as e:
+                logging.error(f"Error deleting result.csv: {e}")
+
+        # Optionally clear session data
+        request.session.flush()
+
+        # Redirect to home page with fresh form
+        form = PhotoFolderUploadForm()
+        config = Config.objects.first()
+        bypass_list = [
+            'bypass_height_check', 'bypass_width_check', 'bypass_size_check',
+            'bypass_format_check', 'bypass_background_check', 'bypass_blurness_check',
+            'bypass_greyness_check', 'bypass_symmetry_check', 'bypass_head_check',
+            'bypass_eye_check', 'bypass_corrupted_check'
+        ]
+        return render(request, 'api/index1.html', {'bypass_list': bypass_list, 'config': config, 'form': form})
+    else:
+        return HttpResponse("Method not allowed", status=405)
 import logging
 import os
 from django.conf import settings
