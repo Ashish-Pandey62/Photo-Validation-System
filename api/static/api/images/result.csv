@@ -1,2 +1,2 @@
-Pasted image (6).png,Blurness check failed,Symmetry check failed
-Pasted image (5).png,File height check failed,File width check failed,Blurness check failed,Symmetry check failed
+Pasted image (6).png,Blurness check failed (20.9% sharpness, min required: 7.0%),Symmetry check failed (face not properly aligned)
+Pasted image (5).png,Height check failed (2230px, required: 100.0-2000.0px),Width check failed (2230px, required: 100.0-2000.0px),Blurness check failed (5.1% sharpness, min required: 7.0%),Symmetry check failed (face not properly aligned)

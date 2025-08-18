@@ -366,10 +366,37 @@
         margin-bottom: 0.5rem;
       }
 
+      .issues-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
       .issues-list li {
         color: var(--text-secondary);
         font-size: 0.875rem;
         margin-bottom: 0.25rem;
+        padding: 0.25rem 0;
+        border-bottom: 1px solid #f3f4f6;
+      }
+
+      .issues-list li:last-child {
+        border-bottom: none;
+      }
+
+      /* Highlight percentage values and numbers in validation issues */
+      .issues-list li:contains("failed") {
+        font-weight: 500;
+      }
+
+      /* Make percentage values and numeric data stand out */
+      .percentage-highlight {
+        background: #fee2e2;
+        color: #dc2626;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-weight: 600;
+        font-family: 'Courier New', monospace;
       }
 
       /* Empty State */

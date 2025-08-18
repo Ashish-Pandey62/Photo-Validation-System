@@ -488,6 +488,14 @@
       background: var(--background-alt);
     }
 
+    .btn-delete {
+      border-left-color: var(--danger-color);
+    }
+
+    .btn-delete:hover {
+      background: var(--background-alt);
+    }
+
     .btn-clear-data {
       border-left-color: var(--danger-color);
     }
@@ -884,6 +892,22 @@
         max-width: 300px;
       }
 
+      /* Action buttons row responsive */
+      .action-buttons-row {
+        flex-direction: column !important;
+        gap: 0.75rem !important;
+      }
+
+      .action-buttons-row form {
+        min-width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      .action-buttons-row button {
+        min-width: 100% !important;
+        max-width: 100% !important;
+      }
+
       .nav-tabs {
         flex-wrap: wrap;
       }
@@ -1263,6 +1287,30 @@
           },
         });
       });
+
+      // Clear Data button confirmation
+      $("#clearDataBtn").click(function (event) {
+        event.preventDefault();
+        
+        const confirmMessage = "Are you sure you want to clear all data?\n\nThis will permanently delete:\n• All uploaded images\n• All validation results\n• All test images\n• All cached data\n\nThis action cannot be undone.";
+        
+        if (confirm(confirmMessage)) {
+          const $btn = $(this);
+          const originalContent = $btn.html();
+          
+          $btn.html(`
+            <span class="loading"></span>
+            <div class="btn-text">
+              <span class="btn-title">Clearing Data...</span>
+              <span class="btn-subtitle">Please wait</span>
+            </div>
+          `);
+          $btn.prop("disabled", true);
+          
+          // Submit the form
+          $("#clearDataForm")[0].submit();
+        }
+      });
     });
   </script>
 </head>
@@ -1373,24 +1421,28 @@
             <div id="result" class="result-display">
               Upload a ZIP file to see validation results
             </div>
-            <button id="showInvalid" class="action-btn btn-view-invalid" disabled>
-              <i class="fas fa-exclamation-triangle"></i>
-              <div class="btn-text">
-                <span class="btn-title">View Invalid Images</span>
-                <span class="btn-subtitle">Review failed validations</span>
-              </div>
-            </button>
-            <br />
-            <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="display:inline;">
-              {% csrf_token %}
-              <button type="submit" id="clearDataBtn" class="action-btn btn-delete" style="margin-left: 1rem;">
-                <i class="fas fa-broom"></i>
+            
+            <!-- Action Buttons Container -->
+            <div class="action-buttons-row" style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; flex-wrap: wrap;">
+              <button id="showInvalid" class="action-btn btn-view-invalid" disabled style="flex: 1; min-width: 280px; max-width: 350px;">
+                <i class="fas fa-exclamation-triangle"></i>
                 <div class="btn-text">
-                  <span class="btn-title">Clear Data</span>
-                  <span class="btn-subtitle">Remove all uploaded & tested images</span>
+                  <span class="btn-title">View Invalid Images</span>
+                  <span class="btn-subtitle">Review failed validations</span>
                 </div>
               </button>
-            </form>
+              
+              <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="flex: 1; min-width: 280px; max-width: 350px;">
+                {% csrf_token %}
+                <button type="submit" id="clearDataBtn" class="action-btn btn-delete" style="width: 100%; height: 100%;">
+                  <i class="fas fa-broom"></i>
+                  <div class="btn-text">
+                    <span class="btn-title">Clear Data</span>
+                    <span class="btn-subtitle">Remove all uploaded & tested images</span>
+                  </div>
+                </button>
+              </form>
+            </div>
             <!-- <button
                 id="showValid"
                 class="action-btn btn-admin-panel"

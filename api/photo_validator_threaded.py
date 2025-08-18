@@ -4,6 +4,7 @@ import time
 import datetime
 import cv2
 import csv
+import numpy as np
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from multiprocessing import cpu_count
 import threading
@@ -113,7 +114,15 @@ def validate_single_image_threaded(image_path, config):
             try:
                 is_file_size_valid = file_size_check.check_image(image_path)
                 if not is_file_size_valid:
-                    messages.append("File size check failed")
+                    # Get detailed size info for enhanced message
+                    try:
+                        file_size_bytes = os.path.getsize(image_path)
+                        file_size_kb = file_size_bytes / 1024
+                        min_size = getattr(config, 'min_size', 10)
+                        max_size = getattr(config, 'max_size', 5000)
+                        messages.append(f"File size check failed ({file_size_kb:.1f}KB, required: {min_size}-{max_size}KB)")
+                    except:
+                        messages.append("File size check failed")
             except Exception as e:
                 logging.error(f"Error in file size check for {image_name}: {e}")
                 messages.append(f"File size check error: {str(e)}")
@@ -123,7 +132,18 @@ def validate_single_image_threaded(image_path, config):
             try:
                 is_file_height_valid = file_size_check.check_height(image_path)
                 if not is_file_height_valid:
-                    messages.append("File height check failed")
+                    # Get detailed height info for enhanced message
+                    try:
+                        img_temp = cv2.imread(image_path)
+                        if img_temp is not None:
+                            height = img_temp.shape[0]
+                            min_height = getattr(config, 'min_height', 100)
+                            max_height = getattr(config, 'max_height', 2000)
+                            messages.append(f"Height check failed ({height}px, required: {min_height}-{max_height}px)")
+                        else:
+                            messages.append("File height check failed")
+                    except:
+                        messages.append("File height check failed")
             except Exception as e:
                 logging.error(f"Error in file height check for {image_name}: {e}")
                 messages.append(f"File height check error: {str(e)}")
@@ -133,7 +153,18 @@ def validate_single_image_threaded(image_path, config):
             try:
                 is_file_width_valid = file_size_check.check_width(image_path)
                 if not is_file_width_valid:
-                    messages.append("File width check failed")
+                    # Get detailed width info for enhanced message
+                    try:
+                        img_temp = cv2.imread(image_path)
+                        if img_temp is not None:
+                            width = img_temp.shape[1]
+                            min_width = getattr(config, 'min_width', 100)
+                            max_width = getattr(config, 'max_width', 2000)
+                            messages.append(f"Width check failed ({width}px, required: {min_width}-{max_width}px)")
+                        else:
+                            messages.append("File width check failed")
+                    except:
+                        messages.append("File width check failed")
             except Exception as e:
                 logging.error(f"Error in file width check for {image_name}: {e}")
                 messages.append(f"File width check error: {str(e)}")
@@ -185,7 +216,7 @@ def validate_single_image_threaded(image_path, config):
         if not getattr(config, 'bypass_greyness_check', False):
             try:
                 if grey_black_and_white_check.is_grey(img, config):
-                    messages.append("GreyScale check failed")
+                    messages.append("Greyscale check failed (image should be in color)")
             except Exception as e:
                 logging.error(f"Error in greyness check for {image_name}: {e}")
                 messages.append(f"Greyness check error: {str(e)}")
@@ -194,7 +225,16 @@ def validate_single_image_threaded(image_path, config):
         if not getattr(config, 'bypass_blurness_check', False):
             try:
                 if blur_check.check_image_blurness(img, config):
-                    messages.append("Blurness check failed")
+                    # Get detailed blur info for enhanced message
+                    try:
+                        grey = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                        laplacian_var = cv2.Laplacian(grey, cv2.CV_64F).var()
+                        sharpness_percentage = min(100, (laplacian_var / 500) * 100)
+                        blurness_threshold = getattr(config, 'blurness_threshold', 20)
+                        min_sharpness_percent = ((blurness_threshold/500)*100)
+                        messages.append(f"Blurness check failed ({sharpness_percentage:.1f}% sharpness, min required: {min_sharpness_percent:.1f}%)")
+                    except:
+                        messages.append("Blurness check failed")
             except Exception as e:
                 logging.error(f"Error in blurness check for {image_name}: {e}")
                 messages.append(f"Blurness check error: {str(e)}")
@@ -203,7 +243,21 @@ def validate_single_image_threaded(image_path, config):
         if not getattr(config, 'bypass_background_check', False):
             try:
                 if not background_check.background_check(img, config):
-                    messages.append("Background check failed")
+                    # Get detailed background info for enhanced message
+                    try:
+                        h, w, channels = img.shape
+                        top_region = img[:int(0.05 * h), :, :]
+                        background_pixels = top_region.reshape(-1, 3)
+                        if len(background_pixels) > 0:
+                            average_color = np.mean(background_pixels)
+                            brightness_percentage = min(100, (average_color / 255) * 100)
+                            bgcolor_threshold = getattr(config, 'bgcolor_threshold', 30)
+                            min_brightness_percent = (bgcolor_threshold / 255) * 100
+                            messages.append(f"Background check failed ({brightness_percentage:.1f}% brightness, min required: {min_brightness_percent:.1f}%)")
+                        else:
+                            messages.append("Background check failed")
+                    except:
+                        messages.append("Background check failed")
             except Exception as e:
                 logging.error(f"Error in background check for {image_name}: {e}")
                 messages.append(f"Background check error: {str(e)}")
@@ -218,13 +272,15 @@ def validate_single_image_threaded(image_path, config):
                     is_head_valid, head_percent = head_check.valid_head_check(img_copy)
                     if not is_head_valid:
                         if head_percent < 10:
-                            messages.append("Head Ratio Small")
+                            messages.append(f"Head check failed ({head_percent:.1f}% head coverage, min required: 10%)")
                         elif 100 > head_percent > 80:
-                            messages.append("Head Ratio Large")
+                            messages.append(f"Head check failed ({head_percent:.1f}% head coverage, max allowed: 80%)")
                         elif head_percent == 101:
-                            messages.append("couldnot detect head")
+                            messages.append("Head check failed (no face detected)")
+                        elif head_percent == 102:
+                            messages.append("Head check failed (multiple faces detected)")
                         else:
-                            messages.append("multiple heads detected")
+                            messages.append(f"Head check failed ({head_percent:.1f}% head coverage, required: 10-80%)")
                 else:
                     messages.append("Invalid image format for head check")
             except Exception as e:
@@ -240,7 +296,7 @@ def validate_single_image_threaded(image_path, config):
                     # Make a copy to avoid modifying the original
                     img_copy = img.copy()
                     if head_check.detect_eyes(img_copy):
-                        messages.append("Eye check failed")
+                        messages.append("Eye check failed (eyes not visible or covered)")
                 else:
                     messages.append("Invalid image format for eye check")
             except Exception as e:
@@ -252,7 +308,7 @@ def validate_single_image_threaded(image_path, config):
         if not getattr(config, 'bypass_symmetry_check', False):
             try:
                 if not symmetry_check.issymmetric(img, config):
-                    messages.append("Symmetry check failed")
+                    messages.append("Symmetry check failed (face not properly aligned)")
             except Exception as e:
                 logging.error(f"Error in symmetry check for {image_name}: {e}")
                 messages.append(f"Symmetry check error: {str(e)}")
@@ -267,6 +323,7 @@ def validate_single_image_threaded(image_path, config):
         processing_time = time.time() - start_time
         logging.error(f"Unexpected error processing {image_name}: {e}")
         return ValidationResult(image_name, False, [f"Unexpected error: {str(e)}"], processing_time)
+
 
 def move_image_thread_safe(image_path, destination_dir, image_name):
     """Thread-safe image moving function"""
