@@ -238,8 +238,8 @@ def main_detailed(imgPath):
 
     # Symmetry check
     if not config.bypass_symmetry_check:
-        is_symmetric = symmetry_check.issymmetric(img, config)
+        is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.issymmetric(img, config)
         if not is_symmetric:
-            detailed_failures.append("Symmetry check failed (face not properly aligned)")
+            detailed_failures.append(f"Symmetry check failed ({symmetry_percentage:.1f}% symmetric, min required: {threshold_percentage:.1f}%)")
 
     return detailed_failures
