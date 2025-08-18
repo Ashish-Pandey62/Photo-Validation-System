@@ -295,6 +295,7 @@ def process_image(request):
 def save_config(request):
     if request.method == "POST":
         try:
+            # Basic dimension and size settings
             minHeight = float(request.POST.get("minHeight", 100))
             maxHeight = float(request.POST.get("maxHeight", 2000))
             minWidth = float(request.POST.get("minWidth", 100))
@@ -302,16 +303,37 @@ def save_config(request):
             minSize = float(request.POST.get("minSize", 10))
             maxSize = float(request.POST.get("maxSize", 5000))
             
+            # Threshold values for quality checks
+            bgcolorThreshold = float(request.POST.get("bgcolorThreshold", 40))
+            blurnessThreshold = float(request.POST.get("blurnessThreshold", 30))
+            pixelatedThreshold = float(request.POST.get("pixelatedThreshold", 100))
+            greynessThreshold = float(request.POST.get("greynessThreshold", 5))
+            symmetryThreshold = float(request.POST.get("symmetryThreshold", 35))
+            
             # Handle checkbox values properly
             jpgchecked = request.POST.get("jpgchecked") == "on"
             pngchecked = request.POST.get("pngchecked") == "on"
             jpegchecked = request.POST.get("jpegchecked") == "on"
+            
+            # Handle bypass checkboxes
+            bypass_height_check = request.POST.get("bypass_height_check") == "on"
+            bypass_width_check = request.POST.get("bypass_width_check") == "on"
+            bypass_size_check = request.POST.get("bypass_size_check") == "on"
+            bypass_format_check = request.POST.get("bypass_format_check") == "on"
+            bypass_background_check = request.POST.get("bypass_background_check") == "on"
+            bypass_blurness_check = request.POST.get("bypass_blurness_check") == "on"
+            bypass_greyness_check = request.POST.get("bypass_greyness_check") == "on"
+            bypass_symmetry_check = request.POST.get("bypass_symmetry_check") == "on"
+            bypass_head_check = request.POST.get("bypass_head_check") == "on"
+            bypass_eye_check = request.POST.get("bypass_eye_check") == "on"
+            bypass_corrupted_check = request.POST.get("bypass_corrupted_check") == "on"
 
             # Get existing config or create new one
             config = Config.objects.first()
             if not config:
                 config = Config()
 
+            # Save basic settings
             config.min_height = minHeight
             config.max_height = maxHeight
             config.min_width = minWidth
@@ -321,6 +343,26 @@ def save_config(request):
             config.is_jpg = jpgchecked
             config.is_png = pngchecked
             config.is_jpeg = jpegchecked
+            
+            # Save threshold settings
+            config.bgcolor_threshold = bgcolorThreshold
+            config.blurness_threshold = blurnessThreshold
+            config.pixelated_threshold = pixelatedThreshold
+            config.greyness_threshold = greynessThreshold
+            config.symmetry_threshold = symmetryThreshold
+            
+            # Save bypass settings
+            config.bypass_height_check = bypass_height_check
+            config.bypass_width_check = bypass_width_check
+            config.bypass_size_check = bypass_size_check
+            config.bypass_format_check = bypass_format_check
+            config.bypass_background_check = bypass_background_check
+            config.bypass_blurness_check = bypass_blurness_check
+            config.bypass_greyness_check = bypass_greyness_check
+            config.bypass_symmetry_check = bypass_symmetry_check
+            config.bypass_head_check = bypass_head_check
+            config.bypass_eye_check = bypass_eye_check
+            config.bypass_corrupted_check = bypass_corrupted_check
 
             config.save()
 
