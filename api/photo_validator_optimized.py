@@ -152,9 +152,9 @@ def main_optimized(imgPath, max_image_dimension=800):
     if config.bypass_background_check == False:
         is_background_ok = background_check.background_check(img, config)
         if is_background_ok:
-            message = message + "Background check: Passed (brightness and uniformity within thresholds)\n"
+            message = message + "Background check: Passed\n"
         else:
-            message = message + "Background check: Failed (insufficient brightness or uniformity)\n"
+            message = message + "Background check: Failed\n"
         logging.info(message)
     else:
         message = message + "Bypassed background check\n"

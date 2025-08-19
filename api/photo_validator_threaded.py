@@ -249,21 +249,8 @@ def validate_single_image_threaded(image_path, config):
         if not getattr(config, 'bypass_background_check', False):
             try:
                 if not background_check.background_check(img, config):
-                    # Get detailed background info for enhanced message
-                    try:
-                        h, w, channels = img.shape
-                        top_region = img[:int(0.05 * h), :, :]
-                        background_pixels = top_region.reshape(-1, 3)
-                        if len(background_pixels) > 0:
-                            average_color = np.mean(background_pixels)
-                            brightness_percentage = min(100, (average_color / 255) * 100)
-                            bgcolor_threshold = getattr(config, 'bgcolor_threshold', 30)
-                            min_brightness_percent = (bgcolor_threshold / 255) * 100
-                            messages.append(f"Background check failed ({brightness_percentage:.1f}% brightness, min required: {min_brightness_percent:.1f}%)")
-                        else:
-                            messages.append("Background check failed")
-                    except:
-                        messages.append("Background check failed")
+                    # Simplified background check failure message
+                    messages.append("Background check failed")
             except Exception as e:
                 logging.error(f"Error in background check for {image_name}: {e}")
                 messages.append(f"Background check error: {str(e)}")

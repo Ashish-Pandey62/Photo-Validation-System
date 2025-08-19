@@ -379,6 +379,12 @@ def save_config(request):
             config.bypass_corrupted_check = bypass_corrupted_check
 
             config.save()
+            # Clear cached configuration so new settings apply immediately
+            try:
+                from api.performance_utils import get_cached_config
+                get_cached_config.cache_clear()
+            except Exception as cache_err:
+                logging.warning(f"Could not clear config cache: {cache_err}")
 
             return HttpResponse("Configuration updated successfully")
         except Exception as e:
@@ -890,6 +896,13 @@ def test_config_image(request):
                 tmp.write(chunk)
             temp_path = tmp.name
 
+        # Ensure we use the latest configuration (clear cached config)
+        try:
+            from api.performance_utils import get_cached_config
+            get_cached_config.cache_clear()
+        except Exception as cache_err:
+            logging.warning(f"Could not clear config cache before test: {cache_err}")
+
         # Run validation using main_optimized
         logging.info(f"Testing image: {image_file.name} at temporary path: {temp_path}")
         result_message = main_optimized(temp_path)
@@ -932,6 +945,17 @@ def test_config_image(request):
                 <div><strong>Pixelation Threshold:</strong> {config.pixelated_threshold} (Lower = stricter)</div>
                 <div><strong>Greyness Threshold:</strong> {config.greyness_threshold} (Lower = stricter)</div>
                 <div><strong>Symmetry Threshold:</strong> {config.symmetry_threshold} (Higher = stricter)</div>
+                <div><strong>Bypass Height:</strong> {getattr(config,'bypass_height_check', False)}</div>
+                <div><strong>Bypass Width:</strong> {getattr(config,'bypass_width_check', False)}</div>
+                <div><strong>Bypass Size:</strong> {getattr(config,'bypass_size_check', False)}</div>
+                <div><strong>Bypass Format:</strong> {getattr(config,'bypass_format_check', False)}</div>
+                <div><strong>Bypass Background:</strong> {getattr(config,'bypass_background_check', False)}</div>
+                <div><strong>Bypass Blurness:</strong> {getattr(config,'bypass_blurness_check', False)}</div>
+                <div><strong>Bypass Greyness:</strong> {getattr(config,'bypass_greyness_check', False)}</div>
+                <div><strong>Bypass Symmetry:</strong> {getattr(config,'bypass_symmetry_check', False)}</div>
+                <div><strong>Bypass Head:</strong> {getattr(config,'bypass_head_check', False)}</div>
+                <div><strong>Bypass Eye:</strong> {getattr(config,'bypass_eye_check', False)}</div>
+                <div><strong>Bypass Corrupted:</strong> {getattr(config,'bypass_corrupted_check', False)}</div>
             </div>
         </div>
         """

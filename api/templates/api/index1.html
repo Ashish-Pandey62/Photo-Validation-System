@@ -896,16 +896,17 @@
       .action-buttons-row {
         flex-direction: column !important;
         gap: 0.75rem !important;
+        align-items: center !important;
       }
 
       .action-buttons-row form {
-        min-width: 100% !important;
-        max-width: 100% !important;
+        width: 100% !important;
+        max-width: 350px !important;
       }
 
       .action-buttons-row button {
-        min-width: 100% !important;
-        max-width: 100% !important;
+        width: 100% !important;
+        max-width: 350px !important;
       }
 
       .nav-tabs {
@@ -1290,12 +1291,10 @@
           },
           success: function (response) {
             $("#btnSaveConfig").html('<i class="fas fa-check"></i> Saved!');
+            // Reload the page to apply configuration changes immediately
             setTimeout(() => {
-              $("#btnSaveConfig").html(
-                '<i class="fas fa-save"></i> Save Configuration'
-              );
-              $("#btnSaveConfig").prop("disabled", false);
-            }, 2000);
+              location.reload();
+            }, 1000);
           },
           error: function (xhr, status, error) {
             $("#btnSaveConfig").html(
@@ -1338,32 +1337,7 @@
       });
     });
 
-    // Show/hide Save Configuration button based on active tab
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      if (e.target.getAttribute('href') === '#nav-configuration') {
-        $('#btnSaveConfig').show();
-      } else {
-        $('#btnSaveConfig').hide();
-      }
-    });
-
-    // Show Save Configuration button initially if Configuration tab is active
-    if ($('#nav-configuration').hasClass('show active')) {
-      $('#btnSaveConfig').show();
-    } else {
-      // Check if we're on the configuration tab by default
-      $('#btnSaveConfig').hide();
-    }
-    
-    // // Ensure save button is visible when configuration tab is shown
-    // $('#nav-config-tab').on('click', function() {
-    //   $('#btnSaveConfig').show();
-    // });
-    
-    // // Hide save button when home tab is shown
-    // $('#nav-home-tab').on('click', function() {
-    //   $('#btnSaveConfig').hide();
-    // });
+    // Visibility is handled by Bootstrap tab panes; no extra JS needed here
   </script>
 </head>
 
@@ -1475,8 +1449,8 @@
             </div>
             
             <!-- Action Buttons Container -->
-            <div class="action-buttons-row" style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; flex-wrap: wrap;">
-              <button id="showInvalid" class="action-btn btn-view-invalid" disabled style="flex: 1; min-width: 280px; max-width: 350px;">
+            <div class="action-buttons-row" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; justify-content: center; align-items: center;">
+              <button id="showInvalid" class="action-btn btn-view-invalid" disabled style="width: 100%; max-width: 350px;">
                 <i class="fas fa-exclamation-triangle"></i>
                 <div class="btn-text">
                   <span class="btn-title">View Invalid Images</span>
@@ -1484,7 +1458,7 @@
                 </div>
               </button>
               
-              <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="flex: 1; min-width: 280px; max-width: 350px;">
+              <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="width: 100%; max-width: 350px;">
                 {% csrf_token %}
                 <button type="submit" id="clearDataBtn" class="action-btn btn-delete" style="width: 100%; height: 100%;">
                   <i class="fas fa-broom"></i>

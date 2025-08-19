@@ -212,8 +212,7 @@ def main_detailed(imgPath):
     if not config.bypass_background_check:
         bg_info = get_detailed_background_info(img, config)
         if not bg_info['is_background_ok']:
-            min_brightness_percent = (bg_info['threshold'] / 255) * 100
-            detailed_failures.append(f"Background check failed ({bg_info['brightness_percentage']}% brightness, min required: {min_brightness_percent:.1f}%)")
+            detailed_failures.append("Background check failed")
 
     # Head check
     if not config.bypass_head_check:
