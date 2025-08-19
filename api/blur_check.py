@@ -19,38 +19,33 @@ def check_image_blurness(image, config=None):
         'is_pixelated': is_pixelated_result
     }
 
+
 def check_if_blur(gray, config=None):
     if config is None:
-        threshold = 20
+        threshold = 100  # sensible default
     else:
-        threshold = getattr(config, "blurness_threshold", 20)
+        threshold = getattr(config, "blurness_threshold", 100)
 
-    # Compute Laplacian variance
     lap_var = cv2.Laplacian(gray, cv2.CV_64F).var()
 
-    # Optional: clip extremely dark areas to reduce false blur detection
     mean_brightness = np.mean(gray)
-    if mean_brightness < 30:  # very dark image
-        lap_var = lap_var * (mean_brightness / 30)
+    if mean_brightness < 30:  # dark photo compensation
+        lap_var *= (mean_brightness / 30)
 
-    # Decide if blurry
     is_blur = lap_var < threshold
-
-    # Optional extreme blur flag
-    is_extreme = lap_var < (threshold * 0.25)  # 25% of threshold considered extreme
+    is_extreme = lap_var < (threshold * 0.25)
 
     return (is_blur or is_extreme), float(lap_var), threshold
 
+
 def check_if_pixalated(gray, config=None):
     if config is None:
-        threshold = 15  # smaller = stricter
+        threshold = 120  # sensible default
     else:
-        threshold = getattr(config, "pixelated_threshold", 15)
+        threshold = getattr(config, "pixelated_threshold", 120)
 
-    # Downsample for speed
     small = cv2.resize(gray, (128, 128), interpolation=cv2.INTER_LINEAR)
 
-    # Compute horizontal + vertical differences
     dx = np.abs(np.diff(small, axis=1)).mean()
     dy = np.abs(np.diff(small, axis=0)).mean()
     blockiness = (dx + dy) / 2
