@@ -28,7 +28,8 @@ DEBUG = True
 
 # ALLOWED_HOSTS = [os.environ.get("hostname")]
 ALLOWED_HOSTS = ['*']
-
+CSRF_COOKIE_SECURE=True
+CSRF_TRUSTED_ORIGINS=['https://*','https://api.linkify.social','https://photo.itclub.asmitphuyal.com.np']
 
 # Application definition
 
