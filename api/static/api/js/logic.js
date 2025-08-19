@@ -13,6 +13,13 @@ $(document).ready(function () {
         $("#selectedFolderText").text("");
     });
 
+    // Add click handler for View Invalid Images button
+    $("#showInvalid").click(function () {
+        if (!$(this).prop('disabled')) {
+            window.location.href = '/image_gallery/';
+        }
+    });
+
     $("#uploadZip").click(function (event) {
         $("#result").html("Processing..").wrap('<pre />');
         //stop submit the form, we will post it manually.
@@ -136,6 +143,15 @@ $(document).ready(function () {
         data.append("jpgchecked", $("#jpgchecked").is(":checked") ? 'True' : 'False');
         data.append("pngchecked", $("#pngchecked").is(":checked") ? 'True' : 'False');
         data.append("jpegchecked", $("#jpegchecked").is(":checked") ? 'True' : 'False');
+        
+        // Add threshold values
+        data.append("bgcolorThreshold", $("#bgcolorThreshold").val());
+        data.append("bgUniformityThreshold", $("#bgUniformityThreshold").val());
+        data.append("blurnessThreshold", $("#blurnessThreshold").val());
+        data.append("pixelatedThreshold", $("#pixelatedThreshold").val());
+        data.append("greynessThreshold", $("#greynessThreshold").val());
+        data.append("symmetryThreshold", $("#symmetryThreshold").val());
+        
         //data.append("CustomField", "This is some extra data, testing");
         // disabled the submit button
         $.ajax({

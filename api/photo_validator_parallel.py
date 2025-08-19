@@ -189,11 +189,11 @@ def validate_single_image(image_path, config_data, directories):
                 messages.append(f"Eye check error: {str(e)}")
 
         # Check for symmetry
-        if not config.bypass_symmetry_check:
+        if not getattr(config, 'bypass_symmetry_check', False):
             try:
-                is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.issymmetric(img, config)
+                is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.check_symmetry_with_head(img, config)
                 if not is_symmetric:
-                    messages.append("Symmetry check failed")
+                    messages.append(f"Symmetry check failed ({symmetry_percentage:.1f}% symmetric, min required: {threshold_percentage:.1f}%)")
             except Exception as e:
                 logging.error(f"Error in symmetry check for {image_name}: {e}")
                 messages.append(f"Symmetry check error: {str(e)}")

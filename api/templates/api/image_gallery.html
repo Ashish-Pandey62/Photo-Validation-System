@@ -325,7 +325,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
       }
 
       .image-checkbox {
@@ -513,7 +513,7 @@
           style="min-width: 150px"
         >
           <i class="fas fa-trash-alt"></i>
-          Delete Selected
+          Manually Revalidate Selected
         </button>
       </div>
 
@@ -580,7 +580,7 @@
         <i class="fas fa-check-circle"></i>
         <h3>No Invalid Images Found!</h3>
         <p>
-          All images in your upload passed the validation checks. Great job!
+          All images in your upload passed the validation checks!
         </p>
         <a
           href="{% url 'startPage' %}"
@@ -638,11 +638,11 @@
         function updateSelectAllButton() {
           const $selectAllBtn = $("#selectAllBtn");
           if (isAllSelected) {
-            $selectAllBtn.html('<i class="fas fa-square"></i> Deselect All');
+            $selectAllBtn.html('<i class="fas fa-check-square"></i> Deselect All');
             $selectAllBtn.removeClass("btn-export").addClass("btn-delete");
           } else {
             $selectAllBtn.html(
-              '<i class="fas fa-check-square"></i> Select All'
+              '<i class="fas fa-square"></i> Select All'
             );
             $selectAllBtn.removeClass("btn-delete").addClass("btn-export");
           }
@@ -660,11 +660,11 @@
           if (selectedCount > 0) {
             deleteBtn.prop("disabled", false);
             deleteBtn.html(
-              `<i class="fas fa-trash-alt"></i> Delete Selected (${selectedCount})`
+              `<i class="fas fa-trash-alt"></i> Revalidate Selected (${selectedCount})`
             );
           } else {
             deleteBtn.prop("disabled", true);
-            deleteBtn.html('<i class="fas fa-trash-alt"></i> Delete Selected');
+            deleteBtn.html('<i class="fas fa-trash-alt"></i> Revalidate Selected');
           }
         }
 

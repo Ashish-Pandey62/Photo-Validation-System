@@ -313,7 +313,7 @@ def validate_single_image_threaded(image_path, config):
         # Check for symmetry
         if not getattr(config, 'bypass_symmetry_check', False):
             try:
-                is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.issymmetric(img, config)
+                is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.check_symmetry_with_head(img, config)
                 if not is_symmetric:
                     messages.append(f"Symmetry check failed ({symmetry_percentage:.1f}% symmetric, min required: {threshold_percentage:.1f}%)")
             except Exception as e:

@@ -1261,6 +1261,7 @@
           jpegchecked: $("#jpegchecked").is(":checked") ? "on" : "",
           // Threshold values
           bgcolorThreshold: $("#bgcolorThreshold").val(),
+          bgUniformityThreshold: $("#bgUniformityThreshold").val(),
           blurnessThreshold: $("#blurnessThreshold").val(),
           pixelatedThreshold: $("#pixelatedThreshold").val(),
           greynessThreshold: $("#greynessThreshold").val(),
@@ -1336,6 +1337,33 @@
         }
       });
     });
+
+    // Show/hide Save Configuration button based on active tab
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      if (e.target.getAttribute('href') === '#nav-configuration') {
+        $('#btnSaveConfig').show();
+      } else {
+        $('#btnSaveConfig').hide();
+      }
+    });
+
+    // Show Save Configuration button initially if Configuration tab is active
+    if ($('#nav-configuration').hasClass('show active')) {
+      $('#btnSaveConfig').show();
+    } else {
+      // Check if we're on the configuration tab by default
+      $('#btnSaveConfig').hide();
+    }
+    
+    // // Ensure save button is visible when configuration tab is shown
+    // $('#nav-config-tab').on('click', function() {
+    //   $('#btnSaveConfig').show();
+    // });
+    
+    // // Hide save button when home tab is shown
+    // $('#nav-home-tab').on('click', function() {
+    //   $('#btnSaveConfig').hide();
+    // });
   </script>
 </head>
 
@@ -1652,104 +1680,6 @@
 
               </div>
 
-            
-<!-- Compact Test Configuration Section -->
-<div class="config-section" style="max-width:400px; margin:2rem auto; font-family:Arial, sans-serif;">
-  <h4 class="config-title" style="margin-bottom:1rem; font-weight:600; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem;">
-    <i class="fas fa-vial"></i> Test Configuration
-  </h4>
-
-  <form id="testConfigForm" enctype="multipart/form-data" method="POST" action="{% url 'test_config_image' %}">
-    {% csrf_token %}
-
-    <!-- File Input Field -->
-    <label for="testConfigImage" 
-           style="display:flex; align-items:center; justify-content:space-between; padding:0.5rem 1rem; border:1px solid #ccc; border-radius:6px; background:#f9f9f9; cursor:pointer; font-size:0.95rem;">
-      <span><i class="fas fa-upload"></i> Choose Image</span>
-      <span id="testConfigFileName" style="font-size:0.85rem; color:#555;">No file selected</span>
-    </label>
-    <input type="file" id="testConfigImage" name="image" accept="image/*" style="display:none;" required autocomplete="off" />
-
-    <!-- Preview Card -->
-    <div id="previewCard" 
-         style="display:none; margin-top:1rem; border:1px solid #ddd; border-radius:6px; overflow:hidden; text-align:center; max-height:180px;">
-      <img id="testConfigPreview" style="max-width:100%; max-height:180px; display:block; object-fit:contain;" />
-    </div>
-
-    <!-- Submit Button -->
-    <button type="submit" id="testConfigBtn" disabled 
-            style="margin-top:1rem; width:100%; padding:0.5rem; font-size:1rem; border:none; border-radius:6px; background:#4CAF50; color:#fff; cursor:pointer;">
-      <i class="fas fa-play"></i> Test Image
-    </button>
-  </form>
-
-  <!-- Result Display -->
-  <div id="testConfigResult" style="margin-top:1rem; font-size:0.95rem; color:#333;">
-    Upload an image to see its configuration result.
-  </div>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const testConfigImage = document.getElementById("testConfigImage");
-  const testConfigFileName = document.getElementById("testConfigFileName");
-  const testConfigBtn = document.getElementById("testConfigBtn");
-  const testConfigForm = document.getElementById("testConfigForm");
-  const testConfigResult = document.getElementById("testConfigResult");
-  const previewCard = document.getElementById("previewCard");
-  const testConfigPreview = document.getElementById("testConfigPreview");
-
-  // Handle file selection
-  testConfigImage.addEventListener("change", function () {
-    if (this.files.length > 0) {
-      const file = this.files[0];
-      testConfigFileName.textContent = file.name;
-      testConfigBtn.disabled = false;
-
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        testConfigPreview.src = e.target.result;
-        previewCard.style.display = "block";
-      };
-      reader.readAsDataURL(file);
-    } else {
-      testConfigFileName.textContent = "No file selected";
-      testConfigBtn.disabled = true;
-      previewCard.style.display = "none";
-    }
-  });
-
-  // Handle form submission
-  testConfigForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    testConfigBtn.innerHTML = '<span class="loading"></span> Testing...';
-    testConfigBtn.disabled = true;
-
-    const formData = new FormData(testConfigForm);
-
-    fetch(testConfigForm.action, {
-      method: "POST",
-      body: formData,
-      headers: {
-        "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        testConfigResult.innerHTML = data.result_html || "No result";
-        testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Test Image';
-        testConfigBtn.disabled = false;
-      })
-      .catch(error => {
-        console.error(error);
-        testConfigResult.innerHTML = `<span style="color:red;"><i class="fas fa-exclamation-triangle"></i> Error during test</span>`;
-        testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Retry Test';
-        testConfigBtn.disabled = false;
-      });
-  });
-});
-</script>
-
 
               
 
@@ -1761,31 +1691,37 @@ document.addEventListener("DOMContentLoaded", function () {
                 </h4>
 
                 <div class="config-row">
-                  <label class="config-label">Background Color Threshold</label>
+                  <label class="config-label">Background Color Threshold (Higher is strict)</label>
                   <input type="number" value="{{config.bgcolor_threshold}}" min="0" max="100" step="1"
                     id="bgcolorThreshold" name="bgcolorThreshold" class="config-input" />
                 </div>
 
                 <div class="config-row">
-                  <label class="config-label">Blurness Threshold</label>
+                  <label class="config-label">Background Uniformity (Lower is strict)</label>
+                  <input type="number" value="{{config.bg_uniformity_threshold}}" min="0" max="100" step="1"
+                    id="bgUniformityThreshold" name="bgUniformityThreshold" class="config-input" />
+                </div>
+
+                <div class="config-row">
+                  <label class="config-label">Blurness Threshold (Higher is strict)</label>
                   <input type="number" value="{{config.blurness_threshold}}" min="0" max="100" step="1"
                     id="blurnessThreshold" name="blurnessThreshold" class="config-input" />
                 </div>
 
                 <div class="config-row">
-                  <label class="config-label">Pixelation Threshold</label>
+                  <label class="config-label">Pixelation Threshold (Lower is strict)</label>
                   <input type="number" value="{{config.pixelated_threshold}}" min="0" max="500" step="1"
                     id="pixelatedThreshold" name="pixelatedThreshold" class="config-input" />
                 </div>
 
                 <div class="config-row">
-                  <label class="config-label">Greyness Threshold</label>
+                  <label class="config-label">Greyness Threshold (Lower is strict)</label>
                   <input type="number" value="{{config.greyness_threshold}}" min="0" max="100" step="1"
                     id="greynessThreshold" name="greynessThreshold" class="config-input" />
                 </div>
 
                 <div class="config-row">
-                  <label class="config-label">Symmetry Threshold</label>
+                  <label class="config-label">Symmetry Threshold (Higher is strict)</label>
                   <input type="number" value="{{config.symmetry_threshold}}" min="0" max="100" step="1"
                     id="symmetryThreshold" name="symmetryThreshold" class="config-input" />
                 </div>
@@ -1800,8 +1736,112 @@ document.addEventListener("DOMContentLoaded", function () {
                 </button>
               </div>
             </form>
-            </form>
           </div>
+
+          <!-- Test Configuration Section - Outside main form -->
+          <div class="glass-card">
+            <div class="config-section" style="max-width:400px; margin:2rem auto; font-family:Arial, sans-serif;">
+              <h4 class="config-title" style="margin-bottom:1rem; font-weight:600; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem;">
+                <i class="fas fa-vial"></i> Test Configuration
+              </h4>
+
+              <form id="testConfigForm" enctype="multipart/form-data" method="POST" action="{% url 'test_config_image' %}">
+                {% csrf_token %}
+
+                <!-- File Input Field -->
+                <label for="testConfigImage" 
+                       style="display:flex; align-items:center; justify-content:space-between; padding:0.5rem 1rem; border:1px solid #ccc; border-radius:6px; background:#f9f9f9; cursor:pointer; font-size:0.95rem;">
+                  <span><i class="fas fa-upload"></i> Choose Image</span>
+                  <span id="testConfigFileName" style="font-size:0.85rem; color:#555;">No file selected</span>
+                </label>
+                <input type="file" id="testConfigImage" name="image" accept="image/*" style="display:none;" required autocomplete="off" />
+
+                <!-- Preview Card -->
+                <div id="previewCard" 
+                     style="display:none; margin-top:1rem; border:1px solid #ddd; border-radius:6px; overflow:hidden; text-align:center; max-height:180px;">
+                  <img id="testConfigPreview" style="max-width:100%; max-height:180px; display:block; object-fit:contain;" />
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="testConfigBtn" disabled 
+                        style="margin-top:1rem; width:100%; padding:0.5rem; font-size:1rem; border:none; border-radius:6px; background:#4CAF50; color:#fff; cursor:pointer;">
+                  <i class="fas fa-play"></i> Test Image
+                </button>
+              </form>
+
+              <!-- Result Display -->
+              <div id="testConfigResult" style="margin-top:1rem; font-size:0.95rem; color:#333;"></div>
+            </div>
+          </div>
+
+          <script>
+            document.addEventListener("DOMContentLoaded", function () {
+              const testConfigImage = document.getElementById("testConfigImage");
+              const testConfigFileName = document.getElementById("testConfigFileName");
+              const testConfigBtn = document.getElementById("testConfigBtn");
+              const testConfigForm = document.getElementById("testConfigForm");
+              const testConfigResult = document.getElementById("testConfigResult");
+              const previewCard = document.getElementById("previewCard");
+              const testConfigPreview = document.getElementById("testConfigPreview");
+
+              testConfigImage.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                  testConfigFileName.textContent = file.name;
+                  testConfigBtn.disabled = false;
+                  
+                  // Show preview
+                  const reader = new FileReader();
+                  reader.onload = function (e) {
+                    testConfigPreview.src = e.target.result;
+                    previewCard.style.display = "block";
+                  };
+                  reader.readAsDataURL(file);
+                } else {
+                  testConfigFileName.textContent = "No file selected";
+                  testConfigBtn.disabled = true;
+                  previewCard.style.display = "none";
+                }
+              });
+
+              testConfigForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                testConfigBtn.innerHTML = '<span class="loading"></span> Testing...';
+                testConfigBtn.disabled = true;
+
+                const formData = new FormData(testConfigForm);
+                
+                // Get CSRF token from the main form
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                
+                fetch(testConfigForm.action, {
+                  method: "POST",
+                  body: formData,
+                  headers: {
+                    "X-CSRFToken": csrfToken
+                  },
+                })
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    testConfigResult.innerHTML = data.result_html || "No result";
+                    testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Test Image';
+                    testConfigBtn.disabled = false;
+                  })
+                  .catch(error => {
+                    console.error("Error:", error);
+                    testConfigResult.innerHTML = `<span style="color:red;"><i class="fas fa-exclamation-triangle"></i> Error during test: ${error.message}</span>`;
+                    testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Retry Test';
+                    testConfigBtn.disabled = false;
+                  });
+              });
+            });
+          </script>
+        </div>
         </div>
       </div>
     </div>

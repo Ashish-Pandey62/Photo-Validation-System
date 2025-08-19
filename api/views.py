@@ -102,7 +102,8 @@ def startPage(request):
                 max_size=5000,
                 is_jpg=True,
                 is_png=True,
-                is_jpeg=True
+                is_jpeg=True,
+                bg_uniformity_threshold=25
             )
     except Exception as e:
         # If there's any error, create a new config
@@ -115,7 +116,8 @@ def startPage(request):
             max_size=5000,
             is_jpg="True",
             is_png="True",
-            is_jpeg="True"
+            is_jpeg="True",
+            bg_uniformity_threshold=25
         )
         config.save()
     
@@ -148,7 +150,8 @@ def process_image(request):
                 max_size=5000,
                 is_jpg=True,
                 is_png=True,
-                is_jpeg=True
+                is_jpeg=True,
+                bg_uniformity_threshold=25
             )
     except Exception as e:
         config = Config(
@@ -160,7 +163,8 @@ def process_image(request):
             max_size=5000,
             is_jpg=True,
             is_png=True,
-            is_jpeg=True
+            is_jpeg=True,
+            bg_uniformity_threshold=25
         )
         config.save()
 
@@ -313,6 +317,7 @@ def save_config(request):
             
             # Threshold values for quality checks
             bgcolorThreshold = float(request.POST.get("bgcolorThreshold", 40))
+            bgUniformityThreshold = float(request.POST.get("bgUniformityThreshold", 25))
             blurnessThreshold = float(request.POST.get("blurnessThreshold", 30))
             pixelatedThreshold = float(request.POST.get("pixelatedThreshold", 100))
             greynessThreshold = float(request.POST.get("greynessThreshold", 5))
@@ -354,6 +359,7 @@ def save_config(request):
             
             # Save threshold settings
             config.bgcolor_threshold = bgcolorThreshold
+            config.bg_uniformity_threshold = bgUniformityThreshold
             config.blurness_threshold = blurnessThreshold
             config.pixelated_threshold = pixelatedThreshold
             config.greyness_threshold = greynessThreshold
@@ -849,52 +855,127 @@ def test_config_image(request):
     if not image_file:
         return JsonResponse({"error": "No image uploaded"}, status=400)
 
-    # Load config (example: from DB or settings, here using request.POST for demo)
-    min_height = int(request.POST.get("minHeight", 0))
-    max_height = int(request.POST.get("maxHeight", 100000))
-    min_width = int(request.POST.get("minWidth", 0))
-    max_width = int(request.POST.get("maxWidth", 100000))
-    min_size = int(request.POST.get("minSize", 0))
-    max_size = int(request.POST.get("maxSize", 100000))
-    allowed_formats = []
-    if request.POST.get("jpgchecked") == "on":
-        allowed_formats.append("JPEG")
-    if request.POST.get("pngchecked") == "on":
-        allowed_formats.append("PNG")
-    if request.POST.get("jpegchecked") == "on":
-        allowed_formats.append("JPEG")
+    try:
+        # Load configuration from database
+        config = Config.objects.first()
+        if not config:
+            config = Config.objects.create(
+                min_height=100,
+                max_height=2000,
+                min_width=100,
+                max_width=2000,
+                min_size=10,
+                max_size=5000,
+                is_jpg=True,
+                is_png=True,
+                is_jpeg=True,
+                bgcolor_threshold=40,
+                bg_uniformity_threshold=25,
+                blurness_threshold=30,
+                pixelated_threshold=100,
+                greyness_threshold=5,
+                symmetry_threshold=35
+            )
 
-    # Save uploaded image to a temporary file
-    import tempfile
-    from api.photo_validator_optimized import main_optimized
+        # Save uploaded image to a temporary file
+        import tempfile
+        import os
+        from api.photo_validator_optimized import main_optimized
 
-    with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
-        for chunk in image_file.chunks():
-            tmp.write(chunk)
-        temp_path = tmp.name
+        # Get the file extension from the uploaded file
+        file_extension = os.path.splitext(image_file.name)[1] or '.jpg'
+        
+        with tempfile.NamedTemporaryFile(suffix=file_extension, delete=False) as tmp:
+            for chunk in image_file.chunks():
+                tmp.write(chunk)
+            temp_path = tmp.name
 
-    # Run validation using main_optimized
-    result_message = main_optimized(temp_path)
+        # Run validation using main_optimized
+        logging.info(f"Testing image: {image_file.name} at temporary path: {temp_path}")
+        result_message = main_optimized(temp_path)
+        logging.info(f"Validation result: {result_message[:100]}...")  # Log first 100 chars
 
-    # Parse result_message for display
-    lines = result_message.split('\n')
-    checks_html = ""
-    status = "PASS"
-    for line in lines:
-        if "Failed" in line or "Corrupted image detected" in line or "Failed to load image" in line:
-            status = "FAIL"
-        if line.strip():
-            checks_html += f"{line}<br>"
+        # Clean up temporary file
+        try:
+            os.unlink(temp_path)
+        except Exception as cleanup_error:
+            logging.warning(f"Could not clean up temporary file {temp_path}: {cleanup_error}")
 
-    if status == "PASS":
-        result_html = (
-            f"<span class='status-success'><i class='fas fa-check'></i> PASS</span><br>"
-            f"{checks_html}"
-        )
-    else:
-        result_html = (
-            f"<span class='status-error'><i class='fas fa-times'></i> FAIL</span><br>"
-            f"{checks_html}"
-        )
+        # Parse result_message for display with detailed analysis
+        lines = result_message.split('\n')
+        checks_html = ""
+        status = "PASS"
+        failed_checks = []
+        
+        for line in lines:
+            if line.strip():
+                if "Failed" in line or "Corrupted image detected" in line or "Failed to load image" in line:
+                    status = "FAIL"
+                    failed_checks.append(line.strip())
+                elif "Passed" in line:
+                    checks_html += f"<div style='color: green; margin: 5px 0;'><i class='fas fa-check'></i> {line.strip()}</div>"
+                elif "Bypassed" in line:
+                    checks_html += f"<div style='color: orange; margin: 5px 0;'><i class='fas fa-ban'></i> {line.strip()}</div>"
+                else:
+                    checks_html += f"<div style='margin: 5px 0;'>{line.strip()}</div>"
 
-    return JsonResponse({"result_html": result_html})
+        # Add configuration summary
+        config_summary = f"""
+        <div style='background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #007bff;'>
+            <h5 style='margin: 0 0 10px 0; color: #007bff;'><i class='fas fa-cog'></i> Configuration Used:</h5>
+            <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9em;'>
+                <div><strong>Dimensions:</strong> {config.min_height}-{config.max_height} × {config.min_width}-{config.max_width} px</div>
+                <div><strong>File Size:</strong> {config.min_size}-{config.max_size} KB</div>
+                <div><strong>Background Threshold:</strong> {config.bgcolor_threshold} (Higher = stricter)</div>
+                <div><strong>Background Uniformity:</strong> {config.bg_uniformity_threshold} (Lower = stricter)</div>
+                <div><strong>Blurness Threshold:</strong> {config.blurness_threshold} (Higher = stricter)</div>
+                <div><strong>Pixelation Threshold:</strong> {config.pixelated_threshold} (Lower = stricter)</div>
+                <div><strong>Greyness Threshold:</strong> {config.greyness_threshold} (Lower = stricter)</div>
+                <div><strong>Symmetry Threshold:</strong> {config.symmetry_threshold} (Higher = stricter)</div>
+            </div>
+        </div>
+        """
+
+        if status == "PASS":
+            result_html = (
+                f"<div style='text-align: center; margin: 20px 0;'>"
+                f"<span style='background: #d4edda; color: #155724; padding: 10px 20px; border-radius: 20px; font-weight: bold;'>"
+                f"<i class='fas fa-check-circle'></i> VALIDATION PASSED</span></div>"
+                f"{config_summary}"
+                f"<div style='background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #17a2b8;'>"
+                f"<h5 style='margin: 0 0 10px 0; color: #17a2b8;'><i class='fas fa-list-check'></i> Check Results:</h5>"
+                f"{checks_html}</div>"
+            )
+        else:
+            result_html = (
+                f"<div style='text-align: center; margin: 20px 0;'>"
+                f"<span style='background: #f8d7da; color: #721c24; padding: 10px 20px; border-radius: 20px; font-weight: bold;'>"
+                f"<i class='fas fa-times-circle'></i> VALIDATION FAILED</span></div>"
+                f"{config_summary}"
+                f"<div style='background: #f8d7da; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #dc3545;'>"
+                f"<h5 style='margin: 0 0 10px 0; color: #dc3545;'><i class='fas fa-exclamation-triangle'></i> Failed Checks:</h5>"
+                f"<div style='color: #721c24;'>{'<br>'.join(failed_checks)}</div></div>"
+                f"<div style='background: #d1ecf1; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #17a2b8;'>"
+                f"<h5 style='margin: 0 0 10px 0; color: #17a2b8;'><i class='fas fa-list-check'></i> All Check Results:</h5>"
+                f"{checks_html}</div>"
+            )
+
+        return JsonResponse({"result_html": result_html})
+
+    except Exception as e:
+        import traceback
+        error_html = f"""
+        <div style='text-align: center; margin: 20px 0;'>
+            <span style='background: #f8d7da; color: #721c24; padding: 10px 20px; border-radius: 20px; font-weight: bold;'>
+                <i class='fas fa-exclamation-triangle'></i> ERROR</span>
+        </div>
+        <div style='background: #f8d7da; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #dc3545;'>
+            <h5 style='margin: 0 0 10px 0; color: #dc3545;'><i class='fas fa-bug'></i> Error Details:</h5>
+            <div style='color: #721c24; font-family: monospace;'>{str(e)}</div>
+            <details style='margin-top: 10px;'>
+                <summary style='cursor: pointer; color: #721c24;'>Stack Trace</summary>
+                <pre style='background: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 5px; font-size: 0.8em;'>{traceback.format_exc()}</pre>
+            </details>
+        </div>
+        """
+        return JsonResponse({"result_html": error_html})

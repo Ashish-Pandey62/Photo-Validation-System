@@ -238,8 +238,14 @@ def main_detailed(imgPath):
 
     # Symmetry check
     if not config.bypass_symmetry_check:
-        is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.issymmetric(img, config)
-        if not is_symmetric:
-            detailed_failures.append(f"Symmetry check failed ({symmetry_percentage:.1f}% symmetric, min required: {threshold_percentage:.1f}%)")
+        # Check for symmetry
+        if not getattr(config, 'bypass_symmetry_check', False):
+            try:
+                is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.check_symmetry_with_head(img, config)
+                if not is_symmetric:
+                    detailed_failures.append(f"Symmetry check failed ({symmetry_percentage:.1f}% symmetric, min required: {threshold_percentage:.1f}%)")
+            except Exception as e:
+                logging.error(f"Error in symmetry check for {imgPath}: {e}")
+                detailed_failures.append(f"Symmetry check error: {str(e)}")
 
     return detailed_failures

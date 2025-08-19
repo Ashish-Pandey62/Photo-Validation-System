@@ -7,3 +7,5 @@ pillow==11.3.0
 sqlparse==0.5.3
 whitenoise
 gunicorn
+scikit-image
+

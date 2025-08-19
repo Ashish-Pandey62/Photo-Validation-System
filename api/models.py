@@ -12,6 +12,7 @@ class Config(models.Model):
     is_png = models.BooleanField()
     is_jpeg = models.BooleanField(default=True)
     bgcolor_threshold = models.FloatField(default=40)  # Reduced from 50 to allow slightly darker backgrounds
+    bg_uniformity_threshold = models.FloatField(default=25)  # New field for background uniformity
     blurness_threshold = models.FloatField(default=30)  # Reduced from 35 to be less strict on blur
     pixelated_threshold = models.FloatField(default=100)  # Increased from 50 to be less strict on pixelation
     greyness_threshold = models.FloatField(default=5)  # Increased from 0 to allow slightly desaturated images

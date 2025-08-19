@@ -146,10 +146,14 @@ def main(imgPath):
       message = message + "Bypassed eye check\n"
 
     # Check for symmetry
-    if config.bypass_symmetry_check==False:
-      is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.issymmetric(img, config)
-      message = message + "Symmetry check: " + ('Passed' if is_symmetric else 'Failed') + "\n"
-      logging.info(message)
+    if not getattr(config, 'bypass_symmetry_check', False):
+        try:
+            is_symmetric, symmetry_percentage, threshold_percentage = symmetry_check.check_symmetry_with_head(img, config)
+            if not is_symmetric:
+                message = message + "Symmetry check failed ({:.1f}% symmetric, min required: {:.1f}%)".format(symmetry_percentage, threshold_percentage) + "\n"
+        except Exception as e:
+            logging.error(f"Error in symmetry check for {imgPath}: {e}")
+            message = message + "Symmetry check error: " + str(e) + "\n"
     else:
       message = message + "Bypassed symmetry check\n"
 

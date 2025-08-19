@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+from skimage.metrics import structural_similarity as ssim
 from .models import Config
 
 def check_symmetry_with_head(image, config=None):
@@ -7,63 +8,51 @@ def check_symmetry_with_head(image, config=None):
         if config is None:
             config = Config.objects.first()
         if not config:
-            threshold = 20  # default symmetry threshold
+            threshold = 20
         else:
             threshold = config.symmetry_threshold
     except Exception:
         threshold = 20
 
-    # Perform symmetry check
     height, width, _ = image.shape
-    
-    # Handle odd-width images properly
-    if width % 2 == 1:  # Odd width
-        half_width = width // 2
-        left_half = image[:, :half_width]
-        right_half = image[:, half_width + 1:]  # Skip middle column
-    else:  # Even width
-        half_width = width // 2
-        left_half = image[:, :half_width]
-        right_half = image[:, half_width:]
 
-    # Flip the right half horizontally for comparison
-    flipped_right_half = cv2.flip(right_half, 1)
-    
-    # Ensure both halves have the same dimensions
-    min_width = min(left_half.shape[1], flipped_right_half.shape[1])
-    left_half = left_half[:, :min_width]
-    flipped_right_half = flipped_right_half[:, :min_width]
+    # ---- Step 1: Face detection (lightweight Haar cascade) ----
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
-    # Calculate the absolute difference between the left and flipped right halves
-    diff = cv2.absdiff(left_half, flipped_right_half)
+    if len(faces) > 0:
+        # Use the largest detected face
+        x, y, w, h = max(faces, key=lambda f: f[2] * f[3])
+        roi = image[y:y+h, x:x+w]
+    else:
+        # Fallback: use full image
+        roi = image
 
-    # Convert the difference image to grayscale
-    diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    h, w, _ = roi.shape
+    half_w = w // 2
 
-    # Calculate the average pixel intensity difference as a symmetry score
-    symmetry_score = np.mean(diff_gray)
+    left_half = roi[:, :half_w]
+    right_half = roi[:, w - half_w:]
 
-    # Convert symmetry score to percentage (lower score = more symmetric)
-    # Invert the score so higher percentage means more symmetric
-    max_possible_diff = 255  # Maximum possible pixel difference
-    symmetry_percentage = max(0, 100 - (symmetry_score / max_possible_diff * 100))
-    
-    # Convert threshold to percentage for comparison
-    threshold_percentage = max(0, 100 - (threshold / max_possible_diff * 100))
+    # Flip right half
+    flipped_right = cv2.flip(right_half, 1)
 
-    # Compare the symmetry score with the threshold
-    is_symmetric = symmetry_score < threshold
+    # Ensure same size
+    min_w = min(left_half.shape[1], flipped_right.shape[1])
+    left_half = left_half[:, :min_w]
+    flipped_right = flipped_right[:, :min_w]
 
-    # Return boolean result, actual percentage, and threshold percentage
+    # ---- Step 2: Compare halves ----
+    # Use SSIM (structural similarity)
+    left_gray = cv2.cvtColor(left_half, cv2.COLOR_BGR2GRAY)
+    right_gray = cv2.cvtColor(flipped_right, cv2.COLOR_BGR2GRAY)
+    symmetry_score, _ = ssim(left_gray, right_gray, full=True)
+
+    # SSIM score is 0–1 (1 = identical)
+    symmetry_percentage = symmetry_score * 100
+    threshold_percentage = threshold  # now directly percentage
+
+    is_symmetric = symmetry_percentage >= threshold_percentage
+
     return is_symmetric, symmetry_percentage, threshold_percentage
-
-def issymmetric(image, config=None):
-    try:
-        is_symmetric, symmetry_percentage, threshold_percentage = check_symmetry_with_head(image, config)
-        return is_symmetric, symmetry_percentage, threshold_percentage
-    except ValueError as e:
-        print("Error:", str(e))
-        return False, 0, 0
-    except Exception as e:
-        print(f"Error in issymmetric: {e}")
-        return False, 0, 0
