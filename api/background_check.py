@@ -1,9 +1,6 @@
 import numpy as np
 from .models import Config
-
-import numpy as np
-import cv2
-from .models import Config
+                                        
 
 def background_check(image, config=None):
     # --- thresholds still fully dynamic ---

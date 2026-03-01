@@ -3,14 +3,13 @@ from .models import Config
 from PIL import Image
 
 
-def check_image(path):
+def check_image(path,config=None):
     size = os.path.getsize(path) / 1000.00#TO KILOBYTES
 
     tolerance = 10.00
 
     # Safely get config object
     try:
-        config = Config.objects.first()
         if not config:
             config = Config.objects.create(
                 min_height=100,
@@ -39,14 +38,13 @@ def check_image(path):
         return True
     return False
 
-def check_height(path):
+def check_height(path,config=None):
     try:
         im = Image.open(path)
         width, height = im.size
 
         tolerance = 10.00
 
-        config = Config.objects.first()
         if not config:
             # Use default values if no config
             min_height = 100 - tolerance
@@ -63,14 +61,13 @@ def check_height(path):
         print(f"Error in check_height: {e}")
         return False
 
-def check_width(path):
+def check_width(path,config=None):
     try:
         im = Image.open(path)
         width, height = im.size
 
         tolerance = 10.00
 
-        config = Config.objects.first()
         if not config:
             # Use default values if no config
             min_width = 100 - tolerance

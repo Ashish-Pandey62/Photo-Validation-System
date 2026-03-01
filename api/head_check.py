@@ -1,7 +1,20 @@
 import dlib
 import cv2
+# from .detectors import FACE_DETECTOR, EYE_CASCADE
+
+# def detect_faces(image):
+#     import cv2
+#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#     return FACE_DETECTOR(gray)
+
+# def detect_eyes(image):
+#     import cv2
+#     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+#     eyes = EYE_CASCADE.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+#     return eyes
 
 def valid_head_check(image):
+    import cv2
     faces = detect_faces(image)
     num_faces = len(faces)
     
@@ -26,6 +39,13 @@ def valid_head_check(image):
     else:
         return False, 102  # Multiple faces detected
     
+
+def calculate_head_percentage(face, image):
+    face_area = face.width() * face.height()
+    image_area = image.shape[0] * image.shape[1]
+    head_percentage = (face_area / image_area) * 100
+    return head_percentage
+
 def detect_eyes(image):
     # Load the pre-trained eye cascade classifier from OpenCV
     eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
@@ -37,12 +57,6 @@ def detect_eyes(image):
     eyes = eye_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5)
     #print("no of eyes", len(eyes))
     return len(eyes) == 0
-
-def calculate_head_percentage(face, image):
-    face_area = face.width() * face.height()
-    image_area = image.shape[0] * image.shape[1]
-    head_percentage = (face_area / image_area) * 100
-    return head_percentage
 
 def detect_faces(image):
     # Load the pre-trained face detection model from dlib

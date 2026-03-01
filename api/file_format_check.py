@@ -2,10 +2,9 @@ from PIL import Image
 from .models import Config
 
 
-def check_image(path):
+def check_image(path,config=None):
     try:
         # Safely get config object
-        config = Config.objects.first()
         if not config:
             # If no config exists, create default one
             config = Config.objects.create(

@@ -49,7 +49,7 @@ def main_optimized(imgPath, max_image_dimension=800):
 
     # Check image file format
     if config.bypass_format_check == False:
-        is_file_format_valid = file_format_check.check_image(imgPath)
+        is_file_format_valid = file_format_check.check_image(imgPath,config)
         if is_file_format_valid:
             message = message + "File format check: Passed (supported format)\n"
         else:
@@ -60,7 +60,7 @@ def main_optimized(imgPath, max_image_dimension=800):
 
     # Check image file size
     if config.bypass_size_check == False:
-        is_file_size_valid = file_size_check.check_image(imgPath)
+        is_file_size_valid = file_size_check.check_image(imgPath,config)
         if is_file_size_valid:
             message = message + "File size check: Passed (size within limits)\n"
         else:
@@ -71,7 +71,7 @@ def main_optimized(imgPath, max_image_dimension=800):
 
     # Check height of the image
     if config.bypass_height_check == False:
-        is_file_height_valid = file_size_check.check_height(imgPath)
+        is_file_height_valid = file_size_check.check_height(imgPath,config)
         if is_file_height_valid:
             message = message + "File Height check: Passed (height within limits)\n"
         else:
@@ -82,7 +82,7 @@ def main_optimized(imgPath, max_image_dimension=800):
 
     # Check width of the image
     if config.bypass_width_check == False:
-        is_file_width_valid = file_size_check.check_width(imgPath)
+        is_file_width_valid = file_size_check.check_width(imgPath,config)
         if is_file_width_valid:
             message = message + "File Width check: Passed (width within limits)\n"
         else:

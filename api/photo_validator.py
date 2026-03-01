@@ -4,6 +4,8 @@ import time
 import cv2
 
 from .models import Config
+from .config_provider import get_config
+
 
 import api.background_check as background_check
 import api.blur_check as blur_check
@@ -19,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 def main(imgPath):
     # Load config once to avoid multiple database calls
     try:
-        config = Config.objects.first()
+        config = get_config()
         if not config:
             config = Config.objects.create(
                 min_height=100,
@@ -41,7 +43,7 @@ def main(imgPath):
 
     # Check image file format
     if config.bypass_format_check==False:
-      is_file_format_valid = file_format_check.check_image(imgPath)
+      is_file_format_valid = file_format_check.check_image(imgPath,config)
       message = message + "File format check: " + ('Passed' if is_file_format_valid else 'Failed') + "\n"
       logging.info(message)
     else:
@@ -50,7 +52,7 @@ def main(imgPath):
 
     # Check image file size
     if config.bypass_size_check==False:
-      is_file_size_valid = file_size_check.check_image(imgPath)
+      is_file_size_valid = file_size_check.check_image(imgPath,config)
       message = message + "File size check: " + ('Passed' if is_file_size_valid else 'Failed') + "\n"
       logging.info(message)
     else:
@@ -61,7 +63,7 @@ def main(imgPath):
 
     # Check height of the image
     if config.bypass_height_check==False:
-      is_file_height_valid = file_size_check.check_height(imgPath)
+      is_file_height_valid = file_size_check.check_height(imgPath,config)
       message = message + "File Height check: " + ('Passed' if is_file_height_valid else 'Failed') + "\n"
       logging.info(message)
     else:
@@ -72,7 +74,7 @@ def main(imgPath):
 
   # Check width of the image
     if config.bypass_width_check==False:
-      is_file_width_valid = file_size_check.check_width(imgPath)
+      is_file_width_valid = file_size_check.check_width(imgPath,config)
       message = message + "File Width check: " + ('Passed' if is_file_width_valid else 'Failed') + "\n"
       logging.info(message)
     else:
@@ -85,7 +87,7 @@ def main(imgPath):
     img = cv2.imread(imgPath)
 
     if config.bypass_corrupted_check == False:
-      is_corrupted = file_format_check.is_corrupted_image(img)
+      is_corrupted = file_format_check.is_corrupted_image(img,config)
       message = message + "File Open Test: " + ('Passed' if not is_corrupted else 'Failed') + "\n"
       logging.info(message)
       if file_format_check.is_corrupted_image(img):

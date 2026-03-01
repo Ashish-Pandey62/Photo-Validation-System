@@ -11,6 +11,7 @@ import threading
 from shutil import move
 from django.conf import settings
 from .models import Config
+from .config_provider import get_config
 
 import api.background_check as background_check
 import api.blur_check as blur_check
@@ -102,7 +103,7 @@ def validate_single_image_threaded(image_path, config):
         # Check image file format
         if not getattr(config, 'bypass_format_check', False):
             try:
-                is_file_format_valid = file_format_check.check_image(image_path)
+                is_file_format_valid = file_format_check.check_image(image_path,config)
                 if not is_file_format_valid:
                     messages.append("File format check failed")
             except Exception as e:
@@ -112,7 +113,7 @@ def validate_single_image_threaded(image_path, config):
         # Check file size
         if not getattr(config, 'bypass_size_check', False):
             try:
-                is_file_size_valid = file_size_check.check_image(image_path)
+                is_file_size_valid = file_size_check.check_image(image_path,config)
                 if not is_file_size_valid:
                     # Get detailed size info for enhanced message
                     try:
@@ -130,7 +131,7 @@ def validate_single_image_threaded(image_path, config):
         # Check height
         if not getattr(config, 'bypass_height_check', False):
             try:
-                is_file_height_valid = file_size_check.check_height(image_path)
+                is_file_height_valid = file_size_check.check_height(image_path,config)
                 if not is_file_height_valid:
                     # Get detailed height info for enhanced message
                     try:
@@ -151,7 +152,7 @@ def validate_single_image_threaded(image_path, config):
         # Check width
         if not getattr(config, 'bypass_width_check', False):
             try:
-                is_file_width_valid = file_size_check.check_width(image_path)
+                is_file_width_valid = file_size_check.check_width(image_path,config)
                 if not is_file_width_valid:
                     # Get detailed width info for enhanced message
                     try:
@@ -377,7 +378,7 @@ def main_threaded(directory, max_workers=None):
     
     # Get config object (no serialization needed for threads)
     try:
-        config = Config.objects.first()
+        config = get_config()
         if not config:
             config = Config.objects.create(
                 min_height=100, max_height=2000, min_width=100, max_width=2000,
