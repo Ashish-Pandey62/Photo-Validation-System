@@ -38,7 +38,7 @@ def clear_data(request):
 
         # Redirect to home page with fresh form
         form = PhotoFolderUploadForm()
-        config = Config.objects.first()
+        config = get_or_create_config()
         bypass_list = [
             'bypass_height_check', 'bypass_width_check', 'bypass_size_check',
             'bypass_format_check', 'bypass_background_check', 'bypass_blurness_check',
@@ -52,18 +52,15 @@ import logging
 import os
 from django.conf import settings
 from django import forms
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 
-import api.photo_validator as photo_validator
-import api.photo_validator_dir as photo_validator_dir
+from api.photo_validator_threaded import main_threaded
 from api.forms import PhotoFolderUploadForm
-from api.blur_check import check_image_blurness
-from api.symmetry_check import check_symmetry_with_head
-from api.file_format_check import is_corrupted_image
+from api.config_utils import get_or_create_config, warm_config_cache, clear_config_cache
 
 # import api.tinkerdirectory as tinker
-from .models import Config, PhotoFolder
+from .models import PhotoFolder
 
 # import urllib.parse
 import shutil
@@ -87,39 +84,7 @@ class NameForm(forms.Form):
 def startPage(request):
     """Main page view with safe config retrieval"""
     form = PhotoFolderUploadForm()
-    
-    # Safely get or create a default config
-    try:
-        config = Config.objects.first()
-        if not config:
-            # Create a default config if none exists
-            config = Config.objects.create(
-                min_height=100,
-                max_height=2000,
-                min_width=100,
-                max_width=2000,
-                min_size=10,
-                max_size=5000,
-                is_jpg=True,
-                is_png=True,
-                is_jpeg=True,
-                bg_uniformity_threshold=25
-            )
-    except Exception as e:
-        # If there's any error, create a new config
-        config = Config(
-            min_height=100,
-            max_height=2000,
-            min_width=100,
-            max_width=2000,
-            min_size=10,
-            max_size=5000,
-            is_jpg="True",
-            is_png="True",
-            is_jpeg="True",
-            bg_uniformity_threshold=25
-        )
-        config.save()
+    config = get_or_create_config()
     
     # views.py
     bypass_list = [
@@ -137,36 +102,7 @@ def startPage(request):
 
 
 def process_image(request):
-    # Get or create config safely
-    try:
-        config = Config.objects.first()
-        if not config:
-            config = Config.objects.create(
-                min_height=100,
-                max_height=2000,
-                min_width=100,
-                max_width=2000,
-                min_size=10,
-                max_size=5000,
-                is_jpg=True,
-                is_png=True,
-                is_jpeg=True,
-                bg_uniformity_threshold=25
-            )
-    except Exception as e:
-        config = Config(
-            min_height=100,
-            max_height=2000,
-            min_width=100,
-            max_width=2000,
-            min_size=10,
-            max_size=5000,
-            is_jpg=True,
-            is_png=True,
-            is_jpeg=True,
-            bg_uniformity_threshold=25
-        )
-        config.save()
+    config = warm_config_cache()
 
     if request.method == "POST":
         form = PhotoFolderUploadForm(request.POST, request.FILES)
@@ -252,6 +188,7 @@ def process_image(request):
                 request.session["path"] = path
                 
                 # Check if path contains any image files
+                total_images = 0
                 if os.path.exists(path):
                     files_in_path = os.listdir(path)
                     image_files = [f for f in files_in_path 
@@ -262,31 +199,61 @@ def process_image(request):
                         raise Exception(f"No image files found in {path}. Available files: {files_in_path}")
                     
                     # Store total count in session for later use
-                    request.session["total_images_count"] = len(image_files)
-                    logging.info(f"Stored total images count in session: {len(image_files)}")
-                
-                photo_validator_dir.main(path)
-                
-                # Redirect to a results page or show success message
-                from django.contrib import messages
-                messages.success(request, 'Photo validation completed successfully!')
+                    total_images = len(image_files)
+                    request.session["total_images_count"] = total_images
+                    logging.info(f"Stored total images count in session: {total_images}")
+
+                return JsonResponse({
+                    "status": "uploaded",
+                    "total_images": total_images,
+                })
                 
             except Exception as e:
-                from django.contrib import messages
-                messages.error(request, f'Error processing upload: {str(e)}')
                 print(f"Error in process_image: {e}")
                 logging.error(f"Error in process_image: {e}")
                 import traceback
                 logging.error(f"Traceback: {traceback.format_exc()}")
+                return JsonResponse({
+                    "status": "error",
+                    "message": str(e),
+                }, status=400)
             
             # return render(request, 'api/image_gallery.html')
         else:
             print(form.errors)
             print(request.FILES)
+            return JsonResponse({
+                "status": "error",
+                "message": "Invalid upload form data",
+                "errors": form.errors,
+            }, status=400)
     else:
         form = PhotoFolderUploadForm()
     
     return render(request, "api/index1.html", {"form": form, "config": config})
+
+
+def validate_images(request):
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Method not allowed"}, status=405)
+
+    path = request.session.get("path")
+    if not path or not os.path.exists(path):
+        return JsonResponse({"status": "error", "message": "No upload session found"}, status=400)
+
+    config = warm_config_cache()
+    try:
+        results = main_threaded(path, config=config)
+        total_images = request.session.get("total_images_count", 0)
+        return JsonResponse({
+            "status": "ok",
+            "total_images": total_images,
+            "valid_count": results.get("valid_count", 0),
+            "invalid_count": results.get("invalid_count", 0),
+        })
+    except Exception as e:
+        logging.error(f"Error validating images: {e}")
+        return JsonResponse({"status": "error", "message": str(e)}, status=400)
 
 
 # def process_image(request):
@@ -341,10 +308,7 @@ def save_config(request):
             bypass_eye_check = request.POST.get("bypass_eye_check") == "on"
             bypass_corrupted_check = request.POST.get("bypass_corrupted_check") == "on"
 
-            # Get existing config or create new one
-            config = Config.objects.first()
-            if not config:
-                config = Config()
+            config = get_or_create_config()
 
             # Save basic settings
             config.min_height = minHeight
@@ -379,12 +343,7 @@ def save_config(request):
             config.bypass_corrupted_check = bypass_corrupted_check
 
             config.save()
-            # Clear cached configuration so new settings apply immediately
-            try:
-                from api.performance_utils import get_cached_config
-                get_cached_config.cache_clear()
-            except Exception as cache_err:
-                logging.warning(f"Could not clear config cache: {cache_err}")
+            clear_config_cache()
 
             return HttpResponse("Configuration updated successfully")
         except Exception as e:
@@ -844,6 +803,52 @@ def download_and_delete_csv(request):
     #             logging.error(f"Error deleting folder: {e}")
     
     return response
+
+
+def download_valid_images(request):
+    """Download all valid images as a zip file."""
+    path = request.session.get("path")
+    if not path:
+        return HttpResponse("No validation session found", status=400)
+
+    valid_directory = os.path.join(path, "valid")
+    if not os.path.exists(valid_directory):
+        return HttpResponse("No valid images found", status=404)
+
+    import io
+    import zipfile
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for filename in os.listdir(valid_directory):
+            file_path = os.path.join(valid_directory, filename)
+            if os.path.isfile(file_path):
+                zipf.write(file_path, arcname=filename)
+
+    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+    response["Content-Disposition"] = 'attachment; filename="valid_images.zip"'
+    return response
+
+
+def download_invalid_images(request):
+    """Download all invalid images as a zip file."""
+    invalid_directory = os.path.join(
+        settings.BASE_DIR, "api", "static", "api", "images", "invalid"
+    )
+    if not os.path.exists(invalid_directory):
+        return HttpResponse("No invalid images found", status=404)
+
+    import io
+    import zipfile
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for filename in os.listdir(invalid_directory):
+            file_path = os.path.join(invalid_directory, filename)
+            if os.path.isfile(file_path):
+                zipf.write(file_path, arcname=filename)
+
+    response = HttpResponse(buffer.getvalue(), content_type="application/zip")
+    response["Content-Disposition"] = 'attachment; filename="invalid_images.zip"'
+    return response
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from PIL import Image
@@ -862,26 +867,7 @@ def test_config_image(request):
         return JsonResponse({"error": "No image uploaded"}, status=400)
 
     try:
-        # Load configuration from database
-        config = Config.objects.first()
-        if not config:
-            config = Config.objects.create(
-                min_height=100,
-                max_height=2000,
-                min_width=100,
-                max_width=2000,
-                min_size=10,
-                max_size=5000,
-                is_jpg=True,
-                is_png=True,
-                is_jpeg=True,
-                bgcolor_threshold=40,
-                bg_uniformity_threshold=25,
-                blurness_threshold=30,
-                pixelated_threshold=100,
-                greyness_threshold=5,
-                symmetry_threshold=35
-            )
+        config = get_or_create_config()
 
         # Save uploaded image to a temporary file
         import tempfile
@@ -896,16 +882,11 @@ def test_config_image(request):
                 tmp.write(chunk)
             temp_path = tmp.name
 
-        # Ensure we use the latest configuration (clear cached config)
-        try:
-            from api.performance_utils import get_cached_config
-            get_cached_config.cache_clear()
-        except Exception as cache_err:
-            logging.warning(f"Could not clear config cache before test: {cache_err}")
+        clear_config_cache()
 
         # Run validation using main_optimized
         logging.info(f"Testing image: {image_file.name} at temporary path: {temp_path}")
-        result_message = main_optimized(temp_path)
+        result_message = main_optimized(temp_path, config=get_or_create_config())
         logging.info(f"Validation result: {result_message[:100]}...")  # Log first 100 chars
 
         # Clean up temporary file

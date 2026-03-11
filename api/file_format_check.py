@@ -1,23 +1,11 @@
 from PIL import Image
-from .models import Config
+from .config_utils import get_cached_config
 
 
-def check_image(path,config=None):
+def check_image(path, config=None):
     try:
-        # Safely get config object
         if not config:
-            # If no config exists, create default one
-            config = Config.objects.create(
-                min_height=100,
-                max_height=2000,
-                min_width=100,
-                max_width=2000,
-                min_size=10,
-                max_size=5000,
-                is_jpg=True,
-                is_png=True,
-                is_jpeg=True
-            )
+            config = get_cached_config()
         
         img = Image.open(path)
         format = img.format

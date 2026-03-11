@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
-from .models import Config
+from .config_utils import get_cached_config
 
 def is_grey(img, config=None):
     try:
         # Load config or use defaults
         if config is None:
-            config = Config.objects.first()
+            config = get_cached_config()
 
         # Single input threshold
         saturation_threshold = getattr(config, "greyness_threshold", 15) if config else 15

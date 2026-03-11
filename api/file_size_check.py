@@ -1,27 +1,16 @@
 import os.path
-from .models import Config
 from PIL import Image
+from .config_utils import get_cached_config
 
 
-def check_image(path,config=None):
+def check_image(path, config=None):
     size = os.path.getsize(path) / 1000.00#TO KILOBYTES
 
     tolerance = 10.00
 
-    # Safely get config object
     try:
         if not config:
-            config = Config.objects.create(
-                min_height=100,
-                max_height=2000,
-                min_width=100,
-                max_width=2000,
-                min_size=10,
-                max_size=5000,
-                is_jpg=True,
-                is_png=True,
-                is_jpeg=True
-            )
+            config = get_cached_config()
     except Exception:
         # Use default values if config fails
         min_size = 10 - tolerance
@@ -38,7 +27,7 @@ def check_image(path,config=None):
         return True
     return False
 
-def check_height(path,config=None):
+def check_height(path, config=None):
     try:
         im = Image.open(path)
         width, height = im.size
@@ -46,12 +35,9 @@ def check_height(path,config=None):
         tolerance = 10.00
 
         if not config:
-            # Use default values if no config
-            min_height = 100 - tolerance
-            max_height = 2000 + tolerance
-        else:
-            min_height = config.min_height - tolerance
-            max_height = config.max_height + tolerance
+            config = get_cached_config()
+        min_height = getattr(config, "min_height", 100) - tolerance
+        max_height = getattr(config, "max_height", 2000) + tolerance
 
         # Check if the height of the image is ok
         if min_height <= height <= max_height:
@@ -61,7 +47,7 @@ def check_height(path,config=None):
         print(f"Error in check_height: {e}")
         return False
 
-def check_width(path,config=None):
+def check_width(path, config=None):
     try:
         im = Image.open(path)
         width, height = im.size
@@ -69,12 +55,9 @@ def check_width(path,config=None):
         tolerance = 10.00
 
         if not config:
-            # Use default values if no config
-            min_width = 100 - tolerance
-            max_width = 2000 + tolerance
-        else:
-            min_width = config.min_width - tolerance
-            max_width = config.max_width + tolerance
+            config = get_cached_config()
+        min_width = getattr(config, "min_width", 100) - tolerance
+        max_width = getattr(config, "max_width", 2000) + tolerance
 
         # Check if the width of the image is ok
         if min_width <= width <= max_width:

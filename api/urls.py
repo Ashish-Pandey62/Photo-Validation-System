@@ -12,6 +12,7 @@ def redirect_root(request):
 urlpatterns = [
     path('', views.startPage, name='startPage'),
     path('photoValidator/', views.process_image, name='photoValidator'),
+    path('validate/', views.validate_images, name='validate_images'),
     path('displayCsv/',views.display_csv, name ='displayCsv'),
     #path('upload/', views.process_image, name='upload'),
     #path('dialogueBox/', views.dialogueBox, name='dialogueBox'),
@@ -21,6 +22,8 @@ urlpatterns = [
     path('health/', views.health_check, name='health_check'),
     path('process_rejected_images/', views.process_rejected_images, name='process_rejected_images'),
     path('download_csv/', views.download_and_delete_csv, name='download_csv'),
+    path('download_valid/', views.download_valid_images, name='download_valid_images'),
+    path('download_invalid/', views.download_invalid_images, name='download_invalid_images'),
     path('delete_all/', views.delete_all, name='delete_all'),
     path('clear_data/', views.clear_data, name='clear_data'),
     path('invalid_image/<str:filename>/', views.serve_invalid_image, name='serve_invalid_image'),

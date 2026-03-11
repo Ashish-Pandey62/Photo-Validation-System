@@ -1,12 +1,12 @@
 import cv2
 import numpy as np
 from skimage.metrics import structural_similarity as ssim
-from .models import Config
+from .config_utils import get_cached_config
 
 def check_symmetry_with_head(image, config=None):
     try:
         if config is None:
-            config = Config.objects.first()
+            config = get_cached_config()
         if not config:
             threshold = 20
         else:

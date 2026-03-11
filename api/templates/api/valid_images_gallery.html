@@ -379,7 +379,13 @@
         </div>
         <div class="nav-actions">
           <a href="{% url 'download_csv' %}" class="btn-action btn-export">
-            <i class="fas fa-download"></i> Export Results
+            <i class="fas fa-download"></i> Results CSV
+          </a>
+          <a href="{% url 'download_valid_images' %}" class="btn-action btn-export">
+            <i class="fas fa-download"></i> Valid ZIP
+          </a>
+          <a href="{% url 'download_invalid_images' %}" class="btn-action btn-export">
+            <i class="fas fa-download"></i> Invalid ZIP
           </a>
         </div>
       </nav>
@@ -431,6 +437,12 @@
       <div class="action-buttons">
         <a href="{% url 'download_csv' %}" class="btn-action btn-export">
           <i class="fas fa-download"></i> Export All Results
+        </a>
+        <a href="{% url 'download_valid_images' %}" class="btn-action btn-export">
+          <i class="fas fa-download"></i> Download Valid ZIP
+        </a>
+        <a href="{% url 'download_invalid_images' %}" class="btn-action btn-export">
+          <i class="fas fa-download"></i> Download Invalid ZIP
         </a>
         <a href="{% url 'startPage' %}" class="btn-action btn-back">
           <i class="fas fa-arrow-left"></i> Back to Home

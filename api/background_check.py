@@ -1,12 +1,12 @@
 import numpy as np
-from .models import Config
+from .config_utils import get_cached_config
                                         
 
 def background_check(image, config=None):
     # --- thresholds still fully dynamic ---
     try:
         if config is None:
-            config = Config.objects.first()
+            config = get_cached_config()
         min_brightness = getattr(config, "bgcolor_threshold", 30)           # 0..255 scale
         uniformity_std = getattr(config, "bg_uniformity_threshold", 40)     # std on 0..255
     except Exception:

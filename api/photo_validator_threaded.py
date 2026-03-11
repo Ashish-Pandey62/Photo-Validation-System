@@ -10,8 +10,7 @@ from multiprocessing import cpu_count
 import threading
 from shutil import move
 from django.conf import settings
-from .models import Config
-from .config_provider import get_config
+from .config_utils import get_cached_config
 
 import api.background_check as background_check
 import api.blur_check as blur_check
@@ -365,7 +364,7 @@ def write_csv_results_thread_safe(csv_file_path, error_messages):
             logging.error(f"Error writing CSV results: {e}")
             return False
 
-def main_threaded(directory, max_workers=None):
+def main_threaded(directory, max_workers=None, config=None):
     """
     Thread-based parallel validation function - stable and fast
     """
@@ -377,19 +376,8 @@ def main_threaded(directory, max_workers=None):
     logging.info(f"🚀 Starting THREADED parallel validation of directory: {directory}")
     
     # Get config object (no serialization needed for threads)
-    try:
-        config = get_config()
-        if not config:
-            config = Config.objects.create(
-                min_height=100, max_height=2000, min_width=100, max_width=2000,
-                min_size=10, max_size=5000, is_jpg=True, is_png=True, is_jpeg=True
-            )
-    except Exception as e:
-        config = Config(
-            min_height=100, max_height=2000, min_width=100, max_width=2000,
-            min_size=10, max_size=5000, is_jpg=True, is_png=True, is_jpeg=True
-        )
-        config.save()
+    if config is None:
+        config = get_cached_config()
     
     # Setup directories
     valid_directory = os.path.join(directory, "valid")

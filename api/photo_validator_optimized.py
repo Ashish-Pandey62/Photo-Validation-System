@@ -1,8 +1,8 @@
 import logging
 import time
 import cv2
-from .models import Config
-from .performance_utils import resize_for_processing, get_cached_config, time_function
+from .performance_utils import resize_for_processing, time_function
+from .config_utils import get_cached_config
 
 import api.background_check as background_check
 import api.blur_check as blur_check
@@ -15,31 +15,14 @@ import api.symmetry_check as symmetry_check
 logging.basicConfig(level=logging.INFO)
 
 @time_function
-def main_optimized(imgPath, max_image_dimension=800):
+def main_optimized(imgPath, max_image_dimension=800, config=None):
     """
     Optimized version of the main photo validator with performance improvements.
     """
     # Load config once using cache
     try:
-        config = get_cached_config()
-        if not config:
-            config = Config.objects.create(
-                min_height=100,
-                max_height=2000,
-                min_width=100,
-                max_width=2000,
-                min_size=10,
-                max_size=5000,
-                is_jpg=True,
-                is_png=True,
-                is_jpeg=True,
-                bgcolor_threshold=40,
-                bg_uniformity_threshold=25,
-                blurness_threshold=30,
-                pixelated_threshold=100,
-                greyness_threshold=5,
-                symmetry_threshold=35
-            )
+        if config is None:
+            config = get_cached_config()
     except Exception as e:
         logging.error(f"Error loading config: {e}")
         return "Configuration error"

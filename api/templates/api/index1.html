@@ -773,23 +773,6 @@
       }
     }
 
-    /* Progress Bar */
-    .progress-container {
-      width: 100%;
-      height: 6px;
-      background: var(--border-light);
-      border-radius: 3px;
-      margin: 1rem 0;
-      overflow: hidden;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background: var(--primary-color);
-      border-radius: 3px;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
 
     /* Status Indicators */
     .status-indicator {
@@ -982,8 +965,11 @@
       const uploadArea = document.querySelector(".file-upload-area");
       const uploadButton = document.getElementById("uploadZip");
       const resultDisplay = document.getElementById("result");
+      const uploadStatus = document.getElementById("uploadStatus");
+      const uploadStatusText = document.getElementById("uploadStatusText");
       const startValidationContainer =
         document.getElementById("startValidationBtn");
+      const validateButton = document.getElementById("validateBtn");
     
       // File input change handler
       fileInput.addEventListener("change", function () {
@@ -994,11 +980,19 @@
           uploadButton.disabled = false;
           uploadArea.style.borderColor = "#3b82f6";
           startValidationContainer.style.display = "block";
+          if (uploadStatus) {
+            uploadStatus.style.display = "none";
+            uploadStatusText.textContent = "";
+          }
         } else {
           fileNameDisplay.style.display = "none";
           uploadButton.disabled = true;
           uploadArea.style.borderColor = "rgba(255, 255, 255, 0.3)";
           startValidationContainer.style.display = "none";
+          if (uploadStatus) {
+            uploadStatus.style.display = "none";
+            uploadStatusText.textContent = "";
+          }
         }
       });
     
@@ -1029,7 +1023,7 @@
         }
       });
 
-      // Form submission with loading state and AJAX
+      // Upload only: do not validate yet
       document
         .getElementById("fileUploadForm")
         .addEventListener("submit", function (e) {
@@ -1037,24 +1031,6 @@
           uploadButton.innerHTML =
             '<span class="loading"></span>Processing...';
           uploadButton.disabled = true;
-
-          // Show progress simulation
-          const progressContainer = document.createElement("div");
-          progressContainer.className = "progress-container";
-          progressContainer.innerHTML = '<div class="progress-bar"></div>';
-          uploadButton.parentNode.insertBefore(
-            progressContainer,
-            uploadButton.nextSibling
-          );
-
-          let progress = 0;
-          const progressBar =
-            progressContainer.querySelector(".progress-bar");
-          const progressInterval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress > 90) progress = 90;
-            progressBar.style.width = progress + "%";
-          }, 500);
 
           // Submit form with AJAX
           const formData = new FormData(this);
@@ -1069,62 +1045,97 @@
           })
             .then((response) => response.json())
             .then((data) => {
-              clearInterval(progressInterval);
-              progressBar.style.width = "100%";
+              if (uploadStatus) {
+                uploadStatusText.textContent = `Upload complete. Found ${data.total_images || 0} images in the ZIP.`;
+                uploadStatus.style.display = "inline-flex";
+              }
 
-              // Enable all view buttons
-              document.getElementById("showValid").disabled = false;
-              document.getElementById("showInvalid").disabled = false;
+              if (validateButton) {
+                validateButton.disabled = false;
+              }
 
-              // Enable buttons in the results section
-              const viewValidBtn = document.getElementById("viewValidBtn");
-              const viewInvalidBtn =
-                document.getElementById("viewInvalidBtn");
-              if (viewValidBtn) viewValidBtn.disabled = false;
-              if (viewInvalidBtn) viewInvalidBtn.disabled = false;
+              document.getElementById("result").innerHTML = `
+                <div style="text-align: center;">
+                  <div style="font-size: 1.1rem; margin-bottom: 0.5rem;">
+                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Upload Complete
+                  </div>
+                  <div style="color: var(--text-secondary);">
+                    Ready to validate ${data.total_images || 0} images.
+                  </div>
+                </div>
+              `;
 
-              // Update result display
+              uploadButton.innerHTML =
+                '<i class="fas fa-upload"></i> Upload Another ZIP';
+              uploadButton.disabled = false;
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              document.getElementById("result").innerHTML = `
+                <div style="color: var(--danger-color);">
+                  <i class="fas fa-exclamation-triangle"></i> An error occurred during upload
+                </div>
+              `;
+              uploadButton.innerHTML =
+                '<i class="fas fa-upload"></i> Retry Upload';
+              uploadButton.disabled = false;
+              if (uploadStatus) {
+                uploadStatus.style.display = "none";
+                uploadStatusText.textContent = "";
+              }
+            });
+        });
+
+      if (validateButton) {
+        validateButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          validateButton.disabled = true;
+          validateButton.innerHTML = '<span class="loading"></span>Validating...';
+
+          fetch("{% url 'validate_images' %}", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": document.querySelector(
+                "[name=csrfmiddlewaretoken]"
+              ).value,
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
               document.getElementById("result").innerHTML = `
                 <div style="text-align: center;">
                   <div style="font-size: 1.25rem; margin-bottom: 1rem;">
                     <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Validation Complete
                   </div>
                   <div style="color: var(--text-secondary);">
-                    Valid Images: <span style="color: var(--success-color); font-weight: 600;">${data.valid_count || 0
-                }</span> &nbsp;|&nbsp;
-                    Invalid Images: <span style="color: var(--warning-color); font-weight: 600;">${data.invalid_count || 0
-                }</span>
+                    Total Uploaded: <span style="color: var(--primary-color); font-weight: 600;">${data.total_images || 0}</span> &nbsp;|&nbsp;
+                    Valid Images: <span style="color: var(--success-color); font-weight: 600;">${data.valid_count || 0}</span> &nbsp;|&nbsp;
+                    Invalid Images: <span style="color: var(--warning-color); font-weight: 600;">${data.invalid_count || 0}</span>
                   </div>
                 </div>
               `;
 
-              // Reset upload button
-              setTimeout(() => {
-                uploadButton.innerHTML =
-                  '<i class="fas fa-play"></i> Start New Validation';
-                uploadButton.disabled = false;
-                progressContainer.remove();
-              }, 2000);
+              const showInvalid = document.getElementById("showInvalid");
+              if (showInvalid) showInvalid.disabled = false;
+
+
+              validateButton.innerHTML =
+                '<i class="fas fa-check-circle"></i> Re-Run Validation';
+              validateButton.disabled = false;
             })
             .catch((error) => {
-              clearInterval(progressInterval);
               console.error("Error:", error);
               document.getElementById("result").innerHTML = `
                 <div style="color: var(--danger-color);">
                   <i class="fas fa-exclamation-triangle"></i> An error occurred during validation
                 </div>
               `;
-              uploadButton.innerHTML =
+              validateButton.innerHTML =
                 '<i class="fas fa-play"></i> Retry Validation';
-              uploadButton.disabled = false;
-              progressContainer.remove();
+              validateButton.disabled = false;
             });
-
-          // Clean up on page unload
-          window.addEventListener("beforeunload", () => {
-            clearInterval(progressInterval);
-          });
         });
+      }
     });
 
     $(document).ready(function () {
@@ -1197,7 +1208,7 @@
             `);
             const targetUrl = isInvalid
               ? "/image_gallery/"
-              : "/valid_images_gallery/";
+              : "/valid_images/";
             window.location.href = targetUrl;
           }
         }
@@ -1411,13 +1422,13 @@
               Validation
             </h3>
 
-            <form method="post" enctype="multipart/form-data" id="fileUploadForm">
+            <form method="post" enctype="multipart/form-data" id="fileUploadForm" action="{% url 'photoValidator' %}">
               {% csrf_token %}
 
               <div class="file-upload-area">
                 <i class="fas fa-file-archive upload-icon"></i>
                 <h4 style="margin-bottom: 1rem; color: var(--text-secondary)">
-                  Drag & Drop or Click to Upload
+                  Drag & Drop or Click to Select
                 </h4>
                 <p style="margin-bottom: 1.5rem; color: var(--text-muted)">
                   Select a ZIP file containing photos to validate
@@ -1430,11 +1441,18 @@
                 <div class="file-name-display" style="display: none">
                   No file selected
                 </div>
+                <div id="uploadStatus" class="status-indicator status-success" style="display: none; margin-top: 1rem;">
+                  <i class="fas fa-check-circle"></i>
+                  <span id="uploadStatusText"></span>
+                </div>
               </div>
 
               <div id="startValidationBtn" style="text-align: center; margin-top: 2rem; display: none">
                 <button type="submit" id="uploadZip" class="file-upload-label" disabled>
-                  <i class="fas fa-play"></i> Start Validation
+                  <i class="fas fa-upload"></i> Upload ZIP
+                </button>
+                <button type="button" id="validateBtn" class="file-upload-label" disabled style="margin-left: 0.5rem;">
+                  <i class="fas fa-play"></i> Validate Now
                 </button>
               </div>
             </form>
@@ -1453,6 +1471,7 @@
             <div id="result" class="result-display">
               Upload a ZIP file to see validation results
             </div>
+
             
             <!-- Action Buttons Container -->
             <div class="action-buttons-row" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; justify-content: center; align-items: center;">
@@ -1838,10 +1857,7 @@
   <script src="{% static 'api/vendor/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'api/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
   <!-- Plugin JavaScript -->
-  <script src="{% static 'api/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
-  <!-- Custom scripts for this template -->
-  <script src="{% static 'api/js/grayscale.min.js' %}"></script>
-  <script src="{% static 'api/js/logic.js' %}"></script>
+  <script src="{% static 'api/vendor/jquery-easing/jquery.easing.compatibility.js' %}"></script>
 </body>
 
 </html>
