@@ -7,11 +7,11 @@ RUN apt-get clean && apt-get -y update && apt-get install -y build-essential cma
 RUN apt-get install ffmpeg libsm6 libxext6 wget curl -y
 
 
-COPY requirements_new.txt .
+COPY requirements.txt .
 
 RUN pip install --upgrade pip setuptools
 
-RUN pip install --pre -r requirements_new.txt
+RUN pip install --pre -r requirements.txt
 
 
 COPY . .
