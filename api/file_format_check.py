@@ -9,7 +9,6 @@ def check_image(path, config=None):
         
         img = Image.open(path)
         format = img.format
-        print("format = ", format)
         
         # Handle different format variations
         format_upper = format.upper() if format else ""
@@ -21,7 +20,6 @@ def check_image(path, config=None):
         elif format_upper == "PNG" and config.is_png:
             is_valid = True
             
-        print(f"Format check result: {is_valid} for format {format}")
         return is_valid
     except IOError:
         return False

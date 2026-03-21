@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import time
+import logging
 
 from .config_utils import get_cached_config
 
@@ -36,7 +37,7 @@ def time_function(func):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print(f"{func.__name__} took {end_time - start_time:.4f} seconds")
+        logging.debug(f"{func.__name__} took {end_time - start_time:.4f} seconds")
         return result
     return wrapper
 

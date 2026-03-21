@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import logging
 from .config_utils import get_cached_config
 
 def is_grey(img, config=None):
@@ -27,5 +28,5 @@ def is_grey(img, config=None):
         return grey_percentage > grey_percentage_cutoff
 
     except Exception as e:
-        print(f"Error in is_grey: {e}")
+        logging.debug(f"Error in is_grey: {e}")
         return False

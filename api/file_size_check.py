@@ -1,4 +1,5 @@
 import os.path
+import logging
 from PIL import Image
 from .config_utils import get_cached_config
 
@@ -44,7 +45,7 @@ def check_height(path, config=None):
             return True
         return False
     except Exception as e:
-        print(f"Error in check_height: {e}")
+        logging.debug(f"Error in check_height: {e}")
         return False
 
 def check_width(path, config=None):
@@ -64,7 +65,7 @@ def check_width(path, config=None):
             return True
         return False
     except Exception as e:
-        print(f"Error in check_width: {e}")
+        logging.debug(f"Error in check_width: {e}")
         return False
 
 

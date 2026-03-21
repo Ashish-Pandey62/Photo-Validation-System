@@ -12,8 +12,6 @@ import api.grey_black_and_white_check as grey_black_and_white_check
 import api.head_check as head_check
 import api.symmetry_check as symmetry_check
 
-logging.basicConfig(level=logging.INFO)
-
 @time_function
 def main_optimized(imgPath, max_image_dimension=800, config=None):
     """
@@ -37,7 +35,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "File format check: Passed (supported format)\n"
         else:
             message = message + "File format check: Failed (unsupported format)\n"
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed file format check\n"
 
@@ -48,7 +46,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "File size check: Passed (size within limits)\n"
         else:
             message = message + "File size check: Failed (size outside limits)\n"
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed file size check\n"
 
@@ -59,7 +57,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "File Height check: Passed (height within limits)\n"
         else:
             message = message + "File Height check: Failed (height outside limits)\n"
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed file height check\n"
 
@@ -70,7 +68,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "File Width check: Passed (width within limits)\n"
         else:
             message = message + "File Width check: Failed (width outside limits)\n"
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed file width check\n"
 
@@ -89,7 +87,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "File Open Test: Passed (image loads correctly)\n"
         else:
             message = message + "File Open Test: Failed (corrupted image)\n"
-        logging.info(message)
+        logging.debug(message)
         if is_corrupted:
             return "Corrupted image detected"
     else:
@@ -101,7 +99,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "Greyness check: Failed (image too grey/black and white)\n"
         else:
             message = message + "Greyness check: Passed (sufficient color variation)\n"
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed greyness check\n"
 
@@ -127,7 +125,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             # Fallback to old behavior if no pixelation details
             message = message + "Blurness check: " + ('Passed' if not is_blur else 'Failed') + "\n"
         
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed blurness and pixelation check\n"
 
@@ -138,7 +136,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "Background check: Passed\n"
         else:
             message = message + "Background check: Failed\n"
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed background check\n"
 
@@ -156,7 +154,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
                 message = message + "Head check: Failed (Multiple heads detected)\n"
         else:
             message = message + "Head check: Passed ({:.1f}% head coverage)\n".format(head_percent)
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed head check\n"
 
@@ -167,7 +165,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "Eye check: Failed (eyes not visible or covered)\n"
         else:
             message = message + "Eye check: Passed (eyes visible)\n"
-        logging.info(message)
+        logging.debug(message)
     else:
         message = message + "Bypassed eye check\n"
 
@@ -179,7 +177,7 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
                 message = message + "Symmetry check: Failed ({:.1f}% symmetric, min required: {:.1f}%)\n".format(symmetry_percentage, threshold_percentage)
             else:
                 message = message + "Symmetry check: Passed ({:.1f}% symmetric)\n".format(symmetry_percentage)
-            logging.info(message)
+            logging.debug(message)
         except Exception as e:
             logging.error(f"Error in symmetry check for {imgPath}: {e}")
             message = message + "Symmetry check error: " + str(e) + "\n"
@@ -187,5 +185,5 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
         message = message + "Bypassed symmetry check\n"
 
     final = time.time()
-    logging.info("Total time in second = " + str(final - initial))
+    logging.debug("Total time in second = " + str(final - initial))
     return message 

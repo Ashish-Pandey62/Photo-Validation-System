@@ -30,7 +30,6 @@ def valid_head_check(image):
         
         # Check if head percentage is within acceptable range
         if 10 < proper_head_percentage < 80:
-            print("head percent", proper_head_percentage)
             return True, proper_head_percentage
         else:
             return False, proper_head_percentage

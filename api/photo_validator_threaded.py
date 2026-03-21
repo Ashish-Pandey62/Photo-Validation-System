@@ -20,7 +20,13 @@ import api.grey_black_and_white_check as grey_black_and_white_check
 import api.head_check as head_check
 import api.symmetry_check as symmetry_check
 
-logging.basicConfig(level=logging.INFO)
+progress_logger = logging.getLogger("validation_progress")
+if not progress_logger.handlers:
+    handler = logging.StreamHandler()
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    progress_logger.addHandler(handler)
+progress_logger.setLevel(logging.INFO)
+progress_logger.propagate = False
 
 # Thread-safe locks for file operations
 file_move_lock = threading.Lock()
@@ -63,8 +69,8 @@ class ProgressTracker:
                 eta = (self.total_items - total_processed) / rate if rate > 0 else 0
                 percentage = (total_processed / self.total_items) * 100 if self.total_items > 0 else 0
                 
-                logging.info(
-                    f"🔥 Progress: {total_processed}/{self.total_items} "
+                progress_logger.info(
+                    f"PROGRESS {total_processed}/{self.total_items} "
                     f"({percentage:.1f}%) - "
                     f"Rate: {rate:.1f} images/sec - "
                     f"ETA: {eta:.0f}s - "
@@ -77,14 +83,14 @@ def get_optimal_thread_count():
     cpu_cores = cpu_count()
     
     
-    if cpu_cores >= 16:  # High-end systems 
+    if cpu_cores >= 16: # High-end systems 
         optimal_threads = 16
-    elif cpu_cores >= 8:  # Mid-range systems
+    elif cpu_cores >= 8: # Mid-range systems
         optimal_threads = min(cpu_cores - 2, 10)
-    else:  # Lower-end systems
+    else: # Lower-end systems
         optimal_threads = min(max(4, cpu_cores * 2), 8)
     
-    logging.info(f"⚡ Using {optimal_threads} threads for parallel processing (detected {cpu_cores} CPU cores)")
+    progress_logger.info(f"PROGRESS Using {optimal_threads} threads for parallel processing (detected {cpu_cores} CPU cores)")
     return optimal_threads
 
 def validate_single_image_threaded(image_path, config):
@@ -279,7 +285,7 @@ def validate_single_image_threaded(image_path, config):
             except Exception as e:
                 logging.error(f"Error in head check for {image_name}: {e}")
                 # Don't add this as a validation failure, just skip the check
-                logging.warning(f"Skipping head check for {image_name} due to format issues")
+                logging.debug(f"Skipping head check for {image_name} due to format issues")
 
         # Check eyes
         if not getattr(config, 'bypass_eye_check', False):
@@ -295,7 +301,7 @@ def validate_single_image_threaded(image_path, config):
             except Exception as e:
                 logging.error(f"Error in eye check for {image_name}: {e}")
                 # Don't add this as a validation failure, just skip the check
-                logging.warning(f"Skipping eye check for {image_name} due to format issues")
+                logging.debug(f"Skipping eye check for {image_name} due to format issues")
 
         # Check for symmetry
         if not getattr(config, 'bypass_symmetry_check', False):
@@ -333,7 +339,7 @@ def move_image_thread_safe(image_path, destination_dir, image_name):
                 logging.debug(f"Moved {image_name} to {destination_dir}")
                 return True
             else:
-                logging.warning(f"Source file {image_path} no longer exists")
+                logging.debug(f"Source file {image_path} no longer exists")
                 return False
         except Exception as e:
             logging.error(f"Error moving {image_name}: {e}")
@@ -358,7 +364,7 @@ def write_csv_results_thread_safe(csv_file_path, error_messages):
             with open(csv_file_path, "a", encoding='utf-8') as f:
                 f.write(csv_string)
             
-            logging.info("Successfully wrote validation results to CSV")
+            logging.debug("Successfully wrote validation results to CSV")
             return True
         except Exception as e:
             logging.error(f"Error writing CSV results: {e}")
@@ -373,7 +379,7 @@ def main_threaded(directory, max_workers=None, config=None):
         raise FileNotFoundError(f"Directory not found: {directory}")
     
     start_time = time.time()
-    logging.info(f"🚀 Starting THREADED parallel validation of directory: {directory}")
+    progress_logger.info(f"PROGRESS Starting validation of directory: {directory}")
     
     # Get config object (no serialization needed for threads)
     if config is None:
@@ -405,7 +411,7 @@ def main_threaded(directory, max_workers=None, config=None):
                         and f.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.gif'))])
     
     if not file_lists:
-        logging.info("No image files found to process")
+        progress_logger.info("PROGRESS No image files found to process")
         return {
             'total_processed': 0,
             'valid_count': 0,
@@ -414,7 +420,7 @@ def main_threaded(directory, max_workers=None, config=None):
             'avg_time_per_image': 0
         }
     
-    logging.info(f"📊 Found {len(file_lists)} image files to process")
+    progress_logger.info(f"PROGRESS Found {len(file_lists)} image files to process")
     
     # Initialize progress tracking
     progress_tracker = ProgressTracker(len(file_lists))
@@ -423,7 +429,7 @@ def main_threaded(directory, max_workers=None, config=None):
     if max_workers is None:
         max_workers = get_optimal_thread_count()
     
-    logging.info(f"🔥 THREADED VALIDATION ENGINE STARTING with {max_workers} threads...")
+    progress_logger.info(f"PROGRESS Validation engine starting with {max_workers} threads")
     
     # Process images with ThreadPoolExecutor
     results = []
@@ -446,12 +452,12 @@ def main_threaded(directory, max_workers=None, config=None):
             except Exception as e:
                 image_path = future_to_image[future]
                 image_name = os.path.basename(image_path)
-                logging.error(f"❌ Error processing {image_name}: {e}")
+                logging.error(f"Error processing {image_name}: {e}")
                 results.append(ValidationResult(image_name, False, [f"Processing error: {str(e)}"], 0))
                 progress_tracker.increment(success=False)
     
     # Process results and move files
-    logging.info("📁 Processing validation results and organizing files...")
+    progress_logger.info("PROGRESS Processing validation results and organizing files")
     
     error_messages = {}
     valid_count = 0
@@ -493,28 +499,28 @@ def main_threaded(directory, max_workers=None, config=None):
     images_per_second = len(file_lists) / total_time if total_time > 0 else 0
     
     # Log completion summary
-    logging.info("🎯" + "=" * 58 + "🎯")
-    logging.info("🚀 THREADED PARALLEL VALIDATION COMPLETED! 🚀")
-    logging.info("🎯" + "=" * 58 + "🎯")
-    logging.info(f"📊 Total images processed: {len(file_lists)}")
-    logging.info(f"✅ Valid images: {valid_count}")
-    logging.info(f"❌ Invalid images: {invalid_count}")
-    logging.info(f"⏱️  Total processing time: {total_time:.2f} seconds")
-    logging.info(f"⚡ Average time per image: {avg_time_per_image:.3f} seconds")
-    logging.info(f"🔥 Processing speed: {images_per_second:.2f} images/second")
-    logging.info(f"🛠️  Threads utilized: {max_workers}")
+    logging.debug("" + "=" * 58 + "")
+    progress_logger.info("PROGRESS Validation completed")
+    logging.debug("" + "=" * 58 + "")
+    progress_logger.info(f"PROGRESS Total images processed: {len(file_lists)}")
+    progress_logger.info(f"PROGRESS Valid images: {valid_count}")
+    progress_logger.info(f"PROGRESS Invalid images: {invalid_count}")
+    progress_logger.info(f"PROGRESS Total processing time: {total_time:.2f} seconds")
+    progress_logger.info(f"PROGRESS Average time per image: {avg_time_per_image:.3f} seconds")
+    progress_logger.info(f"PROGRESS Processing speed: {images_per_second:.2f} images/second")
+    progress_logger.info(f"PROGRESS Threads utilized: {max_workers}")
     
     # Calculate estimated speedup
-    estimated_sequential_time = len(file_lists) * 2.0  # Conservative 2s per image estimate
+    estimated_sequential_time = len(file_lists) * 2.0 # Conservative 2s per image estimate
     speedup_factor = estimated_sequential_time / total_time if total_time > 0 else 1
-    logging.info(f"🚀 ESTIMATED SPEEDUP: {speedup_factor:.1f}x FASTER than sequential!")
+    progress_logger.info(f"PROGRESS Estimated speedup: {speedup_factor:.1f}x faster than sequential")
     
     if invalid_count > 0:
-        logging.info("❌ Invalid images summary:")
+        logging.debug("Invalid images summary:")
         for image, issues in error_messages.items():
-            logging.info(f"   • {image}: {', '.join(issues)}")
+            logging.debug(f"   {image}: {', '.join(issues)}")
     
-    logging.info("🎉 THREADED PROCESSING MISSION ACCOMPLISHED! 🎉")
+    logging.debug(" THREADED PROCESSING MISSION ACCOMPLISHED! ")
     
     return {
         'total_processed': len(file_lists),
