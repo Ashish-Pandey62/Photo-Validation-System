@@ -36,7 +36,7 @@ class Config(models.Model):
     # New check thresholds
     noise_threshold = models.FloatField(default=40)
     dust_spot_threshold = models.IntegerField(default=50)
-    text_region_threshold = models.IntegerField(default=8)
+    text_region_threshold = models.IntegerField(default=15)
 
     # New check bypass toggles
     bypass_printed_photo_check = models.BooleanField(default=False)

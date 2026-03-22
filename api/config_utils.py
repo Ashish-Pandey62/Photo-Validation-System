@@ -21,7 +21,7 @@ DEFAULT_CONFIG = {
     "max_head_percent": 80,
     "noise_threshold": 40,
     "dust_spot_threshold": 50,
-    "text_region_threshold": 8,
+    "text_region_threshold": 15,
 }
 
 
