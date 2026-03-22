@@ -318,11 +318,15 @@ def save_config(request):
             
             # Threshold values for quality checks
             bgcolorThreshold = float(request.POST.get("bgcolorThreshold", 40))
-            bgUniformityThreshold = float(request.POST.get("bgUniformityThreshold", 25))
-            blurnessThreshold = float(request.POST.get("blurnessThreshold", 30))
-            pixelatedThreshold = float(request.POST.get("pixelatedThreshold", 100))
-            greynessThreshold = float(request.POST.get("greynessThreshold", 5))
-            symmetryThreshold = float(request.POST.get("symmetryThreshold", 35))
+            bgUniformityThreshold = float(request.POST.get("bgUniformityThreshold", 35))
+            blurnessThreshold = float(request.POST.get("blurnessThreshold", 100))
+            greynessThreshold = float(request.POST.get("greynessThreshold", 15))
+            symmetryThreshold = float(request.POST.get("symmetryThreshold", 30))
+            minHeadPercent = float(request.POST.get("minHeadPercent", 10))
+            maxHeadPercent = float(request.POST.get("maxHeadPercent", 80))
+            noiseThreshold = float(request.POST.get("noiseThreshold", 25))
+            dustSpotThreshold = int(request.POST.get("dustSpotThreshold", 15))
+            textRegionThreshold = int(request.POST.get("textRegionThreshold", 8))
             
             # Handle checkbox values properly
             jpgchecked = request.POST.get("jpgchecked") == "on"
@@ -341,6 +345,9 @@ def save_config(request):
             bypass_head_check = request.POST.get("bypass_head_check") == "on"
             bypass_eye_check = request.POST.get("bypass_eye_check") == "on"
             bypass_corrupted_check = request.POST.get("bypass_corrupted_check") == "on"
+            bypass_printed_photo_check = request.POST.get("bypass_printed_photo_check") == "on"
+            bypass_dust_noise_check = request.POST.get("bypass_dust_noise_check") == "on"
+            bypass_text_check = request.POST.get("bypass_text_check") == "on"
 
             config = get_or_create_config()
 
@@ -359,9 +366,10 @@ def save_config(request):
             config.bgcolor_threshold = bgcolorThreshold
             config.bg_uniformity_threshold = bgUniformityThreshold
             config.blurness_threshold = blurnessThreshold
-            config.pixelated_threshold = pixelatedThreshold
             config.greyness_threshold = greynessThreshold
             config.symmetry_threshold = symmetryThreshold
+            config.min_head_percent = minHeadPercent
+            config.max_head_percent = maxHeadPercent
             
             # Save bypass settings
             config.bypass_height_check = bypass_height_check
@@ -375,6 +383,14 @@ def save_config(request):
             config.bypass_head_check = bypass_head_check
             config.bypass_eye_check = bypass_eye_check
             config.bypass_corrupted_check = bypass_corrupted_check
+            config.bypass_printed_photo_check = bypass_printed_photo_check
+            config.bypass_dust_noise_check = bypass_dust_noise_check
+            config.bypass_text_check = bypass_text_check
+
+            # Save new check thresholds
+            config.noise_threshold = noiseThreshold
+            config.dust_spot_threshold = dustSpotThreshold
+            config.text_region_threshold = textRegionThreshold
 
             config.save()
             clear_config_cache()
@@ -957,7 +973,7 @@ def test_config_image(request):
                 <div><strong>Background Threshold:</strong> {config.bgcolor_threshold} (Higher = stricter)</div>
                 <div><strong>Background Uniformity:</strong> {config.bg_uniformity_threshold} (Lower = stricter)</div>
                 <div><strong>Blurness Threshold:</strong> {config.blurness_threshold} (Higher = stricter)</div>
-                <div><strong>Pixelation Threshold:</strong> {config.pixelated_threshold} (Lower = stricter)</div>
+                <div><strong>Pixelation Check:</strong> Removed (use blur check instead)</div>
                 <div><strong>Greyness Threshold:</strong> {config.greyness_threshold} (Lower = stricter)</div>
                 <div><strong>Symmetry Threshold:</strong> {config.symmetry_threshold} (Higher = stricter)</div>
                 <div><strong>Bypass Height:</strong> {getattr(config,'bypass_height_check', False)}</div>

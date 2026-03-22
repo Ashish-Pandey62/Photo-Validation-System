@@ -19,6 +19,9 @@ import api.file_size_check as file_size_check
 import api.grey_black_and_white_check as grey_black_and_white_check
 import api.head_check as head_check
 import api.symmetry_check as symmetry_check
+import api.printed_photo_check as printed_photo_check
+import api.dust_noise_check as dust_noise_check
+import api.text_detection_check as text_detection_check
 
 progress_logger = logging.getLogger("validation_progress")
 if not progress_logger.handlers:
@@ -79,15 +82,14 @@ class ProgressTracker:
                 self.last_update = current_time
 
 def get_optimal_thread_count():
-    """Get optimal thread count optimized for Lenovo Legion 5 Pro with i7-13620H"""
+    """Get optimal thread count based on available CPU cores"""
     cpu_cores = cpu_count()
     
-    
-    if cpu_cores >= 16: # High-end systems 
+    if cpu_cores >= 16:
         optimal_threads = 16
-    elif cpu_cores >= 8: # Mid-range systems
+    elif cpu_cores >= 8:
         optimal_threads = min(cpu_cores - 2, 10)
-    else: # Lower-end systems
+    else:
         optimal_threads = min(max(4, cpu_cores * 2), 8)
     
     progress_logger.info(f"PROGRESS Using {optimal_threads} threads for parallel processing (detected {cpu_cores} CPU cores)")
@@ -95,8 +97,8 @@ def get_optimal_thread_count():
 
 def validate_single_image_threaded(image_path, config):
     """
-    Validate a single image in a thread-safe manner
-    Returns ValidationResult object
+    Validate a single image in a thread-safe manner.
+    Returns ValidationResult object.
     """
     start_time = time.time()
     image_name = os.path.basename(image_path)
@@ -108,7 +110,7 @@ def validate_single_image_threaded(image_path, config):
         # Check image file format
         if not getattr(config, 'bypass_format_check', False):
             try:
-                is_file_format_valid = file_format_check.check_image(image_path,config)
+                is_file_format_valid = file_format_check.check_image(image_path, config)
                 if not is_file_format_valid:
                     messages.append("File format check failed")
             except Exception as e:
@@ -118,16 +120,15 @@ def validate_single_image_threaded(image_path, config):
         # Check file size
         if not getattr(config, 'bypass_size_check', False):
             try:
-                is_file_size_valid = file_size_check.check_image(image_path,config)
+                is_file_size_valid = file_size_check.check_image(image_path, config)
                 if not is_file_size_valid:
-                    # Get detailed size info for enhanced message
                     try:
                         file_size_bytes = os.path.getsize(image_path)
                         file_size_kb = file_size_bytes / 1024
                         min_size = getattr(config, 'min_size', 10)
                         max_size = getattr(config, 'max_size', 5000)
                         messages.append(f"File size check failed ({file_size_kb:.1f}KB, required: {min_size}-{max_size}KB)")
-                    except:
+                    except Exception:
                         messages.append("File size check failed")
             except Exception as e:
                 logging.error(f"Error in file size check for {image_name}: {e}")
@@ -136,9 +137,8 @@ def validate_single_image_threaded(image_path, config):
         # Check height
         if not getattr(config, 'bypass_height_check', False):
             try:
-                is_file_height_valid = file_size_check.check_height(image_path,config)
+                is_file_height_valid = file_size_check.check_height(image_path, config)
                 if not is_file_height_valid:
-                    # Get detailed height info for enhanced message
                     try:
                         img_temp = cv2.imread(image_path)
                         if img_temp is not None:
@@ -148,7 +148,7 @@ def validate_single_image_threaded(image_path, config):
                             messages.append(f"Height check failed ({height}px, required: {min_height}-{max_height}px)")
                         else:
                             messages.append("File height check failed")
-                    except:
+                    except Exception:
                         messages.append("File height check failed")
             except Exception as e:
                 logging.error(f"Error in file height check for {image_name}: {e}")
@@ -157,9 +157,8 @@ def validate_single_image_threaded(image_path, config):
         # Check width
         if not getattr(config, 'bypass_width_check', False):
             try:
-                is_file_width_valid = file_size_check.check_width(image_path,config)
+                is_file_width_valid = file_size_check.check_width(image_path, config)
                 if not is_file_width_valid:
-                    # Get detailed width info for enhanced message
                     try:
                         img_temp = cv2.imread(image_path)
                         if img_temp is not None:
@@ -169,7 +168,7 @@ def validate_single_image_threaded(image_path, config):
                             messages.append(f"Width check failed ({width}px, required: {min_width}-{max_width}px)")
                         else:
                             messages.append("File width check failed")
-                    except:
+                    except Exception:
                         messages.append("File width check failed")
             except Exception as e:
                 logging.error(f"Error in file width check for {image_name}: {e}")
@@ -186,12 +185,9 @@ def validate_single_image_threaded(image_path, config):
             
             # Validate image format and convert if necessary
             if len(img.shape) != 3 or img.shape[2] != 3:
-                # Try to convert to BGR format if it's not already
                 if len(img.shape) == 2:
-                    # Grayscale to BGR
                     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
                 elif len(img.shape) == 3 and img.shape[2] == 4:
-                    # RGBA to BGR
                     img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
                 else:
                     messages.append("Unsupported image format")
@@ -199,7 +195,6 @@ def validate_single_image_threaded(image_path, config):
                     processing_time = time.time() - start_time
                     return ValidationResult(image_name, False, messages, processing_time)
             
-            # Ensure the image is 8-bit
             if img.dtype != 'uint8':
                 img = img.astype('uint8')
                 
@@ -232,21 +227,12 @@ def validate_single_image_threaded(image_path, config):
             try:
                 is_blur, blur_details = blur_check.check_image_blurness(img, config)
                 if is_blur:
-                    # Use the actual blur values from the check
                     blur_value = blur_details['blur_value']
                     blur_threshold = blur_details['blur_threshold']
-                    pixelated_value = blur_details['pixelated_value']
-                    pixelated_threshold = blur_details['pixelated_threshold']
-                    
-                    # Convert blur value to percentage (higher laplacian variance = sharper image)
+                    # Convert to percentage for user-friendly message
                     sharpness_percentage = min(100, (blur_value / 500) * 100)
                     min_sharpness_percent = (blur_threshold / 500) * 100
-                    
-                    # Create detailed message based on which check failed
-                    if blur_details['is_blur']:
-                        messages.append(f"Blurness check failed ({sharpness_percentage:.1f}% sharpness, min required: {min_sharpness_percent:.1f}%)")
-                    if blur_details['is_pixelated']:
-                        messages.append(f"Pixelation check failed ({pixelated_value} lines detected, max allowed: {pixelated_threshold})")
+                    messages.append(f"Blurness check failed ({sharpness_percentage:.1f}% sharpness, min required: {min_sharpness_percent:.1f}%)")
             except Exception as e:
                 logging.error(f"Error in blurness check for {image_name}: {e}")
                 messages.append(f"Blurness check error: {str(e)}")
@@ -255,7 +241,6 @@ def validate_single_image_threaded(image_path, config):
         if not getattr(config, 'bypass_background_check', False):
             try:
                 if not background_check.background_check(img, config):
-                    # Simplified background check failure message
                     messages.append("Background check failed")
             except Exception as e:
                 logging.error(f"Error in background check for {image_name}: {e}")
@@ -264,43 +249,37 @@ def validate_single_image_threaded(image_path, config):
         # Check image for head position and coverage
         if not getattr(config, 'bypass_head_check', False):
             try:
-                # Additional validation for head check
                 if img is not None and len(img.shape) == 3 and img.shape[2] == 3:
-                    # Make a copy to avoid modifying the original
                     img_copy = img.copy()
-                    is_head_valid, head_percent = head_check.valid_head_check(img_copy)
+                    is_head_valid, head_percent = head_check.valid_head_check(img_copy, config)
                     if not is_head_valid:
-                        if head_percent < 10:
-                            messages.append(f"Head check failed ({head_percent:.1f}% head coverage, min required: 10%)")
-                        elif 100 > head_percent > 80:
-                            messages.append(f"Head check failed ({head_percent:.1f}% head coverage, max allowed: 80%)")
-                        elif head_percent == 101:
+                        if head_percent == 101:
                             messages.append("Head check failed (no face detected)")
                         elif head_percent == 102:
                             messages.append("Head check failed (multiple faces detected)")
                         else:
-                            messages.append(f"Head check failed ({head_percent:.1f}% head coverage, required: 10-80%)")
+                            min_pct = getattr(config, 'min_head_percent', 10)
+                            max_pct = getattr(config, 'max_head_percent', 80)
+                            messages.append(f"Head check failed ({head_percent:.1f}% head coverage, required: {min_pct:.0f}-{max_pct:.0f}%)")
                 else:
                     messages.append("Invalid image format for head check")
             except Exception as e:
                 logging.error(f"Error in head check for {image_name}: {e}")
-                # Don't add this as a validation failure, just skip the check
                 logging.debug(f"Skipping head check for {image_name} due to format issues")
 
         # Check eyes
         if not getattr(config, 'bypass_eye_check', False):
             try:
-                # Additional validation for eye check
                 if img is not None and len(img.shape) == 3 and img.shape[2] == 3:
-                    # Make a copy to avoid modifying the original
                     img_copy = img.copy()
-                    if head_check.detect_eyes(img_copy):
+                    # detect_eyes returns True = eyes visible (good), False = not visible (bad)
+                    eyes_visible = head_check.detect_eyes(img_copy)
+                    if not eyes_visible:
                         messages.append("Eye check failed (eyes not visible or covered)")
                 else:
                     messages.append("Invalid image format for eye check")
             except Exception as e:
                 logging.error(f"Error in eye check for {image_name}: {e}")
-                # Don't add this as a validation failure, just skip the check
                 logging.debug(f"Skipping eye check for {image_name} due to format issues")
 
         # Check for symmetry
@@ -312,6 +291,46 @@ def validate_single_image_threaded(image_path, config):
             except Exception as e:
                 logging.error(f"Error in symmetry check for {image_name}: {e}")
                 messages.append(f"Symmetry check error: {str(e)}")
+
+        # Check for printed photo (photo-of-photo)
+        if not getattr(config, 'bypass_printed_photo_check', False):
+            try:
+                is_printed, print_details = printed_photo_check.check_printed_photo(img, config)
+                if is_printed:
+                    reasons = []
+                    if print_details.get('has_moire_pattern'):
+                        reasons.append('moiré pattern detected')
+                    if print_details.get('has_border_lines'):
+                        reasons.append('border lines detected')
+                    messages.append(f"Printed photo check failed ({', '.join(reasons)})")
+            except Exception as e:
+                logging.error(f"Error in printed photo check for {image_name}: {e}")
+                messages.append(f"Printed photo check error: {str(e)}")
+
+        # Check for dust and noise
+        if not getattr(config, 'bypass_dust_noise_check', False):
+            try:
+                has_issues, dust_details = dust_noise_check.check_dust_and_noise(img, config)
+                if has_issues:
+                    issues = []
+                    if dust_details.get('has_dust'):
+                        issues.append(f"{dust_details['dust_spot_count']} dust spots (max: {dust_details['dust_spot_threshold']})")
+                    if dust_details.get('is_noisy'):
+                        issues.append(f"noise level {dust_details['noise_level']:.1f} (max: {dust_details['noise_threshold']})")
+                    messages.append(f"Dust/noise check failed ({', '.join(issues)})")
+            except Exception as e:
+                logging.error(f"Error in dust/noise check for {image_name}: {e}")
+                messages.append(f"Dust/noise check error: {str(e)}")
+
+        # Check for text in image
+        if not getattr(config, 'bypass_text_check', False):
+            try:
+                has_text, text_details = text_detection_check.check_text_in_image(img, config)
+                if has_text:
+                    messages.append(f"Text check failed ({text_details['text_region_count']} text regions found, max: {text_details['text_region_threshold']})")
+            except Exception as e:
+                logging.error(f"Error in text check for {image_name}: {e}")
+                messages.append(f"Text check error: {str(e)}")
 
         processing_time = time.time() - start_time
         is_valid = len(messages) == 0
@@ -472,13 +491,11 @@ def main_threaded(directory, max_workers=None, config=None):
             
             if result.is_valid:
                 valid_count += 1
-                # Move to valid directory
                 task = file_executor.submit(move_image_thread_safe, original_path, valid_directory, result.image_name)
                 move_tasks.append(task)
             else:
                 invalid_count += 1
                 error_messages[result.image_name] = result.messages
-                # Move to invalid directory
                 task = file_executor.submit(move_image_thread_safe, original_path, invalid_images_static_directory, result.image_name)
                 move_tasks.append(task)
         
@@ -499,9 +516,7 @@ def main_threaded(directory, max_workers=None, config=None):
     images_per_second = len(file_lists) / total_time if total_time > 0 else 0
     
     # Log completion summary
-    logging.debug("" + "=" * 58 + "")
     progress_logger.info("PROGRESS Validation completed")
-    logging.debug("" + "=" * 58 + "")
     progress_logger.info(f"PROGRESS Total images processed: {len(file_lists)}")
     progress_logger.info(f"PROGRESS Valid images: {valid_count}")
     progress_logger.info(f"PROGRESS Invalid images: {invalid_count}")
@@ -511,7 +526,7 @@ def main_threaded(directory, max_workers=None, config=None):
     progress_logger.info(f"PROGRESS Threads utilized: {max_workers}")
     
     # Calculate estimated speedup
-    estimated_sequential_time = len(file_lists) * 2.0 # Conservative 2s per image estimate
+    estimated_sequential_time = len(file_lists) * 2.0
     speedup_factor = estimated_sequential_time / total_time if total_time > 0 else 1
     progress_logger.info(f"PROGRESS Estimated speedup: {speedup_factor:.1f}x faster than sequential")
     
@@ -519,8 +534,6 @@ def main_threaded(directory, max_workers=None, config=None):
         logging.debug("Invalid images summary:")
         for image, issues in error_messages.items():
             logging.debug(f"   {image}: {', '.join(issues)}")
-    
-    logging.debug(" THREADED PROCESSING MISSION ACCOMPLISHED! ")
     
     return {
         'total_processed': len(file_lists),

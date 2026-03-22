@@ -11,6 +11,9 @@ import api.file_size_check as file_size_check
 import api.grey_black_and_white_check as grey_black_and_white_check
 import api.head_check as head_check
 import api.symmetry_check as symmetry_check
+import api.printed_photo_check as printed_photo_check
+import api.dust_noise_check as dust_noise_check
+import api.text_detection_check as text_detection_check
 
 @time_function
 def main_optimized(imgPath, max_image_dimension=800, config=None):
@@ -103,31 +106,18 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
     else:
         message = message + "Bypassed greyness check\n"
 
-    # Check image for blurness and pixelation
+    # Check image for blurness
     if config.bypass_blurness_check == False:
         is_blur, blur_details = blur_check.check_image_blurness(img, config)
-        
-        # Check if blur_details contains pixelation information
-        if isinstance(blur_details, dict) and 'is_pixelated' in blur_details:
-            is_pixelated = blur_details['is_pixelated']
-            pixelated_value = blur_details.get('pixelated_value', 0)
-            pixelated_threshold = blur_details.get('pixelated_threshold', config.pixelated_threshold)
-            
-            if is_blur and is_pixelated:
-                message = message + "Blurness and pixelation check: Failed (both blur and pixelation detected)\n"
-            elif is_blur:
-                message = message + "Blurness check: Failed (image too blurry)\n"
-            elif is_pixelated:
-                message = message + "Pixelation check: Failed ({:.1f} lines detected, max allowed: {:.1f})\n".format(pixelated_value, pixelated_threshold)
-            else:
-                message = message + "Blurness and pixelation check: Passed\n"
+        if is_blur:
+            blur_value = blur_details['blur_value']
+            blur_threshold = blur_details['blur_threshold']
+            message = message + "Blurness check: Failed (sharpness {:.1f}, min required: {:.1f})\n".format(blur_value, blur_threshold)
         else:
-            # Fallback to old behavior if no pixelation details
-            message = message + "Blurness check: " + ('Passed' if not is_blur else 'Failed') + "\n"
-        
+            message = message + "Blurness check: Passed\n"
         logging.debug(message)
     else:
-        message = message + "Bypassed blurness and pixelation check\n"
+        message = message + "Bypassed blurness check\n"
 
     # Check the background of image
     if config.bypass_background_check == False:
@@ -142,16 +132,16 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
 
     # Check image for head position and coverage (use original image for better accuracy)
     if config.bypass_head_check == False:
-        is_head_valid, head_percent = head_check.valid_head_check(original_img)
+        is_head_valid, head_percent = head_check.valid_head_check(original_img, config)
         if not is_head_valid:
-            if head_percent < 10:
-                message = message + "Head check: Failed (Head Ratio Small: {:.1f}%)\n".format(head_percent)
-            elif 100 > head_percent > 80:
-                message = message + "Head check: Failed (Head Ratio Large: {:.1f}%)\n".format(head_percent)
-            elif head_percent == 101:
+            if head_percent == 101:
                 message = message + "Head check: Failed (Could not detect head)\n"
-            else:
+            elif head_percent == 102:
                 message = message + "Head check: Failed (Multiple heads detected)\n"
+            else:
+                min_pct = getattr(config, 'min_head_percent', 10)
+                max_pct = getattr(config, 'max_head_percent', 80)
+                message = message + "Head check: Failed ({:.1f}% head coverage, required: {:.0f}-{:.0f}%)\n".format(head_percent, min_pct, max_pct)
         else:
             message = message + "Head check: Passed ({:.1f}% head coverage)\n".format(head_percent)
         logging.debug(message)
@@ -160,8 +150,9 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
 
     # Check Eye Covered (use original image for better accuracy)
     if config.bypass_eye_check == False:
-        is_eye_covered = head_check.detect_eyes(original_img)
-        if is_eye_covered:
+        # detect_eyes now returns True = eyes visible (good), False = not visible (bad)
+        eyes_visible = head_check.detect_eyes(original_img)
+        if not eyes_visible:
             message = message + "Eye check: Failed (eyes not visible or covered)\n"
         else:
             message = message + "Eye check: Passed (eyes visible)\n"
@@ -183,6 +174,62 @@ def main_optimized(imgPath, max_image_dimension=800, config=None):
             message = message + "Symmetry check error: " + str(e) + "\n"
     else:
         message = message + "Bypassed symmetry check\n"
+
+    # Check for printed photo (photo-of-photo)
+    if not getattr(config, 'bypass_printed_photo_check', False):
+        try:
+            is_printed, print_details = printed_photo_check.check_printed_photo(img, config)
+            if is_printed:
+                reasons = []
+                if print_details.get('has_moire_pattern'):
+                    reasons.append('moiré pattern detected')
+                if print_details.get('has_border_lines'):
+                    reasons.append('border lines detected')
+                message = message + "Printed photo check: Failed ({})\n".format(', '.join(reasons))
+            else:
+                message = message + "Printed photo check: Passed\n"
+            logging.debug(message)
+        except Exception as e:
+            logging.error(f"Error in printed photo check for {imgPath}: {e}")
+            message = message + "Printed photo check error: " + str(e) + "\n"
+    else:
+        message = message + "Bypassed printed photo check\n"
+
+    # Check for dust and noise
+    if not getattr(config, 'bypass_dust_noise_check', False):
+        try:
+            has_issues, dust_details = dust_noise_check.check_dust_and_noise(img, config)
+            if has_issues:
+                issues = []
+                if dust_details.get('has_dust'):
+                    issues.append('{} dust spots (max: {})'.format(dust_details['dust_spot_count'], dust_details['dust_spot_threshold']))
+                if dust_details.get('is_noisy'):
+                    issues.append('noise level {:.1f} (max: {})'.format(dust_details['noise_level'], dust_details['noise_threshold']))
+                message = message + "Dust/noise check: Failed ({})\n".format(', '.join(issues))
+            else:
+                message = message + "Dust/noise check: Passed\n"
+            logging.debug(message)
+        except Exception as e:
+            logging.error(f"Error in dust/noise check for {imgPath}: {e}")
+            message = message + "Dust/noise check error: " + str(e) + "\n"
+    else:
+        message = message + "Bypassed dust/noise check\n"
+
+    # Check for text in image
+    if not getattr(config, 'bypass_text_check', False):
+        try:
+            has_text, text_details = text_detection_check.check_text_in_image(img, config)
+            if has_text:
+                message = message + "Text check: Failed ({} text regions found, max: {})\n".format(
+                    text_details['text_region_count'], text_details['text_region_threshold'])
+            else:
+                message = message + "Text check: Passed\n"
+            logging.debug(message)
+        except Exception as e:
+            logging.error(f"Error in text check for {imgPath}: {e}")
+            message = message + "Text check error: " + str(e) + "\n"
+    else:
+        message = message + "Bypassed text check\n"
 
     final = time.time()
     logging.debug("Total time in second = " + str(final - initial))

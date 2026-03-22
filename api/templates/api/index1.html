@@ -1275,9 +1275,13 @@
           bgcolorThreshold: $("#bgcolorThreshold").val(),
           bgUniformityThreshold: $("#bgUniformityThreshold").val(),
           blurnessThreshold: $("#blurnessThreshold").val(),
-          pixelatedThreshold: $("#pixelatedThreshold").val(),
           greynessThreshold: $("#greynessThreshold").val(),
           symmetryThreshold: $("#symmetryThreshold").val(),
+          minHeadPercent: $("#minHeadPercent").val(),
+          maxHeadPercent: $("#maxHeadPercent").val(),
+          noiseThreshold: $("#noiseThreshold").val(),
+          dustSpotThreshold: $("#dustSpotThreshold").val(),
+          textRegionThreshold: $("#textRegionThreshold").val(),
           // Bypass checkboxes
           bypass_height_check: $("#bypass_height_check").is(":checked") ? "on" : "",
           bypass_width_check: $("#bypass_width_check").is(":checked") ? "on" : "",
@@ -1289,7 +1293,10 @@
           bypass_symmetry_check: $("#bypass_symmetry_check").is(":checked") ? "on" : "",
           bypass_head_check: $("#bypass_head_check").is(":checked") ? "on" : "",
           bypass_eye_check: $("#bypass_eye_check").is(":checked") ? "on" : "",
-          bypass_corrupted_check: $("#bypass_corrupted_check").is(":checked") ? "on" : ""
+          bypass_corrupted_check: $("#bypass_corrupted_check").is(":checked") ? "on" : "",
+          bypass_printed_photo_check: $("#bypass_printed_photo_check").is(":checked") ? "on" : "",
+          bypass_dust_noise_check: $("#bypass_dust_noise_check").is(":checked") ? "on" : "",
+          bypass_text_check: $("#bypass_text_check").is(":checked") ? "on" : ""
         };
 
         // Submit configuration
@@ -1715,6 +1722,21 @@
                     <input type="checkbox" id="bypass_corrupted_check" name="bypass_corrupted_check" {% if config.bypass_corrupted_check %}checked{% endif %} />
                     <label for="bypass_corrupted_check">Bypass Corrupted Check</label>
                   </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_printed_photo_check" name="bypass_printed_photo_check" {% if config.bypass_printed_photo_check %}checked{% endif %} />
+                    <label for="bypass_printed_photo_check">Bypass Printed Photo Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_dust_noise_check" name="bypass_dust_noise_check" {% if config.bypass_dust_noise_check %}checked{% endif %} />
+                    <label for="bypass_dust_noise_check">Bypass Dust/Noise Check</label>
+                  </div>
+
+                  <div class="bypass-option">
+                    <input type="checkbox" id="bypass_text_check" name="bypass_text_check" {% if config.bypass_text_check %}checked{% endif %} />
+                    <label for="bypass_text_check">Bypass Text Check</label>
+                  </div>
                 </div>
               </div>
 
@@ -1743,27 +1765,58 @@
                 </div>
 
                 <div class="config-row">
-                  <label class="config-label">Blurness Threshold (Higher is strict)</label>
-                  <input type="number" value="{{config.blurness_threshold}}" min="0" max="100" step="1"
+                  <label class="config-label">Blurness Threshold (Higher = stricter)</label>
+                  <input type="number" value="{{config.blurness_threshold}}" min="0" max="1000" step="10"
                     id="blurnessThreshold" name="blurnessThreshold" class="config-input" />
                 </div>
 
                 <div class="config-row">
-                  <label class="config-label">Pixelation Threshold (Lower is strict)</label>
-                  <input type="number" value="{{config.pixelated_threshold}}" min="0" max="500" step="1"
-                    id="pixelatedThreshold" name="pixelatedThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Greyness Threshold (Lower is strict)</label>
+                  <label class="config-label">Greyness Threshold (Lower = stricter)</label>
                   <input type="number" value="{{config.greyness_threshold}}" min="0" max="100" step="1"
                     id="greynessThreshold" name="greynessThreshold" class="config-input" />
                 </div>
 
                 <div class="config-row">
-                  <label class="config-label">Symmetry Threshold (Higher is strict)</label>
+                  <label class="config-label">Symmetry Threshold (Higher = stricter)</label>
                   <input type="number" value="{{config.symmetry_threshold}}" min="0" max="100" step="1"
                     id="symmetryThreshold" name="symmetryThreshold" class="config-input" />
+                </div>
+
+                <div class="config-row">
+                  <label class="config-label">Min Head Coverage (%)</label>
+                  <input type="number" value="{{config.min_head_percent}}" min="0" max="100" step="1"
+                    id="minHeadPercent" name="minHeadPercent" class="config-input" />
+                </div>
+
+                <div class="config-row">
+                  <label class="config-label">Max Head Coverage (%)</label>
+                  <input type="number" value="{{config.max_head_percent}}" min="0" max="100" step="1"
+                    id="maxHeadPercent" name="maxHeadPercent" class="config-input" />
+                </div>
+              </div>
+
+              <!-- New Check Thresholds -->
+              <div class="config-section">
+                <h4 class="config-title">
+                  <i class="fas fa-shield-alt"></i> Advanced Check Thresholds
+                </h4>
+
+                <div class="config-row">
+                  <label class="config-label">Noise Threshold (Higher = more noise tolerated)</label>
+                  <input type="number" value="{{config.noise_threshold}}" min="0" max="100" step="1"
+                    id="noiseThreshold" name="noiseThreshold" class="config-input" />
+                </div>
+
+                <div class="config-row">
+                  <label class="config-label">Dust Spot Threshold (Max spots allowed)</label>
+                  <input type="number" value="{{config.dust_spot_threshold}}" min="0" max="100" step="1"
+                    id="dustSpotThreshold" name="dustSpotThreshold" class="config-input" />
+                </div>
+
+                <div class="config-row">
+                  <label class="config-label">Text Region Threshold (Max text regions allowed)</label>
+                  <input type="number" value="{{config.text_region_threshold}}" min="0" max="50" step="1"
+                    id="textRegionThreshold" name="textRegionThreshold" class="config-input" />
                 </div>
               </div>
 

@@ -13,11 +13,15 @@ DEFAULT_CONFIG = {
     "is_png": True,
     "is_jpeg": True,
     "bgcolor_threshold": 40,
-    "bg_uniformity_threshold": 25,
-    "blurness_threshold": 30,
-    "pixelated_threshold": 100,
-    "greyness_threshold": 5,
-    "symmetry_threshold": 35,
+    "bg_uniformity_threshold": 35,
+    "blurness_threshold": 100,
+    "greyness_threshold": 15,
+    "symmetry_threshold": 30,
+    "min_head_percent": 10,
+    "max_head_percent": 80,
+    "noise_threshold": 25,
+    "dust_spot_threshold": 15,
+    "text_region_threshold": 8,
 }
 
 
