@@ -34,8 +34,8 @@ class Config(models.Model):
     bypass_corrupted_check = models.BooleanField(default=False)
 
     # New check thresholds
-    noise_threshold = models.FloatField(default=25)
-    dust_spot_threshold = models.IntegerField(default=15)
+    noise_threshold = models.FloatField(default=40)
+    dust_spot_threshold = models.IntegerField(default=50)
     text_region_threshold = models.IntegerField(default=8)
 
     # New check bypass toggles

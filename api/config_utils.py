@@ -19,8 +19,8 @@ DEFAULT_CONFIG = {
     "symmetry_threshold": 30,
     "min_head_percent": 10,
     "max_head_percent": 80,
-    "noise_threshold": 25,
-    "dust_spot_threshold": 15,
+    "noise_threshold": 40,
+    "dust_spot_threshold": 50,
     "text_region_threshold": 8,
 }
 
