@@ -1,490 +1,426 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Valid Images Gallery - Photo Validation System</title>
-    {% load static %} {% load custom_filters %}
+<head>
+  <title>Valid Images - Photo Validation System</title>
+  {% load static %} {% load custom_filters %}
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       DESIGN SYSTEM (Matches index1.html)
+       ═══════════════════════════════════════════════════════════════ */
+    :root {
+      --bg: #0f1117;
+      --bg-card: #181a20;
+      --bg-hover: #1e2028;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --green: #22c55e;
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.1);
+      --amber: #f59e0b;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --border: #2d2f3a;
+      --border-hover: #3d3f4a;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --transition: all 0.2s ease;
+    }
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-      :root {
-        --primary-color: #2563eb;
-        --primary-hover: #1d4ed8;
-        --background-color: #ffffff;
-        --background-alt: #f8fafc;
-        --text-primary: #0f172a;
-        --text-secondary: #64748b;
-        --text-muted: #94a3b8;
-        --border-color: #e2e8f0;
-        --border-light: #f1f5f9;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        --radius-sm: 6px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --card-bg: #ffffff;
-        --success-bg: rgba(16, 185, 129, 0.1);
-      }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      font-size: 14px;
+      min-height: 100vh;
+      padding-top: 70px;
+    }
 
-      body {
-        background: rgb(243, 242, 247);
-        color: var(--text-primary);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.5;
-        font-size: 14px;
-        padding-top: 80px; /* Add padding to prevent content from hiding under fixed header */
-      }
+    /* ─── HEADER ─── */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+    }
 
-      /* Header */
-      .header {
-        text-align: center;
-        padding: 1rem 2rem 1rem;
-        background: var(--background-color);
-        display: block;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-          0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        position: fixed;
-        width: 100%;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-      }
+    .app-header .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-      .header h1 {
-        font-family: "Poppins", sans-serif;
-        font-size: 2rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-      }
+    .app-header .logo i { color: var(--green); }
 
-      .header h1 i {
-        color: var(--success-color);
-      }
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
 
-      .header p {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-      }
+    .header-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-        margin-top: 8px;
-      }
+    .header-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    
+    .header-btn.primary { color: var(--accent); border-color: var(--accent); }
+    .header-btn.primary:hover { background: var(--accent-glow); }
 
-      /* Navigation Bar */
-      .nav-bar {
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        padding: 1rem 2rem;
-        margin: 1rem 0 2rem 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: var(--shadow-md);
-      }
+    /* ─── LAYOUT ─── */
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
 
-      .nav-links {
-        display: flex;
-        gap: 1.5rem;
-      }
+    /* ─── TAB NAV ─── */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      width: fit-content;
+      margin-left: auto; margin-right: auto;
+    }
 
-      .nav-link {
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        padding: 0.75rem 1.25rem;
-        border-radius: var(--radius-md);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 16px;
-      }
+    .tab-nav-btn {
+      padding: 0.6rem 1.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-      .nav-link:hover {
-        color: var(--primary-color);
-        background: var(--background-alt);
-      }
+    .tab-nav-btn:hover { color: var(--text-dim); }
 
-      .nav-link.active {
-        color: var(--primary-color);
-        background: var(--background-alt);
-        font-weight: 600;
-      }
+    .tab-nav-btn.active {
+      background: var(--bg-hover);
+      color: white;
+      border: 1px solid var(--border-hover);
+    }
 
-      /* Stats Cards */
-      .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
+    /* ─── STATS CARD ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
 
-      .stat-card {
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        text-align: center;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-        transition: all 0.2s ease;
-      }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      text-align: center;
+    }
 
-      .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-      }
+    .stat-card .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
 
-      .stat-number {
-        font-size: 2.5rem;
-        font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-      }
+    .stat-card .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-      .stat-label {
-        color: var(--text-secondary);
-        font-size: 1rem;
-        font-weight: 500;
-      }
+    .stat-card.valid .stat-value { color: var(--green); }
+    .stat-card.total .stat-value { color: var(--accent); }
+    .stat-card.rate .stat-value { color: var(--amber); }
 
-      /* Action Buttons */
-      .action-buttons {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-      }
+    /* ─── BUTTONS ─── */
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
 
-      .btn-action {
-        padding: 0.75rem 1.5rem;
-        border-radius: var(--radius-md);
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 0.95rem;
-      }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-      .btn-export {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-      }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
 
-      .btn-export:hover {
-        background: var(--primary-hover);
-        transform: translateY(-1px);
-      }
+    /* ─── IMAGE GRID ─── */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
 
-      .btn-back {
-        background: var(--background-color);
-        color: var(--text-primary);
-        border: 1px solid var(--border-color);
-      }
+    .image-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
 
-      .btn-back:hover {
-        background: var(--background-alt);
-        border-color: var(--text-secondary);
-      }
+    .image-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: var(--border-hover);
+    }
 
-      /* Image Grid */
-      .image-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
+    .image-container {
+      position: relative;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
 
-      .image-card {
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-        transition: all 0.2s ease;
-        position: relative;
-      }
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
 
-      .image-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--primary-color);
-      }
+    .image-info { padding: 1.25rem; flex: 1; }
 
-      .image-container {
-        position: relative;
-        height: 250px;
-        overflow: hidden;
-      }
+    .image-filename {
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      word-break: break-all;
+    }
 
-      .image-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        transition: transform 0.3s ease;
-      }
+    .validation-status {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.75rem;
+      color: var(--green);
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-      .image-card:hover .image-container img {
-        transform: scale(1.05);
-      }
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 2rem auto;
+      max-width: 600px;
+    }
 
-      .image-info {
-        padding: 1.5rem;
-      }
+    .empty-state i {
+      font-size: 3.5rem;
+      color: var(--red);
+      margin-bottom: 1.25rem;
+    }
 
-      .image-filename {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
 
-      .validation-status {
-        background: var(--success-bg);
-        color: var(--success-color);
-        padding: 0.5rem 1rem;
-        border-radius: 10px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
+    .empty-state p {
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+    }
 
-      /* Empty State */
-      .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-      }
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .header-actions .text-label { display: none; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
 
-      .empty-state i {
-        font-size: 3.5rem;
-        color: var(--primary-color);
-        margin-bottom: 1.5rem;
-      }
+<body>
+  <!-- Header Section -->
+  <header class="app-header">
+    <div class="logo">
+      <i class="fas fa-check-circle"></i> Valid Images
+    </div>
+    <div class="header-actions">
+      <a href="{% url 'download_csv' %}" class="header-btn" title="Download CSV">
+        <i class="fas fa-file-csv"></i> <span class="text-label">CSV</span>
+      </a>
+      <a href="{% url 'download_valid_images' %}" class="header-btn" title="Download Valid ZIP">
+        <i class="fas fa-file-archive"></i> <span class="text-label">Valid ZIP</span>
+      </a>
+      <a href="{% url 'download_invalid_images' %}" class="header-btn" title="Download Invalid ZIP">
+        <i class="fas fa-exclamation-triangle"></i> <span class="text-label">Invalid ZIP</span>
+      </a>
+    </div>
+  </header>
 
-      .empty-state h3 {
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-        font-weight: 600;
-      }
-
-      .empty-state p {
-        color: var(--text-secondary);
-        margin-bottom: 2rem;
-        font-size: 1.1rem;
-      }
-
-      /* Responsive Design */
-      @media (max-width: 768px) {
-        body {
-          padding-top: 120px; /* Increase padding for mobile to accommodate larger header */
-        }
-
-        .container {
-          padding: 0 1rem;
-        }
-
-        .header h1 {
-          font-size: 1.75rem;
-        }
-
-        .header p {
-          font-size: 0.9rem;
-        }
-
-        .nav-bar {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .nav-links {
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-
-        .image-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .action-buttons {
-          flex-direction: column;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <!-- Header -->
-      <div class="header">
-        <h1><i class="fas fa-check-circle"></i> Valid Images Gallery</h1>
-        <p>Images that passed all validation checks and are ready for use</p>
-      </div>
-
-      <!-- Navigation -->
-      <nav class="nav-bar">
-        <div class="nav-links">
-          <a href="{% url 'startPage' %}" class="nav-link">
-            <i class="fas fa-home"></i> Home
-          </a>
-          <a href="{% url 'image_gallery' %}" class="nav-link">
-            <i class="fas fa-exclamation-triangle"></i> Invalid Images
-          </a>
-          <a href="{% url 'valid_images_gallery' %}" class="nav-link active">
-            <i class="fas fa-check-circle"></i> Valid Images
-          </a>
-        </div>
-        <div class="nav-actions">
-          <a href="{% url 'download_csv' %}" class="btn-action btn-export">
-            <i class="fas fa-download"></i> Results CSV
-          </a>
-          <a href="{% url 'download_valid_images' %}" class="btn-action btn-export">
-            <i class="fas fa-download"></i> Valid ZIP
-          </a>
-          <a href="{% url 'download_invalid_images' %}" class="btn-action btn-export">
-            <i class="fas fa-download"></i> Invalid ZIP
-          </a>
-        </div>
-      </nav>
-
-      <!-- Stats -->
-      <div class="stats-container">
-        <div class="stat-card">
-          <div class="stat-number">{{ valid_images|length }}</div>
-          <div class="stat-label">Valid Images</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">{{ success_rate }}%</div>
-          <div class="stat-label">Success Rate</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">{{ total_images }}</div>
-          <div class="stat-label">Total Images</div>
-        </div>
-      </div>
-
-      {% if valid_images %}
-      <!-- Image Grid -->
-      <div class="image-grid">
-        {% for image in valid_images %}
-        <div class="image-card">
-          <div class="image-container">
-            <img
-              src="{{ image.photo.url }}"
-              alt="{{ image.filename }}"
-              loading="lazy"
-              onerror="this.src='/static/api/images/placeholder.png';"
-            />
-          </div>
-          <div class="image-info">
-            <div class="image-filename">
-              <i class="fas fa-file-image"></i>
-              {{ image.filename }}
-            </div>
-            <div class="validation-status">
-              <i class="fas fa-check-circle"></i>
-              Passed all validation checks
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-
-      <!-- Bottom Actions -->
-      <div class="action-buttons">
-        <a href="{% url 'download_csv' %}" class="btn-action btn-export">
-          <i class="fas fa-download"></i> Export All Results
-        </a>
-        <a href="{% url 'download_valid_images' %}" class="btn-action btn-export">
-          <i class="fas fa-download"></i> Download Valid ZIP
-        </a>
-        <a href="{% url 'download_invalid_images' %}" class="btn-action btn-export">
-          <i class="fas fa-download"></i> Download Invalid ZIP
-        </a>
-        <a href="{% url 'startPage' %}" class="btn-action btn-back">
-          <i class="fas fa-arrow-left"></i> Back to Home
-        </a>
-      </div>
-      {% else %}
-      <!-- Empty State -->
-      <div class="empty-state">
-        <i class="fas fa-check-circle"></i>
-        <h3>No Valid Images Found!</h3>
-        <p>
-          All images in your upload failed the validation checks. You may want
-          to review the invalid images and adjust your criteria.
-        </p>
-        <a href="{% url 'image_gallery' %}" class="btn-action btn-back">
-          <i class="fas fa-exclamation-triangle"></i> View Invalid Images
-        </a>
-        <a
-          href="{% url 'startPage' %}"
-          class="btn-action btn-back"
-          style="margin-top: 1rem"
-        >
-          <i class="fas fa-arrow-left"></i> Back to Home
-        </a>
-      </div>
-      {% endif %}
+  <div class="app-container">
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <a href="{% url 'startPage' %}" class="tab-nav-btn">
+        <i class="fas fa-home"></i> Dashboard
+      </a>
+      <a href="{% url 'image_gallery' %}" class="tab-nav-btn">
+        <i class="fas fa-exclamation-triangle"></i> Invalid
+      </a>
+      <a href="{% url 'valid_images_gallery' %}" class="tab-nav-btn active">
+        <i class="fas fa-check-circle"></i> Valid ({{ valid_images|length }})
+      </a>
     </div>
 
-    <script>
-      $(document).ready(function () {
-        // Add hover effects for image cards
-        $(".image-card").hover(
-          function () {
-            $(this)
-              .find(".image-container img")
-              .css("transform", "scale(1.05)");
-          },
-          function () {
-            $(this).find(".image-container img").css("transform", "scale(1)");
-          }
-        );
-      });
-    </script>
-  </body>
+    <!-- Status Info -->
+    <div class="stats-row">
+      <div class="stat-card valid">
+        <div class="stat-value">{{ valid_images|length }}</div>
+        <div class="stat-label">Valid Images</div>
+      </div>
+      <div class="stat-card rate">
+        <div class="stat-value">{{ success_rate }}%</div>
+        <div class="stat-label">Success Rate</div>
+      </div>
+      <div class="stat-card total">
+        <div class="stat-value">{{ total_images }}</div>
+        <div class="stat-label">Total Images</div>
+      </div>
+    </div>
+
+    {% if valid_images %}
+    <!-- Image Grid -->
+    <div class="image-grid">
+      {% for image in valid_images %}
+      <div class="image-card">
+        <div class="image-container">
+          <img
+            src="{{ image.photo.url }}"
+            alt="{{ image.filename }}"
+            loading="lazy"
+            onerror="this.src='/static/api/images/placeholder.png';"
+          />
+        </div>
+        <div class="image-info">
+          <div class="image-filename">
+            <i class="fas fa-file-image"></i>
+            {{ image.filename }}
+          </div>
+          <div class="validation-status">
+            <i class="fas fa-check-circle"></i>
+            Passed all checks
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Bottom Actions -->
+    <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; margin-bottom: 2rem;">
+      <a href="{% url 'download_valid_images' %}" class="btn btn-outline">
+        <i class="fas fa-download"></i> Download Valid ZIP
+      </a>
+      <a href="{% url 'startPage' %}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+      <i class="fas fa-times-circle"></i>
+      <h3>No Valid Images Found!</h3>
+      <p>All images in your upload failed the validation checks, or you haven't validated anything yet.</p>
+      <div style="display:flex; gap:1rem; justify-content:center;">
+        <a href="{% url 'image_gallery' %}" class="btn btn-outline">
+          <i class="fas fa-exclamation-triangle"></i> View Invalid Images
+        </a>
+        <a href="{% url 'startPage' %}" class="btn btn-outline">
+          <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      // Small scale effect on hover for images
+      $(".image-card").hover(
+        function () { $(this).find(".image-container img").css("transform", "scale(1.03)").css("transition", "transform 0.3s ease"); },
+        function () { $(this).find(".image-container img").css("transform", "scale(1)"); }
+      );
+    });
+  </script>
+</body>
 </html>

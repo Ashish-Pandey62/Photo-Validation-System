@@ -389,7 +389,7 @@ def write_csv_results_thread_safe(csv_file_path, error_messages):
             logging.error(f"Error writing CSV results: {e}")
             return False
 
-def main_threaded(directory, max_workers=None, config=None):
+def main_threaded(directory, max_workers=None, config=None, progress_callback=None):
     """
     Thread-based parallel validation function - stable and fast
     """
@@ -435,6 +435,8 @@ def main_threaded(directory, max_workers=None, config=None):
             'total_processed': 0,
             'valid_count': 0,
             'invalid_count': 0,
+            'valid_images': [],
+            'invalid_images': [],
             'processing_time': 0,
             'avg_time_per_image': 0
         }
@@ -443,6 +445,8 @@ def main_threaded(directory, max_workers=None, config=None):
     
     # Initialize progress tracking
     progress_tracker = ProgressTracker(len(file_lists))
+    if progress_callback:
+        progress_callback(0, len(file_lists))
     
     # Determine optimal thread count
     if max_workers is None:
@@ -474,6 +478,9 @@ def main_threaded(directory, max_workers=None, config=None):
                 logging.error(f"Error processing {image_name}: {e}")
                 results.append(ValidationResult(image_name, False, [f"Processing error: {str(e)}"], 0))
                 progress_tracker.increment(success=False)
+            
+            if progress_callback:
+                progress_callback(progress_tracker.completed_items + progress_tracker.failed_items, len(image_paths))
     
     # Process results and move files
     progress_logger.info("PROGRESS Processing validation results and organizing files")
@@ -481,6 +488,7 @@ def main_threaded(directory, max_workers=None, config=None):
     error_messages = {}
     valid_count = 0
     invalid_count = 0
+    valid_images = []
     
     # Use ThreadPoolExecutor for file operations too
     with ThreadPoolExecutor(max_workers=4) as file_executor:
@@ -491,6 +499,7 @@ def main_threaded(directory, max_workers=None, config=None):
             
             if result.is_valid:
                 valid_count += 1
+                valid_images.append(result.image_name)
                 task = file_executor.submit(move_image_thread_safe, original_path, valid_directory, result.image_name)
                 move_tasks.append(task)
             else:
@@ -539,6 +548,8 @@ def main_threaded(directory, max_workers=None, config=None):
         'total_processed': len(file_lists),
         'valid_count': valid_count,
         'invalid_count': invalid_count,
+        'valid_images': valid_images,
+        'invalid_images': list(error_messages.keys()),
         'processing_time': total_time,
         'avg_time_per_image': avg_time_per_image,
         'images_per_second': images_per_second,

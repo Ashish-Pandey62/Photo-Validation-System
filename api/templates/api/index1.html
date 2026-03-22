@@ -3,1914 +3,1526 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="description" content="Professional Photo Validation System" />
-  <meta name="author" content="" />
   {% load static %}
 
   <title>Photo Validation System v2</title>
 
   <!-- Bootstrap core CSS -->
   <link href="{% static 'api/css/bootstrap.css' %}" rel="stylesheet" />
-
-  <!-- Custom fonts for this template -->
+  <!-- Font Awesome -->
   <link href="{% static 'api/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" />
-
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <link rel="stylesheet" href="{% static 'api/css/style.css' %}" />
-
-  <!-- Custom styles for this template -->
   <link href="{% static 'api/css/grayscale.css' %}" rel="stylesheet" />
 
   <script src="{% static 'api/js/jquer.js' %}"></script>
+
   <style>
-    /* Minimal Variables */
+    /* ═══════════════════════════════════════════════════════════════
+       DESIGN SYSTEM
+       ═══════════════════════════════════════════════════════════════ */
     :root {
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --background-color: #ffffff;
-      --background-alt: #f8fafc;
-      --text-primary: #0f172a;
-      --text-secondary: #64748b;
-      --text-muted: #94a3b8;
-      --border-color: #e2e8f0;
-      --border-light: #f1f5f9;
-      --success-color: #10b981;
-      --warning-color: #f59e0b;
-      --danger-color: #ef4444;
-      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-      --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
+      --bg: #0f1117;
+      --bg-card: #181a20;
+      --bg-hover: #1e2028;
+      --bg-input: #23252d;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --green: #22c55e;
+      --green-bg: rgba(34, 197, 94, 0.1);
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.1);
+      --amber: #f59e0b;
+      --amber-bg: rgba(245, 158, 11, 0.1);
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --border: #2d2f3a;
+      --border-hover: #3d3f4a;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --transition: all 0.2s ease;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: rgb(243, 242, 247);
-      color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-        "Helvetica Neue", Arial, sans-serif;
-      line-height: 1.5;
-      font-size: 14px;
-      padding-top: 80px;
-      /* Add padding to prevent content from hiding under fixed header */
-    }
-
-    /* Clean Header with Blue Accent */
-    .header {
-      text-align: center;
-      padding: 1rem 2rem 1rem;
-      background: var(--background-color);
-      display: block;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
-      position: fixed;
-      width: 100%;
-      top: 0;
-      left: 0;
-      z-index: 1000;
-    }
-
-    .header h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.025em;
-    }
-
-    .header h1 .highlight {
-      color: var(--primary-color);
-      background: linear-gradient(135deg,
-          var(--primary-color) 0%,
-          #1e40af 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .header p {
-      font-size: 1.25rem;
-      color: var(--text-secondary);
-      font-weight: 400;
-      max-width: 600px;
-      margin: 0 auto;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       line-height: 1.6;
+      font-size: 14px;
+      min-height: 100vh;
     }
 
-    .header-features {
+    /* ─── HEADER ─── */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
       display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin-top: 2rem;
-      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    .header-feature {
+    .app-header .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: var(--text-secondary);
-      font-size: 0.875rem;
-      font-weight: 500;
     }
 
-    .header-feature i {
-      color: var(--primary-color);
-      font-size: 1rem;
+    .app-header .logo i { color: var(--accent); }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
     }
 
-    /* Minimal Container */
-    .container {
-      max-width: 1000px;
+    .header-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: inherit;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .header-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
+    .header-btn.danger:hover { border-color: var(--red); color: var(--red); }
+
+    /* ─── LAYOUT ─── */
+    .app-container {
+      max-width: 960px;
       margin: 0 auto;
-      padding: 0 1rem;
+      padding: 1.5rem 1rem;
     }
 
-    /* Clean Card */
+    /* ─── TAB NAV ─── */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+    }
+
+    .tab-nav-btn {
+      flex: 1;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .tab-nav-btn:hover { color: var(--text-dim); }
+
+    .tab-nav-btn.active {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ─── CARDS ─── */
     .card {
-      background: var(--background-color);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      margin: 1rem 0;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.2s ease;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
     }
 
-    .card:hover {
-      border-color: var(--border-light);
-      box-shadow: var(--shadow-md);
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    /* Glassmorphism Card */
-    .glass-card {
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 2.5rem;
-      box-shadow: var(--shadow-light);
-      margin: 1rem;
-      transition: all 0.3s ease;
-    }
+    .card-title i { color: var(--accent); font-size: 1rem; }
 
-    .glass-card:hover {
-      transform: translateY(-5px);
-      box-shadow: var(--shadow-heavy);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Minimal File Upload */
-    .file-upload-area {
-      background: rgb(243, 242, 247);
-      border: 4px dashed var(--border-color);
-      border-radius: var(--radius-md);
+    /* ─── UPLOAD ZONE ─── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
       padding: 2.5rem 1.5rem;
       text-align: center;
-      transition: all 0.2s ease;
       cursor: pointer;
-      position: relative;
+      transition: var(--transition);
+      background: var(--bg);
     }
 
-    .file-upload-area:hover {
-      border-color: var(rgb(243, 242, 247));
-      background: #f8fafc;
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-glow);
     }
 
-    .file-upload-area.dragover {
-      border-color: var(--primary-color);
-      background: rgba(37, 99, 235, 0.05);
-    }
-
-    .upload-icon {
+    .upload-zone .icon {
       font-size: 2rem;
-      color: var(--text-muted);
-      margin-bottom: 1rem;
-      display: block;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
     }
 
-    .file-upload-wrapper input[type="file"] {
-      display: none;
-    }
-
-    .file-upload-label {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      background: var(--primary-color);
-      color: white;
-      border-radius: var(--radius-md);
-      cursor: pointer;
+    .upload-zone h4 {
+      font-size: 1rem;
       font-weight: 500;
-      font-size: 0.875rem;
-      transition: all 0.2s ease;
-      border: none;
+      color: var(--text);
+      margin-bottom: 0.5rem;
     }
 
-    /* .file-upload-label:hover {
-        background: var(--primary-hover);
-      } */
-
-    .file-upload-text {
-      margin-top: 0.75rem;
-      color: var(--text-secondary);
-      font-size: 0.875rem;
+    .upload-zone p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
     }
 
     .file-name-display {
       margin-top: 1rem;
-      padding: 0.75rem 1rem;
-      background: var(--background-color);
-      border: 1px solid var(--border-color);
+      padding: 0.5rem 1rem;
+      background: var(--accent-glow);
+      border: 1px solid rgba(59, 130, 246, 0.3);
       border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      color: var(--text-primary);
-    }
-
-    /* Clean Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.625rem 1rem;
-      border: 1px solid transparent;
-      border-radius: var(--radius-md);
-      font-weight: 500;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      background: transparent;
-    }
-
-    .btn-primary {
-      background: var(--primary-color);
-      color: white;
-      border-color: var(--primary-color);
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-      border-color: var(--primary-hover);
-      color: white;
-      text-decoration: none;
-    }
-
-    .btn-secondary {
-      background: var(--background-color);
-      color: var(--text-primary);
-      border-color: var(--border-color);
-    }
-
-    .btn-secondary:hover {
-      background: var(--background-alt);
-      border-color: var(--text-muted);
-      color: var(--text-primary);
-      text-decoration: none;
-    }
-
-    .btn-success {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      color: white;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 0.875rem;
-      transition: all 0.2s ease;
-      border: none;
-    }
-
-    .btn-success:hover {
-      background: #059669;
-      border-color: #059669;
-      color: white;
-      text-decoration: none;
-    }
-
-    .btn-warning {
-      background: var(--warning-color);
-      color: white;
-      border-color: var(--warning-color);
-    }
-
-    .btn-warning:hover {
-      background: #d97706;
-      border-color: #d97706;
-      color: white;
-      text-decoration: none;
-    }
-
-    .btn-danger {
-      background: var(--danger-color);
-      color: white;
-      border-color: var(--danger-color);
-    }
-
-    .btn-danger:hover {
-      background: #dc2626;
-      border-color: #dc2626;
-      color: white;
-      text-decoration: none;
-    }
-
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      pointer-events: none;
-    }
-
-    /* Sidebar and Hamburger Menu */
-    .hamburger-menu {
-      position: fixed;
-      right: 20px;
-      top: 20px;
-      z-index: 1001;
-      cursor: pointer;
-      background: var(--primary-color);
-      padding-left: 10px;
-      padding-right: 10px;
-      padding-bottom: 5px;
-      padding-top: 5px;
-      border-radius: 8px;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s ease;
-    }
-
-    .hamburger-menu:hover {
-      background: var(--primary-hover);
-    }
-
-    .hamburger-menu i {
-      color: white;
-      font-size: 1.5rem;
-    }
-
-    .sidebar {
-      position: fixed;
-      right: -300px;
-      top: 0;
-      width: 300px;
-      height: 100vh;
-      background: var(--background-color);
-      box-shadow: var(--shadow-md);
-      transition: right 0.3s ease;
-      z-index: 1000;
-      padding: 80px 20px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .sidebar.active {
-      right: 0;
-    }
-
-    .sidebar-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-      z-index: 999;
-    }
-
-    .sidebar-overlay.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Button Grid (now in sidebar) */
-    .button-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    /* Sidebar title */
-    .sidebar-title {
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    /* Action Buttons for Validation Results */
-    .action-btn {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.75rem 1rem;
-      border: none;
-      border-radius: 6px;
-      font-weight: 500;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      background: var(--background-color);
-      color: var(--text-primary);
-      width: 100%;
-      text-align: left;
-      border-left-width: 4px;
-      border-left-style: solid;
-    }
-
-    .action-btn::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(255, 255, 255, 0.05);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .action-btn:hover::before {
-      opacity: 1;
-    }
-
-    .action-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--shadow-heavy);
-      border-color: rgba(255, 255, 255, 0.2);
-      color: var(--text-primary);
-      text-decoration: none;
-    }
-
-    .action-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: var(--shadow-light);
-    }
-
-    .action-btn:disabled:hover {
-      transform: none;
-      box-shadow: var(--shadow-light);
-    }
-
-    .action-btn i {
-      font-size: 1.25rem;
-      transition: transform 0.3s ease;
-    }
-
-    .action-btn:hover i {
-      transform: scale(1.1);
-    }
-
-    /* Specific button styles */
-    .btn-view-invalid {
-      border-left-color: var(--warning-color);
-    }
-
-    .btn-view-invalid:hover {
-      background: var(--background-alt);
-    }
-
-    .btn-delete {
-      border-left-color: var(--danger-color);
-    }
-
-    .btn-delete:hover {
-      background: var(--background-alt);
-    }
-
-    .btn-clear-data {
-      border-left-color: var(--danger-color);
-    }
-
-    .btn-clear-data:hover {
-      background: var(--background-alt);
-    }
-
-    .btn-admin-panel {
-      border-left-color: var(--success-color);
-    }
-
-    .btn-admin-panel:hover {
-      background: var(--background-alt);
-    }
-
-    /* Button text styles */
-    .btn-text {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .btn-title {
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .btn-subtitle {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    /* Results Display */
-    .result-display {
-      margin: 1.5rem 0;
-      padding: 1.5rem;
-      background: var(--background-alt);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      text-align: center;
-      font-size: 1.125rem;
-      font-weight: 500;
-      color: var(--text-primary);
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Validation Results Section */
-    .validation-results {
-      background: var(--background-color);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 2rem;
-      margin: 2rem 0;
-      text-align: center;
-    }
-
-    .validation-results h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .validation-results h2 i {
-      color: var(--primary-color);
-    }
-
-    .validation-prompt {
-      color: var(--text-secondary);
-      font-size: 1rem;
-      margin-bottom: 2rem;
-    }
-
-    .validation-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    /* Configuration Sections */
-    .config-section {
-      margin-bottom: 2rem;
-      padding: 1.5rem;
-      background: var(--background-color);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .config-title {
-      color: var(--text-primary);
-      font-size: 1.125rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .config-row {
-      margin-bottom: 1rem;
-    }
-
-    .config-label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      font-size: 0.875rem;
-    }
-
-    .input-group {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
-    .input-label {
-      color: var(--text-primary);
-      font-weight: 500;
-      font-size: 0.875rem;
-      min-width: 60px;
-      text-align: right;
-    }
-
-    .config-input {
-      padding: 0.625rem 0.75rem;
-      background: var(--background-color);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      color: var(--text-primary);
-      font-size: 0.875rem;
-      transition: all 0.2s ease;
-      width: 120px;
-    }
-
-    .config-input:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .config-input:hover {
-      border-color: var(--text-muted);
-    }
-
-    .btnSaveConfig {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.625rem 1rem;
-      border: 1px solid transparent;
-      border-radius: var(--radius-md);
-      font-weight: 500;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-decoration: none;
-      background: transparent;
-    }
-
-    /* Format Selection */
-    .format-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-
-    .format-option {
-      position: relative;
-    }
-
-    .format-checkbox {
+      font-size: 0.85rem;
+      color: var(--accent);
       display: none;
     }
 
-    .format-label {
+    /* ─── BUTTONS ─── */
+    .btn-row {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1rem 0.75rem;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      color: var(--text-secondary);
-      font-weight: 500;
-      font-size: 0.75rem;
-    }
-
-    .format-label i {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-      transition: all 0.2s ease;
-    }
-
-    .format-checkbox:checked+.format-label {
-      background: rgba(37, 99, 235, 0.05);
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    .format-checkbox:checked+.format-label i {
-      color: var(--primary-color);
-    }
-
-    .format-label:hover {
-      border-color: var(--text-muted);
-      background: var(--background-alt);
-    }
-
-    /* Navigation Tabs */
-    .nav-tabs {
-      border-bottom: 1px solid var(--border-color);
-      background: transparent;
-      margin-bottom: 1.5rem;
-      display: flex;
-      gap: 0;
-    }
-
-    .nav-tabs .nav-link {
-      border: none;
-      color: var(--text-secondary);
-      background: transparent;
-      padding: 0.75rem 1rem;
-      transition: all 0.2s ease;
-      font-weight: 500;
-      font-size: 0.875rem;
-      display: flex;
-      align-items: center;
       gap: 0.5rem;
-      border-bottom: 2px solid transparent;
-      text-decoration: none;
+      justify-content: center;
+      margin-top: 1.25rem;
     }
 
-    .nav-tabs .nav-link:hover {
-      color: var(--text-primary);
-      border-bottom-color: var(--border-color);
-      text-decoration: none;
-    }
-
-    .nav-tabs .nav-link.active {
-      color: var(--primary-color);
-      background: transparent;
-      border-bottom-color: var(--primary-color);
-    }
-
-    /* Loading Animation */
-    .loading {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--border-color);
-      border-radius: 50%;
-      border-top-color: var(--primary-color);
-      animation: spin 1s linear infinite;
-      margin-right: 0.5rem;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-
-    /* Status Indicators */
-    .status-indicator {
+    .btn {
+      padding: 0.55rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      font-family: inherit;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.375rem 0.75rem;
+      gap: 0.4rem;
+    }
+
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .btn-accent {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .btn-accent:hover:not(:disabled) {
+      background: var(--accent-hover);
+      box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: white;
+    }
+    .btn-green:hover:not(:disabled) {
+      background: #16a34a;
+      box-shadow: 0 2px 12px rgba(34, 197, 94, 0.3);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      color: var(--red);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-danger-outline:hover:not(:disabled) {
+      background: var(--red-bg);
+    }
+
+    /* ─── RESULTS STATS ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
       border-radius: var(--radius-sm);
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-
-    .status-success {
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success-color);
-    }
-
-    .status-warning {
-      background: rgba(245, 158, 11, 0.1);
-      color: var(--warning-color);
-    }
-
-    .status-error {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--danger-color);
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .header {
-        padding: 3rem 1rem 2rem;
-      }
-
-      .header h1 {
-        font-size: 2.25rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.75rem;
-        letter-spacing: -0.025em;
-      }
-
-      .header p {
-        font-size: 1rem;
-      }
-
-      .header-features {
-        gap: 1rem;
-      }
-
-      .card {
-        padding: 1.5rem;
-        margin: 0.5rem 0;
-      }
-
-      .config-section {
-        padding: 1rem;
-      }
-
-      .input-group {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-      }
-
-      .input-label {
-        text-align: left;
-        min-width: auto;
-      }
-
-      .config-input {
-        width: 100%;
-        max-width: 200px;
-      }
-
-      .format-grid {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 0.5rem;
-      }
-
-      .button-grid {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .validation-results {
-        padding: 1.5rem;
-      }
-
-      .validation-results h2 {
-        font-size: 1.25rem;
-      }
-
-      .validation-actions {
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-
-      .action-btn {
-        width: 100%;
-        max-width: 300px;
-      }
-
-      /* Action buttons row responsive */
-      .action-buttons-row {
-        flex-direction: column !important;
-        gap: 0.75rem !important;
-        align-items: center !important;
-      }
-
-      .action-buttons-row form {
-        width: 100% !important;
-        max-width: 350px !important;
-      }
-
-      .action-buttons-row button {
-        width: 100% !important;
-        max-width: 350px !important;
-      }
-
-      .nav-tabs {
-        flex-wrap: wrap;
-      }
-
-      .file-upload-area {
-        padding: 2rem 1rem;
-      }
-    }
-
-    /* Utility Classes */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
-
-    .text-center {
+      padding: 1rem;
       text-align: center;
     }
 
-    .mb-0 {
-      margin-bottom: 0;
-    }
-
-    .mb-1 {
+    .stat-card .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1;
       margin-bottom: 0.25rem;
     }
 
-    .mb-2 {
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card.total .stat-value { color: var(--accent); }
+    .stat-card.valid .stat-value { color: var(--green); }
+    .stat-card.invalid .stat-value { color: var(--red); }
+
+    .result-placeholder {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .result-placeholder i {
+      font-size: 1.5rem;
+      display: block;
       margin-bottom: 0.5rem;
+      opacity: 0.5;
     }
 
-    .mb-3 {
-      margin-bottom: 0.75rem;
+    /* ─── PREVIEW GRID ANIMATIONS ─── */
+    .preview-card {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      transition: all 0.3s ease;
+    }
+    
+    .preview-card.validating {
+      border-color: #ffffff;
+      animation: pulse-border 1.5s infinite;
+    }
+    
+    .preview-card.valid-pass {
+      border-color: var(--green);
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+    }
+    
+    .preview-card.invalid-fail {
+      border-color: var(--red);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
     }
 
-    .mb-4 {
-      margin-bottom: 1rem;
+    @keyframes pulse-border {
+      0% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(255, 255, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
     }
 
-    .mt-0 {
-      margin-top: 0;
-    }
-
-    .mt-1 {
-      margin-top: 0.25rem;
-    }
-
-    .mt-2 {
-      margin-top: 0.5rem;
-    }
-
-    .mt-3 {
-      margin-top: 0.75rem;
-    }
-
-    .mt-4 {
+    /* ─── ACTION BUTTONS UNDER RESULTS ─── */
+    .result-actions {
+      display: flex;
+      gap: 0.5rem;
       margin-top: 1rem;
+      justify-content: center;
+    }
+
+    /* ─── ACCORDION (config) ─── */
+    .accordion-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.85rem 1.25rem;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+
+    .accordion-header:hover { background: var(--bg-hover); }
+
+    .accordion-header .left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .accordion-header .left i { color: var(--accent); font-size: 0.9rem; }
+
+    .accordion-header .chevron {
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+      font-size: 0.75rem;
+    }
+
+    .accordion-item.open .accordion-header .chevron { transform: rotate(180deg); }
+
+    .accordion-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .accordion-item.open .accordion-body { max-height: 2000px; }
+
+    .accordion-content { padding: 0 1.25rem 1.25rem; }
+
+    /* ─── CONFIG ROWS ─── */
+    .config-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .config-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .config-field label {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .config-field input[type="number"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      color: var(--text);
+      font-size: 0.85rem;
+      font-family: inherit;
+      transition: var(--transition);
+      width: 100%;
+    }
+
+    .config-field input[type="number"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    /* ─── TOGGLE SWITCHES ─── */
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .toggle-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      transition: var(--transition);
+    }
+
+    .toggle-item:hover { border-color: var(--border-hover); }
+
+    .toggle-item span {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--border);
+      border-radius: 20px;
+      transition: var(--transition);
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(16px);
+      background: white;
+    }
+
+    /* ─── FORMAT CHIPS ─── */
+    .format-chips {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .format-chip {
+      position: relative;
+    }
+
+    .format-chip input { display: none; }
+
+    .format-chip label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.45rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .format-chip label:hover { border-color: var(--border-hover); }
+
+    .format-chip input:checked + label {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ─── TEST IMAGE ─── */
+    .test-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+
+    .test-preview {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 200px;
+    }
+
+    .test-preview img {
+      max-width: 100%;
+      max-height: 250px;
+      object-fit: contain;
+    }
+
+    .test-preview .placeholder-text {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .test-results {
+      font-size: 0.85rem;
+    }
+
+    .test-results .check-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .test-results .check-row:last-child { border-bottom: none; }
+
+    .badge-pass {
+      background: var(--green-bg);
+      color: var(--green);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-fail {
+      background: var(--red-bg);
+      color: var(--red);
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .upload-status {
+      display: none;
+      margin-top: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      background: var(--green-bg);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: var(--radius-sm);
+      color: var(--green);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    /* ─── SAVE BAR ─── */
+    .save-bar {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    /* ─── LOADING ─── */
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+      margin-right: 0.4rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .test-layout { grid-template-columns: 1fr; }
+      .stats-row { grid-template-columns: 1fr; }
+      .config-grid { grid-template-columns: 1fr; }
+      .toggle-grid { grid-template-columns: 1fr; }
+      .tab-nav-btn { font-size: 0.8rem; padding: 0.5rem; }
+      .app-header { padding: 0.75rem 1rem; }
     }
   </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const fileInput = document.getElementById("id_folder");
-      const fileNameDisplay = document.querySelector(".file-name-display");
-      const uploadArea = document.querySelector(".file-upload-area");
-      const uploadButton = document.getElementById("uploadZip");
-      const resultDisplay = document.getElementById("result");
-      const uploadStatus = document.getElementById("uploadStatus");
-      const uploadStatusText = document.getElementById("uploadStatusText");
-      const startValidationContainer =
-        document.getElementById("startValidationBtn");
-      const validateButton = document.getElementById("validateBtn");
-    
-      // File input change handler
-      fileInput.addEventListener("change", function () {
-        if (fileInput.files.length > 0) {
-          const fileName = fileInput.files[0].name;
-          fileNameDisplay.innerHTML = `<i class="fas fa-file-archive"></i> ${fileName}`;
-          fileNameDisplay.style.display = "block";
-          uploadButton.disabled = false;
-          uploadArea.style.borderColor = "#3b82f6";
-          startValidationContainer.style.display = "block";
-          if (uploadStatus) {
-            uploadStatus.style.display = "none";
-            uploadStatusText.textContent = "";
-          }
-        } else {
-          fileNameDisplay.style.display = "none";
-          uploadButton.disabled = true;
-          uploadArea.style.borderColor = "rgba(255, 255, 255, 0.3)";
-          startValidationContainer.style.display = "none";
-          if (uploadStatus) {
-            uploadStatus.style.display = "none";
-            uploadStatusText.textContent = "";
-          }
-        }
-      });
-    
-      // Click to trigger file input only from upload area
-      uploadArea.addEventListener("click", function () {
-        fileInput.click();
-      });
-    
-      // Drag and drop functionality
-      uploadArea.addEventListener("dragover", function (e) {
-        e.preventDefault();
-        uploadArea.classList.add("dragover");
-      });
-    
-      uploadArea.addEventListener("dragleave", function (e) {
-        e.preventDefault();
-        uploadArea.classList.remove("dragover");
-      });
-    
-      uploadArea.addEventListener("drop", function (e) {
-        e.preventDefault();
-        uploadArea.classList.remove("dragover");
-    
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-          fileInput.files = files;
-          fileInput.dispatchEvent(new Event("change"));
-        }
-      });
-
-      // Upload only: do not validate yet
-      document
-        .getElementById("fileUploadForm")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-          uploadButton.innerHTML =
-            '<span class="loading"></span>Processing...';
-          uploadButton.disabled = true;
-
-          // Submit form with AJAX
-          const formData = new FormData(this);
-          fetch(this.action, {
-            method: "POST",
-            body: formData,
-            headers: {
-              "X-CSRFToken": document.querySelector(
-                "[name=csrfmiddlewaretoken]"
-              ).value,
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              if (uploadStatus) {
-                uploadStatusText.textContent = `Upload complete. Found ${data.total_images || 0} images in the ZIP.`;
-                uploadStatus.style.display = "inline-flex";
-              }
-
-              if (validateButton) {
-                validateButton.disabled = false;
-              }
-
-              document.getElementById("result").innerHTML = `
-                <div style="text-align: center;">
-                  <div style="font-size: 1.1rem; margin-bottom: 0.5rem;">
-                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Upload Complete
-                  </div>
-                  <div style="color: var(--text-secondary);">
-                    Ready to validate ${data.total_images || 0} images.
-                  </div>
-                </div>
-              `;
-
-              uploadButton.innerHTML =
-                '<i class="fas fa-upload"></i> Upload Another ZIP';
-              uploadButton.disabled = false;
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              document.getElementById("result").innerHTML = `
-                <div style="color: var(--danger-color);">
-                  <i class="fas fa-exclamation-triangle"></i> An error occurred during upload
-                </div>
-              `;
-              uploadButton.innerHTML =
-                '<i class="fas fa-upload"></i> Retry Upload';
-              uploadButton.disabled = false;
-              if (uploadStatus) {
-                uploadStatus.style.display = "none";
-                uploadStatusText.textContent = "";
-              }
-            });
-        });
-
-      if (validateButton) {
-        validateButton.addEventListener("click", function (e) {
-          e.preventDefault();
-          validateButton.disabled = true;
-          validateButton.innerHTML = '<span class="loading"></span>Validating...';
-
-          fetch("{% url 'validate_images' %}", {
-            method: "POST",
-            headers: {
-              "X-CSRFToken": document.querySelector(
-                "[name=csrfmiddlewaretoken]"
-              ).value,
-            },
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              document.getElementById("result").innerHTML = `
-                <div style="text-align: center;">
-                  <div style="font-size: 1.25rem; margin-bottom: 1rem;">
-                    <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Validation Complete
-                  </div>
-                  <div style="color: var(--text-secondary);">
-                    Total Uploaded: <span style="color: var(--primary-color); font-weight: 600;">${data.total_images || 0}</span> &nbsp;|&nbsp;
-                    Valid Images: <span style="color: var(--success-color); font-weight: 600;">${data.valid_count || 0}</span> &nbsp;|&nbsp;
-                    Invalid Images: <span style="color: var(--warning-color); font-weight: 600;">${data.invalid_count || 0}</span>
-                  </div>
-                </div>
-              `;
-
-              const showInvalid = document.getElementById("showInvalid");
-              if (showInvalid) showInvalid.disabled = false;
-
-
-              validateButton.innerHTML =
-                '<i class="fas fa-check-circle"></i> Re-Run Validation';
-              validateButton.disabled = false;
-            })
-            .catch((error) => {
-              console.error("Error:", error);
-              document.getElementById("result").innerHTML = `
-                <div style="color: var(--danger-color);">
-                  <i class="fas fa-exclamation-triangle"></i> An error occurred during validation
-                </div>
-              `;
-              validateButton.innerHTML =
-                '<i class="fas fa-play"></i> Retry Validation';
-              validateButton.disabled = false;
-            });
-        });
-      }
-    });
-
-    $(document).ready(function () {
-      // Sidebar functionality
-      const hamburgerMenu = $(".hamburger-menu");
-      const sidebar = $(".sidebar");
-      const overlay = $(".sidebar-overlay");
-
-      hamburgerMenu.click(function () {
-        sidebar.toggleClass("active");
-        overlay.toggleClass("active");
-      });
-
-      overlay.click(function () {
-        sidebar.removeClass("active");
-        overlay.removeClass("active");
-      });
-
-      // Close sidebar with escape key
-      $(document).keyup(function (e) {
-        if (e.key === "Escape") {
-          sidebar.removeClass("active");
-          overlay.removeClass("active");
-        }
-      });
-
-      // Button animations and styling
-      $(".btn-modern").hover(
-        function () {
-          $(this).css("transform", "translateY(-2px)");
-        },
-        function () {
-          if (!$(this).is(":disabled")) {
-            $(this).css("transform", "translateY(0)");
-          }
-        }
-      );
-
-      // Enhanced action button hover effects
-      $(".action-btn").hover(
-        function () {
-          if (!$(this).is(":disabled")) {
-            $(this).find("i").css("transform", "scale(1.1)");
-          }
-        },
-        function () {
-          if (!$(this).is(":disabled")) {
-            $(this).find("i").css("transform", "scale(1)");
-          }
-        }
-      );
-
-      // Navigation handlers with enhanced feedback
-      $("#showInvalid, #showValid, #viewInvalidBtn, #viewValidBtn").click(
-        function (event) {
-          event.preventDefault();
-          const button = $(this);
-          if (!button.is(":disabled")) {
-            const isInvalid =
-              button.attr("id") === "showInvalid" ||
-              button.attr("id") === "viewInvalidBtn";
-            const originalContent = button.html();
-            button.html(`
-              <span class="loading"></span>
-              <div class="btn-text">
-                <span class="btn-title">Loading...</span>
-                <span class="btn-subtitle">Fetching ${isInvalid ? "invalid" : "valid"
-              } images</span>
-              </div>
-            `);
-            const targetUrl = isInvalid
-              ? "/image_gallery/"
-              : "/valid_images/";
-            window.location.href = targetUrl;
-          }
-        }
-      );
-
-      $("#adminButton").click(function (event) {
-        event.preventDefault();
-        const originalContent = $(this).html();
-        $(this).html(`
-            <span class="loading"></span>
-            <div class="btn-text">
-              <span class="btn-title">Redirecting...</span>
-              <span class="btn-subtitle">Opening admin panel</span>
-            </div>
-          `);
-        setTimeout(() => {
-          window.location.href = "{% url 'admin:index' %}";
-        }, 500);
-      });
-
-      $("#deleteData").click(function (event) {
-        event.preventDefault();
-        if (
-          confirm(
-            "Are you sure you want to delete all data? This action cannot be undone."
-          )
-        ) {
-          const originalContent = $(this).html();
-          $(this).html(`
-              <span class="loading"></span>
-              <div class="btn-text">
-                <span class="btn-title">Deleting...</span>
-                <span class="btn-subtitle">Clearing all data</span>
-              </div>
-            `);
-          $(this).prop("disabled", true);
-          setTimeout(() => {
-            window.location.href = "{% url 'delete_all' %}";
-          }, 1000);
-        }
-      });
-
-      // Configuration form handling
-      $("#btnSaveConfig").click(function (e) {
-        e.preventDefault();
-        $(this).html('<span class="loading"></span>Saving...');
-        $(this).prop("disabled", true);
-
-        // Collect all form data
-        const formData = {
-          csrfmiddlewaretoken: $("[name=csrfmiddlewaretoken]").val(),
-          // Basic dimensions and size
-          minHeight: $("#minHeight").val(),
-          maxHeight: $("#maxHeight").val(),
-          minWidth: $("#minWidth").val(),
-          maxWidth: $("#maxWidth").val(),
-          minSize: $("#minSize").val(),
-          maxSize: $("#maxSize").val(),
-          // File format checkboxes
-          jpgchecked: $("#jpgchecked").is(":checked") ? "on" : "",
-          pngchecked: $("#pngchecked").is(":checked") ? "on" : "",
-          jpegchecked: $("#jpegchecked").is(":checked") ? "on" : "",
-          // Threshold values
-          bgcolorThreshold: $("#bgcolorThreshold").val(),
-          bgUniformityThreshold: $("#bgUniformityThreshold").val(),
-          blurnessThreshold: $("#blurnessThreshold").val(),
-          greynessThreshold: $("#greynessThreshold").val(),
-          symmetryThreshold: $("#symmetryThreshold").val(),
-          minHeadPercent: $("#minHeadPercent").val(),
-          maxHeadPercent: $("#maxHeadPercent").val(),
-          noiseThreshold: $("#noiseThreshold").val(),
-          dustSpotThreshold: $("#dustSpotThreshold").val(),
-          textRegionThreshold: $("#textRegionThreshold").val(),
-          // Bypass checkboxes
-          bypass_height_check: $("#bypass_height_check").is(":checked") ? "on" : "",
-          bypass_width_check: $("#bypass_width_check").is(":checked") ? "on" : "",
-          bypass_size_check: $("#bypass_size_check").is(":checked") ? "on" : "",
-          bypass_format_check: $("#bypass_format_check").is(":checked") ? "on" : "",
-          bypass_background_check: $("#bypass_background_check").is(":checked") ? "on" : "",
-          bypass_blurness_check: $("#bypass_blurness_check").is(":checked") ? "on" : "",
-          bypass_greyness_check: $("#bypass_greyness_check").is(":checked") ? "on" : "",
-          bypass_symmetry_check: $("#bypass_symmetry_check").is(":checked") ? "on" : "",
-          bypass_head_check: $("#bypass_head_check").is(":checked") ? "on" : "",
-          bypass_eye_check: $("#bypass_eye_check").is(":checked") ? "on" : "",
-          bypass_corrupted_check: $("#bypass_corrupted_check").is(":checked") ? "on" : "",
-          bypass_printed_photo_check: $("#bypass_printed_photo_check").is(":checked") ? "on" : "",
-          bypass_dust_noise_check: $("#bypass_dust_noise_check").is(":checked") ? "on" : "",
-          bypass_text_check: $("#bypass_text_check").is(":checked") ? "on" : ""
-        };
-
-        // Submit configuration
-        $.ajax({
-          url: "{% url 'save_config' %}",
-          type: "POST",
-          data: formData,
-          headers: {
-            "X-CSRFToken": $("[name=csrfmiddlewaretoken]").val()
-          },
-          success: function (response) {
-            $("#btnSaveConfig").html('<i class="fas fa-check"></i> Saved!');
-            // Reload the page to apply configuration changes immediately
-            setTimeout(() => {
-              location.reload();
-            }, 1000);
-          },
-          error: function (xhr, status, error) {
-            $("#btnSaveConfig").html(
-              '<i class="fas fa-exclamation-triangle"></i> Error'
-            );
-            console.error("Save error:", error);
-            console.error("Response:", xhr.responseText);
-            setTimeout(() => {
-              $("#btnSaveConfig").html(
-                '<i class="fas fa-save"></i> Save Configuration'
-              );
-              $("#btnSaveConfig").prop("disabled", false);
-            }, 2000);
-          },
-        });
-      });
-
-      // Clear Data button confirmation
-      $("#clearDataBtn").click(function (event) {
-        event.preventDefault();
-        
-        const confirmMessage = "Are you sure you want to clear all data?\n\nThis will permanently delete:\n• All uploaded images\n• All validation results\n• All test images\n• All cached data\n\nThis action cannot be undone.";
-        
-        if (confirm(confirmMessage)) {
-          const $btn = $(this);
-          const originalContent = $btn.html();
-          
-          $btn.html(`
-            <span class="loading"></span>
-            <div class="btn-text">
-              <span class="btn-title">Clearing Data...</span>
-              <span class="btn-subtitle">Please wait</span>
-            </div>
-          `);
-          $btn.prop("disabled", true);
-          
-          // Submit the form
-          $("#clearDataForm")[0].submit();
-        }
-      });
-    });
-
-    // Visibility is handled by Bootstrap tab panes; no extra JS needed here
-  </script>
 </head>
 
 <body>
-  <!-- Header Section -->
-  <div class="header">
-    <h1>
-      <i class="fas fa-camera"></i>
-      <span class="highlight">Photo</span>Validator
-    </h1>
-  </div>
 
-  <!-- Hamburger Menu -->
-  <div class="hamburger-menu">
-    <i class="fas fa-bars"></i>
-  </div>
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="logo">
+      <i class="fas fa-camera-retro"></i>
+      PhotoValidator
+    </div>
+    <div class="header-actions">
+      <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="button" id="clearDataBtn" class="header-btn danger">
+          <i class="fas fa-broom"></i> Clear Data
+        </button>
+      </form>
+      <a href="{% url 'admin:index' %}" class="header-btn" style="text-decoration:none;">
+        <i class="fas fa-cog"></i> Admin
+      </a>
+    </div>
+  </header>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
+  <!-- ═══ MAIN ═══ -->
+  <div class="app-container">
 
-    <button id="deleteData" class="action-btn btn-clear-data">
-      <i class="fas fa-trash-alt"></i>
-      <div class="btn-text">
-        <span class="btn-title">Clear All Data</span>
-        <span class="btn-subtitle">Remove validation history</span>
-      </div>
-    </button>
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+      <button class="tab-nav-btn active" data-tab="upload">
+        <i class="fas fa-cloud-upload-alt"></i> Upload & Validate
+      </button>
+      <button class="tab-nav-btn" data-tab="config">
+        <i class="fas fa-sliders-h"></i> Configuration
+      </button>
+    </div>
 
-    <button id="adminButton" class="action-btn btn-admin-panel">
-      <i class="fas fa-user-shield"></i>
-      <div class="btn-text">
-        <span class="btn-title">Admin Panel</span>
-        <span class="btn-subtitle">System management</span>
-      </div>
-    </button>
-  </div>
-  </div>
+    <!-- ═══ UPLOAD TAB ═══ -->
+    <div class="tab-panel active" id="tab-upload">
 
-  <!-- Sidebar Overlay -->
-  <div class="sidebar-overlay"></div>
+      <!-- Upload Card -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-file-archive"></i> Upload Photos</div>
 
-  <div class="container">
-    <!-- Navigation Tabs -->
-    {% comment %} forgot to deploy {% endcomment %}
-    <div class="glass-card">
-      <nav>
-        <div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
-          <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab"
-            aria-controls="nav-home" aria-selected="true"><i class="fas fa-upload"></i> Upload & Validate</a>
-          <a class="nav-item nav-link" id="nav-config-tab" data-toggle="tab" href="#nav-configuration" role="tab"
-            aria-controls="nav-configuration" aria-selected="false"><i class="fas fa-cog"></i> Configuration</a>
-        </div>
-      </nav>
+        <form method="post" enctype="multipart/form-data" id="fileUploadForm" action="{% url 'photoValidator' %}">
+          {% csrf_token %}
 
-      <div class="tab-content py-4" id="nav-tabContent">
-        <!-- Home Tab -->
-        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-          <!-- File Upload Section -->
-          <div class="glass-card">
-            <div style="text-align: center; margin-bottom: 1.5rem; color: var(--text-secondary); font-size: 0.8rem;">
-              <strong>Note:</strong> Uploading large ZIP files may take longer to process and could fail due to server limitations.<br>
-              <br>
-              <span style="font-style: italic;">For testing a single image, please use the <b>Configuration</b> tab.</span>
-            </div>
-            <h3 style="
-                  text-align: center;
-                  margin-bottom: 2rem;
-                  color: var(--text-primary);
-                ">
-              <i class="fas fa-cloud-upload-alt"></i> Upload Photos for
-              Validation
-            </h3>
-
-            <form method="post" enctype="multipart/form-data" id="fileUploadForm" action="{% url 'photoValidator' %}">
-              {% csrf_token %}
-
-              <div class="file-upload-area">
-                <i class="fas fa-file-archive upload-icon"></i>
-                <h4 style="margin-bottom: 1rem; color: var(--text-secondary)">
-                  Drag & Drop or Click to Select
-                </h4>
-                <p style="margin-bottom: 1.5rem; color: var(--text-muted)">
-                  Select a ZIP file containing photos to validate
-                </p>
-
-                <div class="file-upload-wrapper">
-                  {{ form.folder }}
-                </div>
-
-                <div class="file-name-display" style="display: none">
-                  No file selected
-                </div>
-                <div id="uploadStatus" class="status-indicator status-success" style="display: none; margin-top: 1rem;">
-                  <i class="fas fa-check-circle"></i>
-                  <span id="uploadStatusText"></span>
-                </div>
-              </div>
-
-              <div id="startValidationBtn" style="text-align: center; margin-top: 2rem; display: none">
-                <button type="submit" id="uploadZip" class="file-upload-label" disabled>
-                  <i class="fas fa-upload"></i> Upload ZIP
-                </button>
-                <button type="button" id="validateBtn" class="file-upload-label" disabled style="margin-left: 0.5rem;">
-                  <i class="fas fa-play"></i> Validate Now
-                </button>
-              </div>
-            </form>
+          <div class="upload-zone" id="uploadZone">
+            <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <h4>Drag & Drop or Click to Select</h4>
+            <p>Upload a ZIP file containing photos to validate</p>
+            <div style="display:none;">{{ form.folder }}</div>
           </div>
 
-          <!-- Results Section -->
-          <div class="glass-card">
-            <h3 style="
-                  text-align: center;
-                  margin-bottom: 2rem;
-                  color: var(--text-primary);
-                ">
-              <i class="fas fa-chart-line"></i> Validation Results
-            </h3>
+          <div class="file-name-display" id="fileNameDisplay">
+            <i class="fas fa-file-archive"></i> <span id="fileName"></span>
+          </div>
 
-            <div id="result" class="result-display">
-              Upload a ZIP file to see validation results
+          <div id="uploadStatus" class="upload-status">
+            <i class="fas fa-check-circle"></i> <span id="uploadStatusText"></span>
+          </div>
+
+          <div class="btn-row" id="actionBtns" style="display:none;">
+            <button type="submit" id="uploadZip" class="btn btn-accent" disabled>
+              <i class="fas fa-upload"></i> Upload ZIP
+            </button>
+            <button type="button" id="validateBtn" class="btn btn-green" disabled>
+              <i class="fas fa-play"></i> Validate
+            </button>
+          </div>
+          
+          <div id="validationProgressContainer" style="display:none; margin-top:1.5rem; background:var(--bg-card); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text); margin-bottom:0.75rem;">
+               <span id="progressText"><i class="fas fa-spinner fa-spin" style="margin-right:6px; color:var(--accent);"></i> Validating images...</span>
+               <span id="progressPct" style="font-weight:600; color:var(--accent);">0%</span>
             </div>
+            <div style="background:var(--bg); border:1px solid var(--border); border-radius:4px; overflow:hidden; height:12px;">
+               <div id="progressBar" style="background:var(--accent); width:0%; height:100%; transition:width 0.2s ease;"></div>
+            </div>
+          </div>
+        </form>
+      </div>
 
-            
-            <!-- Action Buttons Container -->
-            <div class="action-buttons-row" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; justify-content: center; align-items: center;">
-              <button id="showInvalid" class="action-btn btn-view-invalid" disabled style="width: 100%; max-width: 350px;">
-                <i class="fas fa-exclamation-triangle"></i>
-                <div class="btn-text">
-                  <span class="btn-title">View Invalid Images</span>
-                  <span class="btn-subtitle">Review failed validations</span>
+      <!-- Results Card -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-chart-bar"></i> Validation Results</div>
+
+        <div id="result" class="result-placeholder">
+          <i class="fas fa-inbox"></i>
+          Upload a ZIP file to see validation results
+        </div>
+
+        <div class="result-actions">
+          <button id="showInvalid" class="btn btn-danger-outline" disabled>
+            <i class="fas fa-exclamation-triangle"></i> View Invalid
+          </button>
+          <form id="clearDataForm2" method="POST" action="{% url 'clear_data' %}" style="display:inline;">
+            {% csrf_token %}
+            <button type="button" id="clearDataBtn2" class="btn btn-outline">
+              <i class="fas fa-broom"></i> Clear Data
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ CONFIG TAB ═══ -->
+    <div class="tab-panel" id="tab-config">
+
+      <!-- Test Image Section -->
+      <div class="card">
+        <div class="card-title"><i class="fas fa-vial"></i> Test Single Image</div>
+        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem;">
+          Upload a single image to test against the current configuration.
+        </p>
+
+        <form id="testConfigForm" enctype="multipart/form-data" method="POST" action="{% url 'test_config_image' %}">
+          {% csrf_token %}
+
+          <div class="test-layout">
+            <div>
+              <label for="testConfigImage" class="btn btn-outline" style="width:100%; justify-content:center; margin-bottom:0.75rem;">
+                <i class="fas fa-image"></i> <span id="testConfigFileName">Choose Image</span>
+              </label>
+              <input type="file" id="testConfigImage" name="image" accept="image/*" style="display:none;" required />
+
+              <div class="test-preview" id="previewCard">
+                <div class="placeholder-text" id="previewPlaceholder">
+                  <i class="fas fa-image" style="font-size:2rem; opacity:0.3; display:block; margin-bottom:0.5rem;"></i>
+                  No image selected
                 </div>
+                <img id="testConfigPreview" style="display:none;" />
+              </div>
+
+              <button type="submit" id="testConfigBtn" class="btn btn-green" disabled style="width:100%; margin-top:0.75rem; justify-content:center;">
+                <i class="fas fa-play"></i> Run Test
               </button>
-              
-              <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="width: 100%; max-width: 350px;">
-                {% csrf_token %}
-                <button type="submit" id="clearDataBtn" class="action-btn btn-delete" style="width: 100%; height: 100%;">
-                  <i class="fas fa-broom"></i>
-                  <div class="btn-text">
-                    <span class="btn-title">Clear Data</span>
-                    <span class="btn-subtitle">Remove all uploaded & tested images</span>
-                  </div>
-                </button>
-              </form>
             </div>
-            <!-- <button
-                id="showValid"
-                class="action-btn btn-admin-panel"
-                disabled
-              >
-                <i class="fas fa-check-circle"></i>
-                <div class="btn-text">
-                  <span class="btn-title">View Valid Images</span>
-                  <span class="btn-subtitle">Review failed validations</span>
-                </div>
-              </button> -->
-            <!-- Action Buttons moved to sidebar -->
-          </div>
-        </div>
-        <!-- Configuration Tab -->
-        <div class="tab-pane fade" id="nav-configuration" role="tabpanel" aria-labelledby="nav-config-tab">
-                <!-- Test Configuration Section - Outside main form -->
-          <div class="glass-card">
-              <div style="margin-bottom:1rem; color:var(--text-secondary); font-size:0.95rem;">
-                <i class="fas fa-info-circle" style="margin-right:0.5rem;"></i>
-                <span>
-                  To test with the new settings, update the configuration below and click <b>Save Configuration</b>. Changes will be applied instantly.
-                </span>
+
+            <div id="testConfigResult" class="test-results">
+              <div style="color:var(--text-muted); text-align:center; padding:2rem 0; font-size:0.85rem;">
+                Test results will appear here
               </div>
-            <div class="config-section" style="max-width:400px; margin:2rem auto; font-family:Arial, sans-serif;">
-              <h4 class="config-title" style="margin-bottom:1rem; font-weight:600; font-size:1.1rem; display:flex; align-items:center; gap:0.5rem;">
-                <i class="fas fa-vial"></i> Test Configuration
-              </h4>
-
-              <form id="testConfigForm" enctype="multipart/form-data" method="POST" action="{% url 'test_config_image' %}">
-                {% csrf_token %}
-
-                <!-- File Input Field -->
-                <label for="testConfigImage" 
-                       style="display:flex; align-items:center; justify-content:space-between; padding:0.5rem 1rem; border:1px solid #ccc; border-radius:6px; background:#f9f9f9; cursor:pointer; font-size:0.95rem;">
-                  <span><i class="fas fa-upload"></i> Choose Image</span>
-                  <span id="testConfigFileName" style="font-size:0.85rem; color:#555;">No file selected</span>
-                </label>
-                <input type="file" id="testConfigImage" name="image" accept="image/*" style="display:none;" required autocomplete="off" />
-
-                <!-- Preview Card -->
-                <div id="previewCard" 
-                     style="display:none; margin-top:1rem; border:1px solid #ddd; border-radius:6px; overflow:hidden; text-align:center; max-height:180px;">
-                  <img id="testConfigPreview" style="max-width:100%; max-height:180px; display:block; object-fit:contain;" />
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="testConfigBtn" disabled 
-                        style="margin-top:1rem; width:100%; padding:0.5rem; font-size:1rem; border:none; border-radius:6px; background:#4CAF50; color:#fff; cursor:pointer;">
-                  <i class="fas fa-play"></i> Test Image
-                </button>
-              </form>
-
-              <!-- Result Display -->
-              <div id="testConfigResult" style="margin-top:1rem; font-size:0.95rem; color:#333;"></div>
             </div>
           </div>
-          <div class="glass-card">
-            <h3 style="
-                  text-align: center;
-                  margin-bottom: 2rem;
-                  color: var(--text-primary);
-                ">
-              <i class="fas fa-sliders-h"></i> Validation Configuration
-            </h3>
-
-            <form method="POST" action="{% url 'save_config' %}" enctype="multipart/form-data" id="configForm">
-              {% csrf_token %}
-
-              <!-- Image Dimensions -->
-              <div class="config-section">
-                <h4 class="config-title">
-                  <i class="fas fa-expand-arrows-alt"></i> Image Dimensions
-                </h4>
-
-                <div class="config-row">
-                  <label class="config-label">Height (pixels)</label>
-                  <div class="input-group">
-                    <label class="input-label">Min:</label>
-                    <input type="number" value="{{config.min_height}}" min="0" max="100000" step="10" id="minHeight"
-                      name="minHeight" class="config-input" />
-                    <label class="input-label">Max:</label>
-                    <input type="number" value="{{config.max_height}}" min="0" max="100000" step="10" id="maxHeight"
-                      name="maxHeight" class="config-input" />
-                  </div>
-                </div>
-
-                <div class="config-row">
-                  <div class="config-group">
-                    <label class="config-label">Width (pixels)</label>
-                    <div class="input-group">
-                      <label class="input-label">Min:</label>
-                      <input type="number" value="{{config.min_width}}" min="0" max="100000" step="10" id="minWidth"
-                        name="minWidth" class="config-input" />
-                      <label class="input-label">Max:</label>
-                      <input type="number" value="{{config.max_width}}" min="0" max="100000" step="10" id="maxWidth"
-                        name="maxWidth" class="config-input" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- File Size -->
-              <div class="config-section">
-                <h4 class="config-title">
-                  <i class="fas fa-hdd"></i> File Size
-                </h4>
-
-                <div class="config-row">
-                  <div class="config-group">
-                    <label class="config-label">Size (KB)</label>
-                    <div class="input-group">
-                      <label class="input-label">Min:</label>
-                      <input type="number" value="{{config.min_size}}" min="0" max="100000" step="10" id="minSize"
-                        name="minSize" class="config-input" />
-                      <label class="input-label">Max:</label>
-                      <input type="number" value="{{config.max_size}}" min="0" max="100000" step="10" id="maxSize"
-                        name="maxSize" class="config-input" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              
-              <!-- File Formats -->
-              <div class="config-section">
-                <h4 class="config-title">
-                  <i class="fas fa-file-image"></i> Allowed File Formats
-                </h4>
-
-                <div class="format-grid">
-                  <div class="format-option">
-                    <input type="checkbox" class="format-checkbox" id="jpgchecked" name="jpgchecked" {% if config.is_jpg %}checked{% endif %} />
-
-                    <label for="jpgchecked" class="format-label">
-                      <i class="fas fa-image"></i>
-                      <span>JPG</span>
-                    </label>
-                  </div>
-
-                  <div class="format-option">
-                    <input type="checkbox" class="format-checkbox" id="pngchecked" name="pngchecked" {% if config.is_png %}checked{% endif %} />
-                     
-                    <label for="pngchecked" class="format-label">
-                      <i class="fas fa-image"></i>
-                      <span>PNG</span>
-                    </label>
-                  </div>
-
-                  <div class="format-option">
-                    <input type="checkbox" class="format-checkbox" id="jpegchecked" name="jpegchecked" {% if config.is_jpeg %}checked{% endif %} />
-                      
-                    <label for="jpegchecked" class="format-label">
-                      <i class="fas fa-image"></i>
-                      <span>JPEG</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Bypass Options -->
-              <div class="config-section">
-                <h4 class="config-title">
-                  <i class="fas fa-toggle-off"></i> Bypass Options
-                </h4>
-
-                <div class="bypass-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem;">
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_height_check" name="bypass_height_check" {% if config.bypass_height_check %}checked{% endif %} />
-                    <label for="bypass_height_check">Bypass Height Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_width_check" name="bypass_width_check" {% if config.bypass_width_check %}checked{% endif %} />
-                    <label for="bypass_width_check">Bypass Width Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_size_check" name="bypass_size_check" {% if config.bypass_size_check %}checked{% endif %} />
-                    <label for="bypass_size_check">Bypass Size Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_format_check" name="bypass_format_check" {% if config.bypass_format_check %}checked{% endif %} />
-                    <label for="bypass_format_check">Bypass Format Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_background_check" name="bypass_background_check" {% if config.bypass_background_check %}checked{% endif %} />
-                    <label for="bypass_background_check">Bypass Background Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_blurness_check" name="bypass_blurness_check" {% if config.bypass_blurness_check %}checked{% endif %} />
-                    <label for="bypass_blurness_check">Bypass Blurness Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_greyness_check" name="bypass_greyness_check" {% if config.bypass_greyness_check %}checked{% endif %} />
-                    <label for="bypass_greyness_check">Bypass Greyness Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_symmetry_check" name="bypass_symmetry_check" {% if config.bypass_symmetry_check %}checked{% endif %} />
-                    <label for="bypass_symmetry_check">Bypass Symmetry Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_head_check" name="bypass_head_check" {% if config.bypass_head_check %}checked{% endif %} />
-                    <label for="bypass_head_check">Bypass Head Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_eye_check" name="bypass_eye_check" {% if config.bypass_eye_check %}checked{% endif %} />
-                    <label for="bypass_eye_check">Bypass Eye Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_corrupted_check" name="bypass_corrupted_check" {% if config.bypass_corrupted_check %}checked{% endif %} />
-                    <label for="bypass_corrupted_check">Bypass Corrupted Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_printed_photo_check" name="bypass_printed_photo_check" {% if config.bypass_printed_photo_check %}checked{% endif %} />
-                    <label for="bypass_printed_photo_check">Bypass Printed Photo Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_dust_noise_check" name="bypass_dust_noise_check" {% if config.bypass_dust_noise_check %}checked{% endif %} />
-                    <label for="bypass_dust_noise_check">Bypass Dust/Noise Check</label>
-                  </div>
-
-                  <div class="bypass-option">
-                    <input type="checkbox" id="bypass_text_check" name="bypass_text_check" {% if config.bypass_text_check %}checked{% endif %} />
-                    <label for="bypass_text_check">Bypass Text Check</label>
-                  </div>
-                </div>
-              </div>
-
-              </div>
-
-
-              
-
-
-              <!-- Image Quality & Attributes -->
-              <div class="config-section">
-                <h4 class="config-title">
-                  <i class="fas fa-sliders-h"></i> Image Quality & Attributes
-                </h4>
-
-                <div class="config-row">
-                  <label class="config-label">Background Color Threshold (Higher is strict)</label>
-                  <input type="number" value="{{config.bgcolor_threshold}}" min="0" max="100" step="1"
-                    id="bgcolorThreshold" name="bgcolorThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Background Uniformity (Lower is strict)</label>
-                  <input type="number" value="{{config.bg_uniformity_threshold}}" min="0" max="100" step="1"
-                    id="bgUniformityThreshold" name="bgUniformityThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Blurness Threshold (Higher = stricter)</label>
-                  <input type="number" value="{{config.blurness_threshold}}" min="0" max="1000" step="10"
-                    id="blurnessThreshold" name="blurnessThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Greyness Threshold (Lower = stricter)</label>
-                  <input type="number" value="{{config.greyness_threshold}}" min="0" max="100" step="1"
-                    id="greynessThreshold" name="greynessThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Symmetry Threshold (Higher = stricter)</label>
-                  <input type="number" value="{{config.symmetry_threshold}}" min="0" max="100" step="1"
-                    id="symmetryThreshold" name="symmetryThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Min Head Coverage (%)</label>
-                  <input type="number" value="{{config.min_head_percent}}" min="0" max="100" step="1"
-                    id="minHeadPercent" name="minHeadPercent" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Max Head Coverage (%)</label>
-                  <input type="number" value="{{config.max_head_percent}}" min="0" max="100" step="1"
-                    id="maxHeadPercent" name="maxHeadPercent" class="config-input" />
-                </div>
-              </div>
-
-              <!-- New Check Thresholds -->
-              <div class="config-section">
-                <h4 class="config-title">
-                  <i class="fas fa-shield-alt"></i> Advanced Check Thresholds
-                </h4>
-
-                <div class="config-row">
-                  <label class="config-label">Noise Threshold (Higher = more noise tolerated)</label>
-                  <input type="number" value="{{config.noise_threshold}}" min="0" max="100" step="1"
-                    id="noiseThreshold" name="noiseThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Dust Spot Threshold (Max spots allowed)</label>
-                  <input type="number" value="{{config.dust_spot_threshold}}" min="0" max="100" step="1"
-                    id="dustSpotThreshold" name="dustSpotThreshold" class="config-input" />
-                </div>
-
-                <div class="config-row">
-                  <label class="config-label">Text Region Threshold (Max text regions allowed)</label>
-                  <input type="number" value="{{config.text_region_threshold}}" min="0" max="50" step="1"
-                    id="textRegionThreshold" name="textRegionThreshold" class="config-input" />
-                </div>
-              </div>
-
-
-              <div style="text-align: center; margin-top: 3rem">
-                <button type="button" id="btnSaveConfig" class="btn-modern btn-success">
-                  <i class="fas fa-save"></i> Save Configuration
-                </button>
-              </div>
-              </div>
-
-            </form>
-          </div>
-
-  
-
-          <script>
-            document.addEventListener("DOMContentLoaded", function () {
-              const testConfigImage = document.getElementById("testConfigImage");
-              const testConfigFileName = document.getElementById("testConfigFileName");
-              const testConfigBtn = document.getElementById("testConfigBtn");
-              const testConfigForm = document.getElementById("testConfigForm");
-              const testConfigResult = document.getElementById("testConfigResult");
-              const previewCard = document.getElementById("previewCard");
-              const testConfigPreview = document.getElementById("testConfigPreview");
-
-              testConfigImage.addEventListener("change", function () {
-                const file = this.files[0];
-                if (file) {
-                  testConfigFileName.textContent = file.name;
-                  testConfigBtn.disabled = false;
-                  
-                  // Show preview
-                  const reader = new FileReader();
-                  reader.onload = function (e) {
-                    testConfigPreview.src = e.target.result;
-                    previewCard.style.display = "block";
-                  };
-                  reader.readAsDataURL(file);
-                } else {
-                  testConfigFileName.textContent = "No file selected";
-                  testConfigBtn.disabled = true;
-                  previewCard.style.display = "none";
-                }
-              });
-
-              testConfigForm.addEventListener("submit", function (e) {
-                e.preventDefault();
-                testConfigBtn.innerHTML = '<span class="loading"></span> Testing...';
-                testConfigBtn.disabled = true;
-
-                const formData = new FormData(testConfigForm);
-                
-                // Get CSRF token from the main form
-                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                
-                fetch(testConfigForm.action, {
-                  method: "POST",
-                  body: formData,
-                  headers: {
-                    "X-CSRFToken": csrfToken
-                  },
-                })
-                  .then(response => {
-                    if (!response.ok) {
-                      throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                  })
-                  .then(data => {
-                    testConfigResult.innerHTML = data.result_html || "No result";
-                    testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Test Image';
-                    testConfigBtn.disabled = false;
-                  })
-                  .catch(error => {
-                    console.error("Error:", error);
-                    testConfigResult.innerHTML = `<span style="color:red;"><i class="fas fa-exclamation-triangle"></i> Error during test: ${error.message}</span>`;
-                    testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Retry Test';
-                    testConfigBtn.disabled = false;
-                  });
-              });
-            });
-          </script>
-        </div>
-        </div>
+        </form>
       </div>
+
+      <!-- Config Form -->
+      <form method="POST" action="{% url 'save_config' %}" id="configForm">
+        {% csrf_token %}
+
+        <!-- Dimensions -->
+        <div class="accordion-item open">
+          <button type="button" class="accordion-header">
+            <span class="left"><i class="fas fa-ruler-combined"></i> Image Dimensions & Size</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-content">
+              <div class="config-grid">
+                <div class="config-field">
+                  <label>Min Height (px)</label>
+                  <input type="number" value="{{config.min_height}}" id="minHeight" name="minHeight" />
+                </div>
+                <div class="config-field">
+                  <label>Max Height (px)</label>
+                  <input type="number" value="{{config.max_height}}" id="maxHeight" name="maxHeight" />
+                </div>
+                <div class="config-field">
+                  <label>Min Width (px)</label>
+                  <input type="number" value="{{config.min_width}}" id="minWidth" name="minWidth" />
+                </div>
+                <div class="config-field">
+                  <label>Max Width (px)</label>
+                  <input type="number" value="{{config.max_width}}" id="maxWidth" name="maxWidth" />
+                </div>
+                <div class="config-field">
+                  <label>Min Size (KB)</label>
+                  <input type="number" value="{{config.min_size}}" id="minSize" name="minSize" />
+                </div>
+                <div class="config-field">
+                  <label>Max Size (KB)</label>
+                  <input type="number" value="{{config.max_size}}" id="maxSize" name="maxSize" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- File Formats -->
+        <div class="accordion-item">
+          <button type="button" class="accordion-header">
+            <span class="left"><i class="fas fa-file-image"></i> Allowed Formats</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-content">
+              <div class="format-chips">
+                <div class="format-chip">
+                  <input type="checkbox" id="jpgchecked" name="jpgchecked" {% if config.is_jpg %}checked{% endif %} />
+                  <label for="jpgchecked"><i class="fas fa-image"></i> JPG</label>
+                </div>
+                <div class="format-chip">
+                  <input type="checkbox" id="pngchecked" name="pngchecked" {% if config.is_png %}checked{% endif %} />
+                  <label for="pngchecked"><i class="fas fa-image"></i> PNG</label>
+                </div>
+                <div class="format-chip">
+                  <input type="checkbox" id="jpegchecked" name="jpegchecked" {% if config.is_jpeg %}checked{% endif %} />
+                  <label for="jpegchecked"><i class="fas fa-image"></i> JPEG</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quality Thresholds -->
+        <div class="accordion-item open">
+          <button type="button" class="accordion-header">
+            <span class="left"><i class="fas fa-sliders-h"></i> Quality Thresholds</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-content">
+              <div class="config-grid">
+                <div class="config-field">
+                  <label>Background Color Threshold</label>
+                  <input type="number" value="{{config.bgcolor_threshold}}" id="bgcolorThreshold" name="bgcolorThreshold" />
+                </div>
+                <div class="config-field">
+                  <label>Background Uniformity</label>
+                  <input type="number" value="{{config.bg_uniformity_threshold}}" id="bgUniformityThreshold" name="bgUniformityThreshold" />
+                </div>
+                <div class="config-field">
+                  <label>Blurness Threshold</label>
+                  <input type="number" value="{{config.blurness_threshold}}" id="blurnessThreshold" name="blurnessThreshold" />
+                </div>
+                <div class="config-field">
+                  <label>Greyness Threshold</label>
+                  <input type="number" value="{{config.greyness_threshold}}" id="greynessThreshold" name="greynessThreshold" />
+                </div>
+                <div class="config-field">
+                  <label>Symmetry Threshold</label>
+                  <input type="number" value="{{config.symmetry_threshold}}" id="symmetryThreshold" name="symmetryThreshold" />
+                </div>
+                <div class="config-field">
+                  <label>Min Head Coverage (%)</label>
+                  <input type="number" value="{{config.min_head_percent}}" id="minHeadPercent" name="minHeadPercent" />
+                </div>
+                <div class="config-field">
+                  <label>Max Head Coverage (%)</label>
+                  <input type="number" value="{{config.max_head_percent}}" id="maxHeadPercent" name="maxHeadPercent" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Thresholds -->
+        <div class="accordion-item">
+          <button type="button" class="accordion-header">
+            <span class="left"><i class="fas fa-shield-alt"></i> Advanced Check Thresholds</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-content">
+              <div class="config-grid">
+                <div class="config-field">
+                  <label>Noise Threshold</label>
+                  <input type="number" value="{{config.noise_threshold}}" id="noiseThreshold" name="noiseThreshold" />
+                </div>
+                <div class="config-field">
+                  <label>Dust Spot Threshold</label>
+                  <input type="number" value="{{config.dust_spot_threshold}}" id="dustSpotThreshold" name="dustSpotThreshold" />
+                </div>
+                <div class="config-field">
+                  <label>Text Region Threshold</label>
+                  <input type="number" value="{{config.text_region_threshold}}" id="textRegionThreshold" name="textRegionThreshold" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bypass Toggles -->
+        <div class="accordion-item">
+          <button type="button" class="accordion-header">
+            <span class="left"><i class="fas fa-toggle-off"></i> Bypass Options</span>
+            <i class="fas fa-chevron-down chevron"></i>
+          </button>
+          <div class="accordion-body">
+            <div class="accordion-content">
+              <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                Enable toggles to skip specific validation checks.
+              </p>
+              <div class="toggle-grid">
+                <div class="toggle-item">
+                  <span>Height Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_height_check" name="bypass_height_check" {% if config.bypass_height_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Width Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_width_check" name="bypass_width_check" {% if config.bypass_width_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Size Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_size_check" name="bypass_size_check" {% if config.bypass_size_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Format Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_format_check" name="bypass_format_check" {% if config.bypass_format_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Background Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_background_check" name="bypass_background_check" {% if config.bypass_background_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Blurness Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_blurness_check" name="bypass_blurness_check" {% if config.bypass_blurness_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Greyness Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_greyness_check" name="bypass_greyness_check" {% if config.bypass_greyness_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Symmetry Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_symmetry_check" name="bypass_symmetry_check" {% if config.bypass_symmetry_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Head Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_head_check" name="bypass_head_check" {% if config.bypass_head_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Eye Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_eye_check" name="bypass_eye_check" {% if config.bypass_eye_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Corrupted Check</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_corrupted_check" name="bypass_corrupted_check" {% if config.bypass_corrupted_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Printed Photo</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_printed_photo_check" name="bypass_printed_photo_check" {% if config.bypass_printed_photo_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Dust/Noise</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_dust_noise_check" name="bypass_dust_noise_check" {% if config.bypass_dust_noise_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="toggle-item">
+                  <span>Text Detection</span>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="bypass_text_check" name="bypass_text_check" {% if config.bypass_text_check %}checked{% endif %} />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <button type="button" id="btnSaveConfig" class="btn btn-green">
+            <i class="fas fa-save"></i> Save Configuration
+          </button>
+        </div>
+      </form>
+
     </div>
   </div>
 
-  <!-- Bootstrap core JavaScript -->
+  <!-- ═══ SCRIPTS ═══ -->
   <script src="{% static 'api/vendor/jquery/jquery.min.js' %}"></script>
   <script src="{% static 'api/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <!-- Plugin JavaScript -->
   <script src="{% static 'api/vendor/jquery-easing/jquery.easing.compatibility.js' %}"></script>
-</body>
 
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // ─── Tab switching ───
+    document.querySelectorAll(".tab-nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".tab-nav-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+      });
+    });
+
+    // ─── Accordion ───
+    document.querySelectorAll(".accordion-header").forEach(header => {
+      header.addEventListener("click", () => {
+        header.parentElement.classList.toggle("open");
+      });
+    });
+
+    // ─── File upload area ───
+    const uploadZone = document.getElementById("uploadZone");
+    const fileInput = document.getElementById("id_folder");
+    const fileNameDisplay = document.getElementById("fileNameDisplay");
+    const fileNameText = document.getElementById("fileName");
+    const uploadBtn = document.getElementById("uploadZip");
+    const validateBtn = document.getElementById("validateBtn");
+    const actionBtns = document.getElementById("actionBtns");
+    const uploadStatus = document.getElementById("uploadStatus");
+    const uploadStatusText = document.getElementById("uploadStatusText");
+
+    uploadZone.addEventListener("click", () => fileInput.click());
+
+    uploadZone.addEventListener("dragover", e => {
+      e.preventDefault();
+      uploadZone.classList.add("dragover");
+    });
+
+    uploadZone.addEventListener("dragleave", e => {
+      e.preventDefault();
+      uploadZone.classList.remove("dragover");
+    });
+
+    uploadZone.addEventListener("drop", e => {
+      e.preventDefault();
+      uploadZone.classList.remove("dragover");
+      if (e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        fileInput.dispatchEvent(new Event("change"));
+      }
+    });
+
+    fileInput.addEventListener("change", function () {
+      if (fileInput.files.length > 0) {
+        fileNameText.textContent = fileInput.files[0].name;
+        fileNameDisplay.style.display = "block";
+        uploadBtn.disabled = false;
+        actionBtns.style.display = "flex";
+        uploadStatus.style.display = "none";
+      } else {
+        fileNameDisplay.style.display = "none";
+        actionBtns.style.display = "none";
+      }
+    });
+
+    // ─── Upload form ───
+    document.getElementById("fileUploadForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      uploadBtn.innerHTML = '<span class="loading"></span>Uploading...';
+      uploadBtn.disabled = true;
+
+      const formData = new FormData(this);
+      fetch(this.action, {
+        method: "POST",
+        body: formData,
+        headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value }
+      })
+      .then(r => r.json())
+      .then(data => {
+        uploadStatusText.textContent = `Upload complete — ${data.total_images || 0} images found.`;
+        uploadStatus.style.display = "block";
+        if (validateBtn) validateBtn.disabled = false;
+
+        let previewHtml = '';
+        if (data.image_files && data.image_files.length > 0) {
+            let gridItems = data.image_files.map(img => `
+                <div class="preview-card" data-filename="${img}">
+                    <div style="height:90px; display:flex; align-items:center; justify-content:center; padding:4px;">
+                        <img src="/uploaded_image/${encodeURIComponent(img)}" loading="lazy" style="max-width:100%; max-height:100%; object-fit:contain;" onerror="this.src='/static/api/images/placeholder.png';" />
+                    </div>
+                    <div style="font-size:0.65rem; color:var(--text-dim); text-align:center; padding:4px; border-top:1px solid var(--border); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${img}">${img}</div>
+                </div>
+            `).join('');
+            
+            let extraMsg = data.total_images > data.image_files.length ? ` (showing ${data.image_files.length} of ${data.total_images})` : '';
+            
+            previewHtml = `
+              <div style="margin-top:2rem; text-align:left;">
+                  <h5 style="color:var(--text); margin-bottom:1rem; font-size:0.9rem; font-weight:600;"><i class="fas fa-images" style="color:var(--accent);"></i> Loaded Images Preview <span style="color:var(--text-muted); font-weight:normal;">${extraMsg}</span></h5>
+                  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:12px; max-height:450px; overflow-y:auto; padding-right:8px;" id="uploadPreviewGrid">
+                      ${gridItems}
+                  </div>
+              </div>
+            `;
+        }
+
+        document.getElementById("result").innerHTML = `
+          <div class="stats-row" id="statsRow">
+            <div class="stat-card total">
+              <div class="stat-value">${data.total_images || 0}</div>
+              <div class="stat-label">Uploaded</div>
+            </div>
+            <div class="stat-card valid">
+              <div class="stat-value">—</div>
+              <div class="stat-label">Valid</div>
+            </div>
+            <div class="stat-card invalid">
+              <div class="stat-value">—</div>
+              <div class="stat-label">Invalid</div>
+            </div>
+          </div>
+          ${previewHtml}
+        `;
+
+        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Upload Another';
+        uploadBtn.disabled = false;
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById("result").innerHTML = `
+          <div style="color:var(--red);text-align:center;">
+            <i class="fas fa-exclamation-triangle"></i> Upload failed
+          </div>`;
+        uploadBtn.innerHTML = '<i class="fas fa-upload"></i> Retry';
+        uploadBtn.disabled = false;
+      });
+    });
+
+    // ─── Validate ───
+    if (validateBtn) {
+      validateBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        validateBtn.disabled = true;
+        validateBtn.innerHTML = '<span class="loading"></span>Validating...';
+
+        // Add 'validating' animation to all newly loaded images
+        document.querySelectorAll('.preview-card').forEach(card => {
+          card.classList.remove('valid-pass', 'invalid-fail');
+          card.classList.add('validating');
+        });
+
+        const progressContainer = document.getElementById("validationProgressContainer");
+        const progressBar = document.getElementById("progressBar");
+        const progressPct = document.getElementById("progressPct");
+        const progressText = document.getElementById("progressText");
+        
+        if (progressContainer) progressContainer.style.display = "block";
+        if (progressBar) progressBar.style.width = "0%";
+        if (progressPct) progressPct.textContent = "0%";
+        if (progressText) progressText.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:6px; color:var(--accent);"></i> Preparing validation...';
+
+        fetch("{% url 'validate_images' %}", {
+          method: "POST",
+          headers: { "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value }
+        })
+        .then(async response => {
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                buffer += decoder.decode(value, { stream: true });
+                let lines = buffer.split("\n");
+                buffer = lines.pop(); // keep last incomplete line
+                
+                for (const line of lines) {
+                    if (line.trim()) {
+                        try {
+                            const data = JSON.parse(line);
+                            if (data.status === "processing") {
+                                 let pct = 0;
+                                 if (data.total > 0) {
+                                     pct = Math.round((data.processed / data.total) * 100);
+                                 }
+                                 if (progressBar) progressBar.style.width = pct + "%";
+                                 if (progressPct) progressPct.textContent = pct + "%";
+                                 if (progressText) progressText.innerHTML = `<i class="fas fa-spinner fa-spin" style="margin-right:6px; color:var(--accent);"></i> Processing <strong style="color:var(--text);">&nbsp;${data.processed}&nbsp;</strong> of ${data.total} images...`;
+                            } else if (data.status === "ok") {
+                                 finishValidation(data);
+                            } else if (data.status === "error") {
+                                 alert("Error validating images: " + data.message);
+                                 if (progressText) progressText.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--red);"></i> Failed.`;
+                                 validateBtn.innerHTML = '<i class="fas fa-play"></i> Retry';
+                                 validateBtn.disabled = false;
+                            }
+                        } catch (e) {
+                            console.error("JSON parse error on stream line:", line, e);
+                        }
+                    }
+                }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if (progressText) progressText.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--red);"></i> Request Failed.`;
+            validateBtn.innerHTML = '<i class="fas fa-play"></i> Retry';
+            validateBtn.disabled = false;
+        });
+        
+        function finishValidation(data) {
+          // Finish progress
+          if (progressBar) progressBar.style.width = "100%";
+          if (progressPct) progressPct.textContent = "100%";
+          if (progressText) progressText.innerHTML = `<i class="fas fa-check-circle" style="margin-right:6px; color:var(--green);"></i> Validation Complete!`;
+          setTimeout(() => { if (progressContainer) progressContainer.style.display = "none"; }, 3000);
+
+          // Remove validating animation
+          document.querySelectorAll('.preview-card').forEach(card => card.classList.remove('validating'));
+
+          let summaryHtml = '';
+          if (data.top_reasons && data.top_reasons.length > 0) {
+            let listItems = data.top_reasons.map(r => 
+              `<div style="display:flex; justify-content:space-between; padding:0.4rem 0; border-bottom:1px solid var(--border);">
+                 <span>${r.reason}</span>
+                 <strong style="color:var(--red)">${r.count} <i class="fas fa-times-circle"></i></strong>
+               </div>`
+            ).join('');
+            
+            summaryHtml = `
+              <div style="margin-top:1.5rem; text-align:left; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:1.25rem;" id="reasonsSummaryBox">
+                <h5 style="color:var(--text); font-size:0.95rem; margin-bottom:0.75rem;"><i class="fas fa-clipboard-list" style="color:var(--accent)"></i> Top Reasons for Failure</h5>
+                <div style="font-size:0.85rem; color:var(--text-dim);">
+                  ${listItems}
+                </div>
+              </div>
+            `;
+          }
+
+          // Update validation stats safely without erasing the preview grid
+          const statsRow = document.getElementById("statsRow");
+          if (statsRow) {
+            statsRow.innerHTML = `
+                <div class="stat-card total">
+                  <div class="stat-value">${data.total_images || 0}</div>
+                  <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card valid">
+                  <div class="stat-value">${data.valid_count || 0}</div>
+                  <div class="stat-label">Valid</div>
+                </div>
+                <div class="stat-card invalid">
+                  <div class="stat-value">${data.invalid_count || 0}</div>
+                  <div class="stat-label">Invalid</div>
+                </div>
+            `;
+          }
+          
+          let oldSummaryBox = document.getElementById("reasonsSummaryBox");
+          if (oldSummaryBox) oldSummaryBox.remove();
+          
+          if (summaryHtml) {
+              const resultContainer = document.getElementById("result");
+              resultContainer.insertAdjacentHTML("beforeend", summaryHtml);
+          }
+
+          // Apply green/red borders based on results
+          if (data.valid_images) {
+             data.valid_images.forEach(img => {
+                let card = document.querySelector(`.preview-card[data-filename="${img}"]`);
+                if (card) card.classList.add("valid-pass");
+             });
+          }
+          if (data.invalid_images) {
+             data.invalid_images.forEach(img => {
+                let card = document.querySelector(`.preview-card[data-filename="${img}"]`);
+                if (card) card.classList.add("invalid-fail");
+             });
+          }
+
+          const showInvalid = document.getElementById("showInvalid");
+          if (showInvalid) showInvalid.disabled = false;
+
+          validateBtn.innerHTML = '<i class="fas fa-play"></i> Re-Validate';
+          validateBtn.disabled = false;
+        }
+      });
+    }
+
+    // ─── View Invalid ───
+    document.getElementById("showInvalid").addEventListener("click", function (e) {
+      e.preventDefault();
+      if (!this.disabled) window.location.href = "/image_gallery/";
+    });
+
+    // ─── Clear data ───
+    function handleClear(btnId, formId) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (confirm("Clear all uploaded images and results? This cannot be undone.")) {
+          btn.innerHTML = '<span class="loading"></span>Clearing...';
+          btn.disabled = true;
+          document.getElementById(formId).submit();
+        }
+      });
+    }
+    handleClear("clearDataBtn", "clearDataForm");
+    handleClear("clearDataBtn2", "clearDataForm2");
+
+    // ─── Save Config ───
+    document.getElementById("btnSaveConfig").addEventListener("click", function (e) {
+      e.preventDefault();
+      const btn = this;
+      btn.innerHTML = '<span class="loading"></span>Saving...';
+      btn.disabled = true;
+
+      const formData = {
+        csrfmiddlewaretoken: document.querySelector("[name=csrfmiddlewaretoken]").value,
+        minHeight: document.getElementById("minHeight").value,
+        maxHeight: document.getElementById("maxHeight").value,
+        minWidth: document.getElementById("minWidth").value,
+        maxWidth: document.getElementById("maxWidth").value,
+        minSize: document.getElementById("minSize").value,
+        maxSize: document.getElementById("maxSize").value,
+        jpgchecked: document.getElementById("jpgchecked").checked ? "on" : "",
+        pngchecked: document.getElementById("pngchecked").checked ? "on" : "",
+        jpegchecked: document.getElementById("jpegchecked").checked ? "on" : "",
+        bgcolorThreshold: document.getElementById("bgcolorThreshold").value,
+        bgUniformityThreshold: document.getElementById("bgUniformityThreshold").value,
+        blurnessThreshold: document.getElementById("blurnessThreshold").value,
+        greynessThreshold: document.getElementById("greynessThreshold").value,
+        symmetryThreshold: document.getElementById("symmetryThreshold").value,
+        minHeadPercent: document.getElementById("minHeadPercent").value,
+        maxHeadPercent: document.getElementById("maxHeadPercent").value,
+        noiseThreshold: document.getElementById("noiseThreshold").value,
+        dustSpotThreshold: document.getElementById("dustSpotThreshold").value,
+        textRegionThreshold: document.getElementById("textRegionThreshold").value,
+        bypass_height_check: document.getElementById("bypass_height_check").checked ? "on" : "",
+        bypass_width_check: document.getElementById("bypass_width_check").checked ? "on" : "",
+        bypass_size_check: document.getElementById("bypass_size_check").checked ? "on" : "",
+        bypass_format_check: document.getElementById("bypass_format_check").checked ? "on" : "",
+        bypass_background_check: document.getElementById("bypass_background_check").checked ? "on" : "",
+        bypass_blurness_check: document.getElementById("bypass_blurness_check").checked ? "on" : "",
+        bypass_greyness_check: document.getElementById("bypass_greyness_check").checked ? "on" : "",
+        bypass_symmetry_check: document.getElementById("bypass_symmetry_check").checked ? "on" : "",
+        bypass_head_check: document.getElementById("bypass_head_check").checked ? "on" : "",
+        bypass_eye_check: document.getElementById("bypass_eye_check").checked ? "on" : "",
+        bypass_corrupted_check: document.getElementById("bypass_corrupted_check").checked ? "on" : "",
+        bypass_printed_photo_check: document.getElementById("bypass_printed_photo_check").checked ? "on" : "",
+        bypass_dust_noise_check: document.getElementById("bypass_dust_noise_check").checked ? "on" : "",
+        bypass_text_check: document.getElementById("bypass_text_check").checked ? "on" : ""
+      };
+
+      $.ajax({
+        url: "{% url 'save_config' %}",
+        type: "POST",
+        data: formData,
+        headers: { "X-CSRFToken": formData.csrfmiddlewaretoken },
+        success: function () {
+          btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+          setTimeout(() => location.reload(), 800);
+        },
+        error: function (xhr) {
+          console.error("Save error:", xhr.responseText);
+          btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+          setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-save"></i> Save Configuration';
+            btn.disabled = false;
+          }, 2000);
+        }
+      });
+    });
+
+    // ─── Test Image ───
+    const testConfigImage = document.getElementById("testConfigImage");
+    const testConfigBtn = document.getElementById("testConfigBtn");
+    const testConfigForm = document.getElementById("testConfigForm");
+    const testConfigResult = document.getElementById("testConfigResult");
+    const testConfigPreview = document.getElementById("testConfigPreview");
+    const previewPlaceholder = document.getElementById("previewPlaceholder");
+    const testConfigFileName = document.getElementById("testConfigFileName");
+
+    testConfigImage.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        testConfigFileName.textContent = file.name;
+        testConfigBtn.disabled = false;
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          testConfigPreview.src = e.target.result;
+          testConfigPreview.style.display = "block";
+          previewPlaceholder.style.display = "none";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        testConfigFileName.textContent = "Choose Image";
+        testConfigBtn.disabled = true;
+        testConfigPreview.style.display = "none";
+        previewPlaceholder.style.display = "block";
+      }
+    });
+
+    testConfigForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      testConfigBtn.innerHTML = '<span class="loading"></span>Testing...';
+      testConfigBtn.disabled = true;
+
+      const formData = new FormData(testConfigForm);
+      const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+      fetch(testConfigForm.action, {
+        method: "POST",
+        body: formData,
+        headers: { "X-CSRFToken": csrfToken }
+      })
+      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
+      .then(data => {
+        testConfigResult.innerHTML = data.result_html || "No result";
+        testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Run Test';
+        testConfigBtn.disabled = false;
+      })
+      .catch(err => {
+        testConfigResult.innerHTML = `<div style="color:var(--red);padding:1rem;text-align:center;"><i class="fas fa-exclamation-triangle"></i> ${err.message}</div>`;
+        testConfigBtn.innerHTML = '<i class="fas fa-play"></i> Retry';
+        testConfigBtn.disabled = false;
+      });
+    });
+  });
+  </script>
+
+</body>
 </html>

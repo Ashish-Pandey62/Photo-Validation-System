@@ -209,6 +209,7 @@ def process_image(request):
                 return JsonResponse({
                     "status": "uploaded",
                     "total_images": total_images,
+                    "image_files": image_files[:100],  # Return up to 100 for preview
                 })
                 
             except Exception as e:
@@ -244,9 +245,13 @@ def validate_images(request):
     if not path or not os.path.exists(path):
         return JsonResponse({"status": "error", "message": "No upload session found"}, status=400)
 
+    def progress_callback(processed, total):
+        result_container["processed"] = processed
+        result_container["total"] = total
+
     def run_validation(zip_path):
         config = warm_config_cache()
-        return main_threaded(zip_path, config=config)
+        return main_threaded(zip_path, max_workers=None, config=config, progress_callback=progress_callback)
 
     def process_in_thread(result_container, zip_path):
         try:
@@ -260,6 +265,8 @@ def validate_images(request):
         "done": False,
         "data": None,
         "error": None,
+        "processed": 0,
+        "total": 0,
     }
 
     thread = threading.Thread(
@@ -271,21 +278,61 @@ def validate_images(request):
 
     total_images = request.session.get("total_images_count", 0)
 
+    def _get_reason_summary():
+        """Parse result.csv to build a summary of top invalidation reasons."""
+        result_file = os.path.join(
+            settings.BASE_DIR, "api", "static", "api", "images", "result.csv"
+        )
+        reason_counts = {}
+        try:
+            with open(result_file, "r") as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    if len(row) > 1:
+                        for reason in row[1:]:
+                            reason = reason.strip()
+                            if reason:
+                                # Extract just the check name (first part before details)
+                                check_name = reason.split("(")[0].split("failed")[0].strip()
+                                if not check_name:
+                                    check_name = reason
+                                reason_counts[check_name] = reason_counts.get(check_name, 0) + 1
+        except Exception:
+            pass
+        # Sort by count descending, return top 5
+        sorted_reasons = sorted(reason_counts.items(), key=lambda x: x[1], reverse=True)[:5]
+        return [{"reason": r, "count": c} for r, c in sorted_reasons]
+
     def stream():
+        last_processed = -1
         while not result_container["done"]:
-            yield " "
-            time.sleep(1)
+            processed = result_container.get("processed", 0)
+            total_items = result_container.get("total", total_images)
+            
+            # Only send update if progress changed
+            if processed > last_processed:
+                yield json.dumps({
+                    "status": "processing", 
+                    "processed": processed, 
+                    "total": total_items
+                }) + "\n"
+                last_processed = processed
+            time.sleep(0.5)
 
         if result_container["error"]:
-            yield json.dumps({"status": "error", "message": result_container["error"]})
+            yield json.dumps({"status": "error", "message": result_container["error"]}) + "\n"
         else:
             results = result_container["data"] or {}
+            top_reasons = _get_reason_summary()
             yield json.dumps({
                 "status": "ok",
                 "total_images": total_images,
                 "valid_count": results.get("valid_count", 0),
                 "invalid_count": results.get("invalid_count", 0),
-            })
+                "valid_images": results.get("valid_images", []),
+                "invalid_images": results.get("invalid_images", []),
+                "top_reasons": top_reasons,
+            }) + "\n"
 
     return StreamingHttpResponse(stream(), content_type="application/json")
 
@@ -602,6 +649,29 @@ def serve_valid_image(request, filename):
     else:
         from django.http import Http404
         raise Http404(f"Image {filename} not found")
+
+
+def serve_uploaded_image(request, filename):
+    """Serve an uploaded image for the preview grid before/after validation."""
+    path = request.session.get("path")
+    if not path:
+        return HttpResponse("No session path found", status=400)
+    
+    file_path = os.path.join(path, filename)
+    if not os.path.exists(file_path):
+        return HttpResponse("File not found", status=404)
+        
+    try:
+        with open(file_path, 'rb') as f:
+            # Simple content type guessing based on extension
+            content_type = "image/jpeg"
+            if filename.lower().endswith('.png'):
+                content_type = "image/png"
+            elif filename.lower().endswith('.gif'):
+                content_type = "image/gif"
+            return HttpResponse(f.read(), content_type=content_type)
+    except Exception as e:
+        return HttpResponse(f"Error serving file: {str(e)}", status=500)
 
 
 def serve_invalid_image(request, filename):

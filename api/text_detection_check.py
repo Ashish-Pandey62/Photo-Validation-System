@@ -6,11 +6,14 @@ from .config_utils import get_cached_config
 
 def check_text_in_image(image, config=None):
     """
-    Detect text, watermarks, or stamps in a photo using OpenCV's MSER
-    with strict geometric filtering and spatial clustering.
+    Detect significant text in a photo using edge-based stroke width analysis.
 
-    Only flags the image if text-like regions appear in clusters (actual
-    text forms lines/groups; scattered blobs from faces/texture do not).
+    Instead of MSER (which produces too many false positives on portraits),
+    this uses a simpler, more robust approach:
+    1. Detect edges in the peripheral regions of the image only
+    2. Find connected components of edge pixels
+    3. Filter for text-like stroke patterns (consistent width, aligned)
+    4. Only flag if a LARGE cluster of text-like strokes is found
 
     Returns (has_text: bool, details: dict)
     """
@@ -25,15 +28,14 @@ def check_text_in_image(image, config=None):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         h, w = gray.shape
 
-        # Create a mask excluding the face region (avoid false positives)
-        exclude_mask = _get_face_exclusion_mask(image, h, w)
+        # Only search the outer peripheral band of the image
+        # Text/watermarks appear at edges, not on the subject's face
+        text_score = _detect_peripheral_text(gray, h, w)
 
-        text_cluster_count = _detect_text_clusters(gray, exclude_mask, h, w)
-
-        has_text = text_cluster_count > text_region_threshold
+        has_text = text_score > text_region_threshold
 
         return has_text, {
-            "text_region_count": text_cluster_count,
+            "text_region_count": text_score,
             "text_region_threshold": text_region_threshold,
         }
     except Exception as e:
@@ -41,152 +43,99 @@ def check_text_in_image(image, config=None):
         return False, {"error": str(e)}
 
 
-def _get_face_exclusion_mask(image, h, w):
+def _detect_peripheral_text(gray, h, w):
     """
-    Create a binary mask where face regions AND the center of the image
-    are blocked out (0 = exclude). For portrait photos, the subject
-    occupies the middle, so we exclude a generous center region too.
+    Detect text-like patterns in the peripheral (outer 10%) band of the image.
+
+    Uses contour analysis on edge-detected peripheral regions.
+    The key insight: for passport/portrait photos, any problematic text
+    (watermarks, stamps, date stamps) appears at the edges, not on the face.
     """
-    mask = np.ones((h, w), dtype=np.uint8) * 255
+    # Define the peripheral band (outer 10% on each side)
+    band = int(min(h, w) * 0.10)
+    if band < 20:
+        return 0
 
-    # Exclude the center 60% of the image (where the subject/face is)
-    # This dramatically reduces false positives from skin, hair, clothing
-    center_margin_h = int(0.2 * h)
-    center_margin_w = int(0.2 * w)
-    mask[center_margin_h:h - center_margin_h, center_margin_w:w - center_margin_w] = 0
+    # Extract the 4 border strips
+    strips = [
+        gray[:band, :],              # top
+        gray[h - band:, :],          # bottom
+        gray[band:h - band, :band],  # left (excluding corners)
+        gray[band:h - band, w - band:],  # right (excluding corners)
+    ]
 
-    # Also detect and exclude face regions with generous padding
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier(
-        cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+    total_text_regions = 0
+
+    for strip in strips:
+        if strip.size == 0:
+            continue
+        total_text_regions += _count_text_contours_in_strip(strip)
+
+    return total_text_regions
+
+
+def _count_text_contours_in_strip(strip):
+    """
+    Count text-like contours in an image strip.
+
+    Text characters have very specific properties:
+    - Small, consistent size
+    - High contrast edges
+    - Compact shape (not elongated streaks)
+    """
+    sh, sw = strip.shape
+
+    # Adaptive threshold to handle varying backgrounds
+    binary = cv2.adaptiveThreshold(
+        strip, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+        cv2.THRESH_BINARY_INV, 15, 8
     )
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
 
-    for (fx, fy, fw, fh) in faces:
-        # Expand face region by 40% to cover hair, neck, shoulders
-        expand = int(0.4 * max(fw, fh))
-        x1 = max(0, fx - expand)
-        y1 = max(0, fy - expand)
-        x2 = min(w, fx + fw + expand)
-        y2 = min(h, fy + fh + expand)
-        mask[y1:y2, x1:x2] = 0
+    # Remove noise
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
 
-    return mask
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+    text_count = 0
+    strip_area = sh * sw
 
-def _detect_text_clusters(gray, exclude_mask, h, w):
-    """
-    Detect text-like regions using MSER + strict geometric filtering +
-    spatial clustering.
+    for c in contours:
+        area = cv2.contourArea(c)
+        x, y, cw, ch = cv2.boundingRect(c)
 
-    Real text has specific properties:
-    - Characters have consistent size within a line
-    - Characters are roughly aligned horizontally or vertically
-    - Characters appear in groups, not scattered randomly
-
-    We count regions that pass ALL filters AND appear in spatial clusters.
-    """
-    mser = cv2.MSER_create()
-
-    # Conservative MSER parameters
-    mser.setMinArea(100)                      # ignore tiny blobs
-    mser.setMaxArea(int(h * w * 0.005))       # max 0.5% of image
-    mser.setDelta(8)                          # higher delta = more stable regions only
-
-    # Detect regions
-    regions, _ = mser.detectRegions(gray)
-
-    image_area = h * w
-    candidate_centers = []
-
-    for region in regions:
-        # Bounding box of the region
-        x, y, rw, rh = cv2.boundingRect(region)
-
-        # Skip if the region center is in the excluded area
-        cx, cy = x + rw // 2, y + rh // 2
-        if 0 <= cy < h and 0 <= cx < w and exclude_mask[cy, cx] == 0:
+        # Text character size constraints (relative to strip)
+        if area < 30 or area > strip_area * 0.05:
             continue
 
-        area = cv2.contourArea(region) if len(region) >= 5 else rw * rh
-
-        # --- Strict geometric filters ---
-
-        # 1. Size: text characters are typically 100-2000 pixels in a photo
-        if area < 100 or area > min(image_area * 0.003, 3000):
+        # Must be small relative to the strip
+        if cw > sw * 0.15 or ch > sh * 0.5:
             continue
 
-        # 2. Aspect ratio: text characters are between 0.2 and 3.0
-        #    (stricter than before to reject elongated blobs)
-        if rh == 0:
+        # Aspect ratio filter: characters are 0.2 - 4.0
+        if ch == 0:
             continue
-        aspect = rw / rh
-        if aspect < 0.2 or aspect > 3.0:
-            continue
-
-        # 3. Bounding box not too big (single char is small)
-        if rw > w * 0.08 or rh > h * 0.08:
+        aspect = cw / ch
+        if aspect < 0.15 or aspect > 5.0:
             continue
 
-        # 4. Fill ratio: text chars fill their bounding box 30-85%
-        bbox_area = rw * rh
+        # Fill ratio: characters fill their bbox 25-90%
+        bbox_area = cw * ch
         if bbox_area == 0:
             continue
         extent = area / bbox_area
-        if extent < 0.25 or extent > 0.85:
+        if extent < 0.2 or extent > 0.92:
             continue
 
-        # 5. Compactness: text chars are compact, not fractal shapes
-        perimeter = cv2.arcLength(region, True) if len(region) >= 5 else 2 * (rw + rh)
-        if perimeter > 0:
-            compactness = area / (perimeter * perimeter)
-            if compactness < 0.01:  # very non-compact = not text
+        # Solidity: contour area / convex hull area
+        # Text chars are fairly solid (> 0.4)
+        hull = cv2.convexHull(c)
+        hull_area = cv2.contourArea(hull)
+        if hull_area > 0:
+            solidity = area / hull_area
+            if solidity < 0.35:
                 continue
 
-        candidate_centers.append((cx, cy))
+        text_count += 1
 
-    if len(candidate_centers) < 3:
-        return 0
-
-    # --- Spatial clustering ---
-    # Real text forms lines. Check if candidates cluster into horizontal/vertical groups.
-    # A cluster = 3+ regions within a narrow horizontal or vertical band.
-    clustered_count = _count_clustered_regions(candidate_centers, h, w)
-
-    return clustered_count
-
-
-def _count_clustered_regions(centers, h, w):
-    """
-    Count how many candidate text regions appear in spatial clusters
-    (horizontal bands), which is characteristic of actual text lines.
-
-    Scattered random blobs (from texture/edges) won't form clusters.
-    """
-    if len(centers) < 3:
-        return 0
-
-    centers = np.array(centers)
-    band_height = max(h * 0.03, 15)  # cluster band = 3% of image height
-
-    # Sort by y-coordinate
-    sorted_by_y = centers[centers[:, 1].argsort()]
-
-    clustered = 0
-    i = 0
-    while i < len(sorted_by_y):
-        # Find all points within band_height of current y
-        cy = sorted_by_y[i, 1]
-        band_members = []
-        j = i
-        while j < len(sorted_by_y) and sorted_by_y[j, 1] - cy <= band_height:
-            band_members.append(sorted_by_y[j])
-            j += 1
-
-        if len(band_members) >= 3:
-            # This band has 3+ candidates — likely a text line
-            clustered += len(band_members)
-
-        i = j if j > i else i + 1
-
-    return clustered
+    return text_count

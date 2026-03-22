@@ -1,793 +1,567 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Invalid Images Gallery - Photo Validation System</title>
-    {% load static %} {% load custom_filters %}
+<head>
+  <title>Invalid Images - Photo Validation System</title>
+  {% load static %} {% load custom_filters %}
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       DESIGN SYSTEM (Matches index1.html)
+       ═══════════════════════════════════════════════════════════════ */
+    :root {
+      --bg: #0f1117;
+      --bg-card: #181a20;
+      --bg-hover: #1e2028;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --green: #22c55e;
+      --red: #ef4444;
+      --red-bg: rgba(239, 68, 68, 0.1);
+      --amber: #f59e0b;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --border: #2d2f3a;
+      --border-hover: #3d3f4a;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      --transition: all 0.2s ease;
+    }
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    {% csrf_token %}
-    <style>
-      :root {
-        --primary-color: #2563eb;
-        --secondary-color: #0f172a;
-        --background-color: #ffffff;
-        --surface-color: #f8fafc;
-        --error-color: #ef4444;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --border-color: #e2e8f0;
-        --text-primary: #1e293b;
-        --text-secondary: #64748b;
-        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      font-size: 14px;
+      min-height: 100vh;
+      padding-top: 70px;
+    }
 
-      body {
-        background: rgb(243, 242, 247);
-        color: var(--text-primary);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        line-height: 1.5;
-        font-size: 14px;
-        padding-top: 80px; /* Add padding to prevent content from hiding under fixed header */
-      }
+    /* ─── HEADER ─── */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+    }
 
-      /* Header */
-      .header {
-        text-align: center;
-        padding: 1rem 2rem 1rem;
-        background: var(--background-color);
-        display: block;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-          0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        position: fixed;
-        width: 100%;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-      }
+    .app-header .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-      .header h1 {
-        font-family: "Poppins", sans-serif;
-        font-size: 2rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-      }
+    .app-header .logo i { color: var(--red); }
 
-      .header h1 i {
-        color: var(--warning-color);
-      }
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
 
-      .header p {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        max-width: 600px;
-        margin: 0 auto;
-      }
+    .header-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-decoration: none;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-        margin-top: 8px;
-      }
-      /* Navigation Bar */
-      .nav-bar {
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        padding: 1rem 2rem;
-        margin: 1rem 0 2rem 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: var(--shadow-md);
-      }
+    .header-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+    
+    .header-btn.primary { color: var(--accent); border-color: var(--accent); }
+    .header-btn.primary:hover { background: var(--accent-glow); }
 
-      .nav-links {
-        display: flex;
-        gap: 1.5rem;
-      }
+    /* ─── LAYOUT ─── */
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
 
-      .nav-link {
-        color: var(--text-secondary);
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        padding: 0.75rem 1.25rem;
-        border-radius: var(--radius-md);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 16px;
-      }
+    /* ─── TAB NAV ─── */
+    .tab-nav {
+      display: flex;
+      gap: 0;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 4px;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      width: fit-content;
+      margin-left: auto; margin-right: auto;
+    }
 
-      .nav-link:hover {
-        color: var(--primary-color);
-        background: var(--background-alt);
-      }
+    .tab-nav-btn {
+      padding: 0.6rem 1.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
 
-      .nav-link.active {
-        color: var(--primary-color);
-        background: var(--background-alt);
-        font-weight: 600;
-      }
+    .tab-nav-btn:hover { color: var(--text-dim); }
 
-      /*Stats Card*/
+    .tab-nav-btn.active {
+      background: var(--bg-hover);
+      color: white;
+      border: 1px solid var(--border-hover);
+    }
 
-      .stats-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
+    /* ─── STATS CARD ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+      max-width: 500px;
+    }
 
-      .stat-card {
-        background: var(--background-color);
-        border-radius: var(--radius-lg);
-        padding: 2rem;
-        text-align: center;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-        transition: all 0.2s ease;
-      }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      text-align: center;
+    }
 
-      .stat-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-      }
+    .stat-card .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
 
-      .stat-number {
-        font-size: 2.5rem;
-        font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-      }
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
 
-      .stat-label {
-        color: var(--text-secondary);
-        font-size: 1rem;
-        font-weight: 500;
-      }
+    .stat-card.invalid .stat-value { color: var(--red); }
+    .stat-card.total .stat-value { color: var(--accent); }
 
-      /* Enhanced Professional Buttons */
-      .btn-action {
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        font-weight: 500;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: none;
-        font-size: 0.9375rem;
-        letter-spacing: 0.025em;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
-        text-decoration: none;
-        position: relative;
-        overflow: hidden;
-      }
+    /* ─── ACTION BAR ─── */
+    .action-bar {
+      display: flex;
+      justify-content: flex-start;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: var(--bg-card);
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
 
-      .btn-action:after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: transparent;
-        transition: background-color 0.3s ease;
-      }
+    .btn {
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
+      border: 1px solid transparent;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+    }
 
-      .btn-action:hover:after {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-      .btn-export {
-        background: var(--primary-color);
-        color: white;
-        border: none;
-      }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-dim);
+      border-color: var(--border);
+    }
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
 
-      .btn-export:hover {
-        background: #1d4ed8;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-      }
+    .btn-danger {
+      background: var(--red-bg);
+      color: var(--red);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.2);
+    }
 
-      .btn-delete {
-        background: var(--error-color);
-        color: white;
-        border: none;
-      }
+    /* ─── IMAGE GRID ─── */
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
 
-      .btn-delete:hover {
-        background: #dc2626;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
-      }
+    .image-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
 
-      .btn-back {
-        background: var(--background-color);
-        color: var(--text-primary);
-        border: 2px solid var(--border-color);
-        font-weight: 600;
-        padding: 0.7rem 1.5rem;
-      }
+    .image-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: var(--border-hover);
+    }
 
-      .btn-back:hover {
-        background: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-      }
+    .image-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
 
-      /* Action buttons container */
-      .action-buttons {
-        display: flex;
-        gap: 1rem;
-        margin: 1.5rem 0 2.5rem 0;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-      }
+    .image-container {
+      position: relative;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
 
-      /* Disabled State */
-      .btn-action:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        transform: none !important;
-        box-shadow: none !important;
-      }
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
 
-      .btn-action:disabled:after {
-        display: none;
-      }
+    .image-checkbox {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 10;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
 
-      /* Active/Pressed State */
-      .btn-action:active {
-        transform: translateY(1px) !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
-      }
+    .image-info { padding: 1.25rem; flex: 1; }
 
-      /* Loading State */
-      .btn-action .loading {
-        display: inline-block;
-        width: 1rem;
-        height: 1rem;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top-color: white;
-        animation: spin 0.8s linear infinite;
-        margin-right: 0.5rem;
-      }
+    .image-filename {
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      word-break: break-all;
+    }
 
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+    .validation-issues {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+    }
 
-      /* Image Grid */
-      .image-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-      }
+    .issues-title {
+      color: var(--red);
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-      .image-card {
-        background: var(--background-color);
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-        transition: transform 0.2s;
-      }
+    .issues-list {
+      list-style: none;
+      padding: 0; margin: 0;
+    }
 
-      .image-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-md);
-      }
+    .issues-list li {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      margin-bottom: 0.35rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      line-height: 1.4;
+    }
+    
+    .issues-list li:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
 
-      .image-container {
-        position: relative;
-        padding-top: 75%;
-      }
+    .issues-list li strong {
+      color: var(--text);
+      font-weight: 500;
+    }
 
-      .image-container img {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin: 2rem auto;
+      max-width: 600px;
+    }
 
-      .image-checkbox {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 1;
-        width: 20px;
-        height: 20px;
-        cursor: pointer;
-        accent-color: var(--primary-color);
-      }
+    .empty-state i {
+      font-size: 3.5rem;
+      color: var(--green);
+      margin-bottom: 1.25rem;
+    }
 
-      .image-card.selected {
-        outline: 3px solid var(--primary-color);
-      }
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
 
-      .image-info {
-        padding: 1rem;
-      }
+    .empty-state p {
+      color: var(--text-dim);
+      margin-bottom: 1.5rem;
+    }
 
-      .image-filename {
-        font-weight: 500;
-        margin-bottom: 1rem;
-        color: var(--text-primary);
-      }
+    /* ─── LOADING ─── */
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+      margin-right: 0.4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-      .validation-issues {
-        background: #fef2f2;
-        border: 1px solid #fee2e2;
-        border-radius: 6px;
-        padding: 1rem;
-      }
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .action-bar { flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
+      .header-actions .text-label { display: none; }
+    }
+  </style>
+</head>
 
-      .issues-title {
-        color: var(--error-color);
-        font-weight: 500;
-        margin-bottom: 0.5rem;
-      }
+<body>
+  <!-- Header Section -->
+  <header class="app-header">
+    <div class="logo">
+      <i class="fas fa-exclamation-triangle"></i> Invalid Images
+    </div>
+    <div class="header-actions">
+      <a href="{% url 'download_csv' %}" class="header-btn" title="Download CSV">
+        <i class="fas fa-file-csv"></i> <span class="text-label">CSV</span>
+      </a>
+      <a href="{% url 'download_invalid_images' %}" class="header-btn" title="Download Invalid ZIP">
+        <i class="fas fa-file-archive"></i> <span class="text-label">Invalid ZIP</span>
+      </a>
+      <a href="{% url 'download_valid_images' %}" class="header-btn" title="Download Valid ZIP">
+        <i class="fas fa-check-circle"></i> <span class="text-label">Valid ZIP</span>
+      </a>
+    </div>
+  </header>
 
-      .issues-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .issues-list li {
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-        margin-bottom: 0.25rem;
-        padding: 0.25rem 0;
-        border-bottom: 1px solid #f3f4f6;
-      }
-
-      .issues-list li:last-child {
-        border-bottom: none;
-      }
-
-      /* Highlight percentage values and numbers in validation issues */
-      .issues-list li:contains("failed") {
-        font-weight: 500;
-      }
-
-      /* Make percentage values and numeric data stand out */
-      .percentage-highlight {
-        background: #fee2e2;
-        color: #dc2626;
-        padding: 2px 4px;
-        border-radius: 3px;
-        font-weight: 600;
-        font-family: 'Courier New', monospace;
-      }
-
-      /* Empty State */
-      .empty-state {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: var(--background-color);
-        border-radius: 8px;
-        box-shadow: var(--shadow-sm);
-      }
-
-      .empty-state i {
-        font-size: 3rem;
-        color: var(--success-color);
-        margin-bottom: 1rem;
-      }
-
-      /* Responsive Design */
-      @media (max-width: 768px) {
-        body {
-          padding-top: 120px;
-        }
-
-        .container {
-          padding: 0 1rem;
-        }
-
-        .nav-bar {
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .nav-links {
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-
-        .image-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .action-buttons {
-          flex-direction: column;
-          width: 100%;
-        }
-
-        .btn-action {
-          width: 100%;
-          justify-content: center;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <!-- Header Section -->
-    <div class="header">
-      <h1>
-        <i class="fas fa-exclamation-triangle"></i> Invalid Images Gallery
-      </h1>
-      <p>Review and manage images that failed validation checks</p>
+  <div class="app-container">
+    <!-- Navigation Tabs -->
+    <div class="tab-nav">
+      <a href="{% url 'startPage' %}" class="tab-nav-btn">
+        <i class="fas fa-home"></i> Dashboard
+      </a>
+      <a href="{% url 'image_gallery' %}" class="tab-nav-btn active">
+        <i class="fas fa-exclamation-triangle"></i> Invalid ({{ invalid_images|length }})
+      </a>
+      <a href="{% url 'valid_images_gallery' %}" class="tab-nav-btn">
+        <i class="fas fa-check-circle"></i> Valid
+      </a>
     </div>
 
-    <div class="container">
-      <!-- Navigation -->
-      <nav class="nav-bar">
-        <div class="nav-links">
-          <a href="{% url 'startPage' %}" class="nav-link">
-            <i class="fas fa-home"></i> Home
-          </a>
-          <a href="{% url 'image_gallery' %}" class="nav-link active">
-            <i class="fas fa-exclamation-triangle"></i> Invalid Images
-          </a>
-          <a href="{% url 'valid_images_gallery' %}" class="nav-link">
-            <i class="fas fa-check-circle"></i> Valid Images
-          </a>
-        </div>
-        <div class="nav-actions">
-          <a href="{% url 'download_csv' %}" class="btn-action btn-export">
-            <i class="fas fa-download"></i> Results CSV
-          </a>
-          <a href="{% url 'download_invalid_images' %}" class="btn-action btn-export">
-            <i class="fas fa-download"></i> Invalid ZIP
-          </a>
-          <a href="{% url 'download_valid_images' %}" class="btn-action btn-export">
-            <i class="fas fa-download"></i> Valid ZIP
-          </a>
-        </div>
-      </nav>
-
-      <!-- Status Info -->
-      <div class="stats-container">
-        <div class="stat-card">
-          <div class="stat-number">{{ invalid_images|length }}</div>
-          <div class="stat-label">Invalid Images</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">{{ total_images }}</div>
-          <div class="stat-label">Total Images</div>
-        </div>
+    {% if invalid_images %}
+    <!-- Status Info -->
+    <div class="stats-row">
+      <div class="stat-card invalid">
+        <div class="stat-value">{{ invalid_images|length }}</div>
+        <div class="stat-label">Invalid Images</div>
       </div>
-
-      {% if invalid_images %}
-      <!-- Action Buttons -->
-      <div
-        class="action-buttons"
-        style="justify-content: flex-start; gap: 1rem"
-      >
-        <button
-          id="selectAllBtn"
-          class="btn-action btn-export"
-          style="min-width: 130px"
-        >
-          <i class="fas fa-check-square"></i>
-          Select All
-        </button>
-        <button
-          id="deleteSelectedBtn"
-          class="btn-action btn-delete"
-          style="min-width: 150px"
-        >
-          <i class="fas fa-trash-alt"></i>
-          Manually Revalidate Selected
-        </button>
+      <div class="stat-card total">
+        <div class="stat-value">{{ total_images }}</div>
+        <div class="stat-label">Total Images</div>
       </div>
-
-      <!-- Image Grid -->
-      <div class="image-grid">
-        {% for image in invalid_images %}
-        <div class="image-card">
-          <div class="image-container">
-            <input
-              type="checkbox"
-              class="image-checkbox"
-              value="{{ image.id }}"
-            />
-            <img
-              src="{{ image.photo.url }}"
-              alt="{{ image.filename }}"
-              loading="lazy"
-              onerror="this.src='/static/api/images/placeholder.png';"
-            />
-          </div>
-          <div class="image-info">
-            <div class="image-filename">
-              <i class="fas fa-file-image"></i>
-              {{ image.filename }}
-            </div>
-            <div class="validation-issues">
-              <div class="issues-title">
-                <i class="fas fa-exclamation-circle"></i>
-                Validation Issues
-              </div>
-              <ul class="issues-list">
-                {% for reason in image.reason_array %}
-                <li>{{ reason }}</li>
-                {% endfor %}
-              </ul>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-
-      <!-- Bottom Actions -->
-      <div class="action-buttons">
-        <a href="{% url 'download_csv' %}" class="btn-action btn-export">
-          <i class="fas fa-download"></i> Export All Results
-        </a>
-        <a href="{% url 'download_invalid_images' %}" class="btn-action btn-export">
-          <i class="fas fa-download"></i> Download Invalid ZIP
-        </a>
-        <a href="{% url 'download_valid_images' %}" class="btn-action btn-export">
-          <i class="fas fa-download"></i> Download Valid ZIP
-        </a>
-        <a href="{% url 'startPage' %}" class="btn-action btn-back">
-          <i class="fas fa-arrow-left"></i> Back to Home
-        </a>
-      </div>
-      <!-- <div class="action-buttons">
-        <button id="selectAllBtn" class="btn-action btn-export">
-          <i class="fas fa-check-square"></i>
-          Select All
-        </button>
-        <button id="deselectAllBtn" class="btn-action btn-delete">
-          <i class="fas fa-square"></i>
-          Deselect All
-        </button>
-      </div> -->
-      {% else %}
-      <!-- Empty State -->
-      <div class="empty-state">
-        <i class="fas fa-check-circle"></i>
-        <h3>No Invalid Images Found!</h3>
-        <p>
-          All images in your upload passed the validation checks!
-        </p>
-        <a
-          href="{% url 'startPage' %}"
-          class="btn-back"
-          style="margin-top: 1rem"
-        >
-          <i class="fas fa-arrow-left"></i>
-          Back to Home
-        </a>
-      </div>
-      {% endif %}
     </div>
 
-    <script>
-      $(document).ready(function () {
-        // Toggle Select/Deselect All functionality
-        let isAllSelected = false;
-        $("#selectAllBtn").click(function () {
-          isAllSelected = !isAllSelected;
-          $(".image-checkbox").prop("checked", isAllSelected);
-          updateCardSelection();
+    <!-- Action Buttons -->
+    <div class="action-bar">
+      <button id="selectAllBtn" class="btn btn-outline">
+        <i class="fas fa-check-square"></i> Select All
+      </button>
+      <button id="deleteSelectedBtn" class="btn btn-danger" disabled>
+        <i class="fas fa-sync-alt"></i> Manually Revalidate Selected
+      </button>
+    </div>
 
-          // Update button text and icon
-          updateSelectAllButton();
-          updateDeleteButton();
-        });
+    <!-- Image Grid -->
+    <div class="image-grid">
+      {% for image in invalid_images %}
+      <div class="image-card">
+        <div class="image-container">
+          <input type="checkbox" class="image-checkbox" value="{{ image.id }}" />
+          <img
+            src="{{ image.photo.url }}"
+            alt="{{ image.filename }}"
+            loading="lazy"
+            onerror="this.src='/static/api/images/placeholder.png';"
+          />
+        </div>
+        <div class="image-info">
+          <div class="image-filename">
+            <i class="fas fa-file-image"></i>
+            {{ image.filename }}
+          </div>
+          <div class="validation-issues">
+            <div class="issues-title">
+              <i class="fas fa-exclamation-circle"></i> Validation Failed
+            </div>
+            <ul class="issues-list">
+              {% for reason in image.reason_array %}
+              <li>{{ reason }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
 
-        // Handle individual image selection
-        $(".image-checkbox").change(function () {
-          const $card = $(this).closest(".image-card");
-          if ($(this).is(":checked")) {
-            $card.addClass("selected");
-          } else {
-            $card.removeClass("selected");
-          }
+    {% else %}
+    <!-- Empty State -->
+    <div class="empty-state">
+      <i class="fas fa-check-circle"></i>
+      <h3>No Invalid Images Found!</h3>
+      <p>All images in your upload passed the validation checks, or no data exists.</p>
+      <a href="{% url 'startPage' %}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+    {% endif %}
+  </div>
 
-          // Check if all images are selected
-          const totalImages = $(".image-checkbox").length;
-          const selectedImages = $(".image-checkbox:checked").length;
-          isAllSelected = totalImages === selectedImages;
+  <script>
+    $(document).ready(function () {
+      let isAllSelected = false;
 
-          updateSelectAllButton();
-          updateDeleteButton();
-        });
+      // Select All Toggle
+      $("#selectAllBtn").click(function () {
+        isAllSelected = !isAllSelected;
+        $(".image-checkbox").prop("checked", isAllSelected);
+        
+        $(".image-card").toggleClass("selected", isAllSelected);
 
-        // Update card selection visual state
-        function updateCardSelection() {
-          $(".image-card").each(function () {
-            const isChecked = $(this).find(".image-checkbox").is(":checked");
-            $(this).toggleClass("selected", isChecked);
-          });
+        if (isAllSelected) {
+          $(this).html('<i class="fas fa-square"></i> Deselect All');
+        } else {
+          $(this).html('<i class="fas fa-check-square"></i> Select All');
         }
-
-        // Update Select All button state
-        function updateSelectAllButton() {
-          const $selectAllBtn = $("#selectAllBtn");
-          if (isAllSelected) {
-            $selectAllBtn.html('<i class="fas fa-check-square"></i> Deselect All');
-            $selectAllBtn.removeClass("btn-export").addClass("btn-delete");
-          } else {
-            $selectAllBtn.html(
-              '<i class="fas fa-square"></i> Select All'
-            );
-            $selectAllBtn.removeClass("btn-delete").addClass("btn-export");
-          }
-        }
-
-        // Update delete button state
-        $(".image-checkbox").change(function () {
-          updateDeleteButton();
-        });
-
-        function updateDeleteButton() {
-          const selectedCount = $(".image-checkbox:checked").length;
-          const deleteBtn = $("#deleteSelectedBtn");
-
-          if (selectedCount > 0) {
-            deleteBtn.prop("disabled", false);
-            deleteBtn.html(
-              `<i class="fas fa-trash-alt"></i> Revalidate Selected (${selectedCount})`
-            );
-          } else {
-            deleteBtn.prop("disabled", true);
-            deleteBtn.html('<i class="fas fa-trash-alt"></i> Revalidate Selected');
-          }
-        }
-
-        // Delete selected images (revalidate them)
-        $("#deleteSelectedBtn").click(function () {
-          const selectedImages = $(".image-checkbox:checked");
-
-          if (selectedImages.length === 0) {
-            alert("Please select at least one image to revalidate.");
-            return;
-          }
-
-          const confirmMessage = `Are you sure you want to revalidate ${selectedImages.length} selected image(s)? This will move them from invalid to valid folder.`;
-
-          if (confirm(confirmMessage)) {
-            $(this).html('<span class="loading"></span>Revalidating...');
-            $(this).prop("disabled", true);
-
-            // Create form and submit to backend
-            const form = $("<form>", {
-              method: "POST",
-              action: "{% url 'process_selected_images' %}",
-            });
-
-            // Add CSRF token
-            form.append(
-              $("<input>", {
-                type: "hidden",
-                name: "csrfmiddlewaretoken",
-                value: $("[name=csrfmiddlewaretoken]").val(),
-              })
-            );
-
-            // Add selected images
-            selectedImages.each(function () {
-              const imageName = $(this).val();
-              form.append(
-                $("<input>", {
-                  type: "hidden",
-                  name: "selected_images",
-                  value: imageName,
-                })
-              );
-            });
-
-            // Submit form
-            $("body").append(form);
-            form.submit();
-          }
-        });
-
-        // Export results
-        $("#exportResultsBtn").click(function () {
-          const $btn = $(this);
-          $btn.html('<span class="loading"></span>Exporting...');
-          $btn.prop("disabled", true);
-
-          // Create a temporary link element for download
-          const link = document.createElement("a");
-          link.href = "{% url 'download_csv' %}";
-          link.download = "validation_results.csv";
-          link.style.display = "none";
-
-          // Add link to body and trigger download
-          document.body.appendChild(link);
-          link.click();
-
-          // Remove the link element
-          document.body.removeChild(link);
-
-          // Reset button after download starts
-          setTimeout(function () {
-            $btn.html('<i class="fas fa-download"></i> Export Results');
-            $btn.prop("disabled", false);
-          }, 2000);
-        });
-
-        function updateImageCount() {
-          const remainingCount = $(".image-card").length;
-          $(".image-count").html(
-            `<i class="fas fa-images"></i> ${remainingCount} Invalid Images Found`
-          );
-
-          if (remainingCount === 0) {
-            $(".container").html(`
-                        <div class="empty-state">
-                            <i class="fas fa-check-circle"></i>
-                            <h3>All invalid images have been processed!</h3>
-                            <p>No more invalid images to review.</p>
-                            <a href="{% url 'startPage' %}" class="btn-back" style="margin-top: 1rem;">
-                                <i class="fas fa-arrow-left"></i>
-                                Back to Home
-                            </a>
-                        </div>
-                    `);
-          }
-        }
-
-        // Initialize delete button state
-        updateDeleteButton();
-
-        // Add hover effects for image cards
-        $(".image-card").hover(
-          function () {
-            $(this).css("transform", "translateY(-5px)");
-          },
-          function () {
-            $(this).css("transform", "translateY(0)");
-          }
-        );
+        updateRevalidateButton();
       });
-    </script>
-  </body>
+
+      // Individual selection
+      $(".image-checkbox").change(function () {
+        const $card = $(this).closest(".image-card");
+        $card.toggleClass("selected", $(this).is(":checked"));
+
+        const total = $(".image-checkbox").length;
+        const selected = $(".image-checkbox:checked").length;
+        isAllSelected = (total === selected);
+        
+        const $selectAllBtn = $("#selectAllBtn");
+        if (isAllSelected) {
+          $selectAllBtn.html('<i class="fas fa-square"></i> Deselect All');
+        } else {
+          $selectAllBtn.html('<i class="fas fa-check-square"></i> Select All');
+        }
+        
+        updateRevalidateButton();
+      });
+
+      function updateRevalidateButton() {
+        const selectedCount = $(".image-checkbox:checked").length;
+        const btn = $("#deleteSelectedBtn");
+
+        if (selectedCount > 0) {
+          btn.prop("disabled", false);
+          btn.html(`<i class="fas fa-sync-alt"></i> Revalidate Selected (${selectedCount})`);
+        } else {
+          btn.prop("disabled", true);
+          btn.html('<i class="fas fa-sync-alt"></i> Manually Revalidate Selected');
+        }
+      }
+
+      // Revalidate logic
+      $("#deleteSelectedBtn").click(function () {
+        const selectedImages = $(".image-checkbox:checked");
+        if (selectedImages.length === 0) return;
+
+        if (confirm(`Revalidate ${selectedImages.length} image(s)? They will be processed again.`)) {
+          $(this).html('<span class="loading"></span>Revalidating...');
+          $(this).prop("disabled", true);
+
+          const form = $("<form>", { method: "POST", action: "{% url 'process_selected_images' %}" });
+          form.append($("<input>", { type: "hidden", name: "csrfmiddlewaretoken", value: "{{ csrf_token }}" }));
+
+          selectedImages.each(function () {
+            form.append($("<input>", { type: "hidden", name: "selected_images", value: $(this).val() }));
+          });
+
+          $("body").append(form);
+          form.submit();
+        }
+      });
+    });
+  </script>
+</body>
 </html>
