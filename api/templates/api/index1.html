@@ -479,6 +479,52 @@
       transform: scale(1.1);
     }
 
+    .results-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 1.5rem;
+      width: 100%;
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .results-action-card {
+      position: relative;
+      border: 1px solid var(--border-color);
+      border-left-width: 4px;
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      box-shadow: var(--shadow-sm);
+      min-height: 78px;
+    }
+
+    .results-action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+    }
+
+    .results-action-card .btn-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .results-action-card .btn-subtitle {
+      font-size: 0.76rem;
+    }
+
+    .results-action-card i {
+      width: 26px;
+      text-align: center;
+    }
+
+    #clearDataForm.full {
+      grid-column: span 2;
+    }
+
     /* Specific button styles */
     .btn-view-invalid {
       border-left-color: var(--warning-color);
@@ -509,6 +555,14 @@
     }
 
     .btn-admin-panel:hover {
+      background: var(--background-alt);
+    }
+
+    .btn-report {
+      border-left-color: var(--primary-color);
+    }
+
+    .btn-report:hover {
       background: var(--background-alt);
     }
 
@@ -882,6 +936,11 @@
         align-items: center !important;
       }
 
+      .results-actions-grid {
+        grid-template-columns: 1fr;
+        max-width: 360px;
+      }
+
       .action-buttons-row form {
         width: 100% !important;
         max-width: 350px !important;
@@ -1118,6 +1177,12 @@
               const showInvalid = document.getElementById("showInvalid");
               if (showInvalid) showInvalid.disabled = false;
 
+              const showValid = document.getElementById("showValid");
+              if (showValid) showValid.disabled = false;
+
+              const seeReport = document.getElementById("seeReport");
+              if (seeReport) seeReport.disabled = false;
+
 
               validateButton.innerHTML =
                 '<i class="fas fa-check-circle"></i> Re-Run Validation';
@@ -1189,7 +1254,7 @@
       );
 
       // Navigation handlers with enhanced feedback
-      $("#showInvalid, #showValid, #viewInvalidBtn, #viewValidBtn").click(
+      $("#showInvalid, #showValid, #viewInvalidBtn, #viewValidBtn, #seeReport").click(
         function (event) {
           event.preventDefault();
           const button = $(this);
@@ -1197,18 +1262,18 @@
             const isInvalid =
               button.attr("id") === "showInvalid" ||
               button.attr("id") === "viewInvalidBtn";
+            const isReport = button.attr("id") === "seeReport";
             const originalContent = button.html();
             button.html(`
               <span class="loading"></span>
               <div class="btn-text">
                 <span class="btn-title">Loading...</span>
-                <span class="btn-subtitle">Fetching ${isInvalid ? "invalid" : "valid"
-              } images</span>
+                <span class="btn-subtitle">${isReport ? "Generating dashboard" : `Fetching ${isInvalid ? "invalid" : "valid"} images`}</span>
               </div>
             `);
-            const targetUrl = isInvalid
-              ? "/image_gallery/"
-              : "/valid_images/";
+            const targetUrl = isReport
+              ? "/validation_report/"
+              : (isInvalid ? "/image_gallery/" : "/valid_images/");
             window.location.href = targetUrl;
           }
         }
@@ -1473,19 +1538,34 @@
             </div>
 
             
-            <!-- Action Buttons Container -->
-            <div class="action-buttons-row" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; justify-content: center; align-items: center;">
-              <button id="showInvalid" class="action-btn btn-view-invalid" disabled style="width: 100%; max-width: 350px;">
+            <div class="results-actions-grid">
+              <button id="showValid" class="action-btn btn-admin-panel results-action-card" disabled>
+                <i class="fas fa-check-circle"></i>
+                <div class="btn-text">
+                  <span class="btn-title">View Valid Images</span>
+                  <span class="btn-subtitle">See all passed photos</span>
+                </div>
+              </button>
+
+              <button id="showInvalid" class="action-btn btn-view-invalid results-action-card" disabled>
                 <i class="fas fa-exclamation-triangle"></i>
                 <div class="btn-text">
                   <span class="btn-title">View Invalid Images</span>
                   <span class="btn-subtitle">Review failed validations</span>
                 </div>
               </button>
-              
-              <form id="clearDataForm" method="POST" action="{% url 'clear_data' %}" style="width: 100%; max-width: 350px;">
+
+              <button id="seeReport" class="action-btn btn-report results-action-card" disabled>
+                <i class="fas fa-chart-pie"></i>
+                <div class="btn-text">
+                  <span class="btn-title">See Report</span>
+                  <span class="btn-subtitle">Open validation dashboard</span>
+                </div>
+              </button>
+                
+              <form id="clearDataForm" class="full" method="POST" action="{% url 'clear_data' %}">
                 {% csrf_token %}
-                <button type="submit" id="clearDataBtn" class="action-btn btn-delete" style="width: 100%; height: 100%;">
+                <button type="submit" id="clearDataBtn" class="action-btn btn-delete results-action-card" style="width: 100%;">
                   <i class="fas fa-broom"></i>
                   <div class="btn-text">
                     <span class="btn-title">Clear Data</span>
@@ -1494,18 +1574,6 @@
                 </button>
               </form>
             </div>
-            <!-- <button
-                id="showValid"
-                class="action-btn btn-admin-panel"
-                disabled
-              >
-                <i class="fas fa-check-circle"></i>
-                <div class="btn-text">
-                  <span class="btn-title">View Valid Images</span>
-                  <span class="btn-subtitle">Review failed validations</span>
-                </div>
-              </button> -->
-            <!-- Action Buttons moved to sidebar -->
           </div>
         </div>
         <!-- Configuration Tab -->

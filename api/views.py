@@ -68,6 +68,7 @@ import zipfile
 import json
 import threading
 import time
+from collections import Counter
 
 def health_check(request):
     return HttpResponse("OK")
@@ -384,6 +385,112 @@ def save_config(request):
             return HttpResponse(f"Error updating configuration: {str(e)}", status=400)
     else:
         return HttpResponse("Method not allowed", status=405)
+
+
+def _list_image_files(directory_path):
+    if not directory_path or not os.path.exists(directory_path):
+        return []
+    return sorted(
+        [
+            filename
+            for filename in os.listdir(directory_path)
+            if filename.lower().endswith((".jpg", ".jpeg", ".png", ".gif", ".bmp"))
+        ]
+    )
+
+
+def _build_validation_report(request):
+    path = request.session.get("path")
+    valid_directory = os.path.join(path, "valid") if path else None
+    invalid_directory = os.path.join(
+        settings.BASE_DIR, "api", "static", "api", "images", "invalid"
+    )
+    result_file = os.path.join(
+        settings.BASE_DIR, "api", "static", "api", "images", "result.csv"
+    )
+
+    valid_images = _list_image_files(valid_directory)
+    invalid_images = _list_image_files(invalid_directory)
+
+    invalid_reasons_by_image = {}
+    if os.path.exists(result_file):
+        with open(result_file, "r", encoding="utf-8") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                if not row:
+                    continue
+                image_filename = row[0].strip()
+                if not image_filename or image_filename.startswith("#"):
+                    continue
+                reasons = [reason.strip() for reason in row[1:] if reason and reason.strip()]
+                invalid_reasons_by_image[image_filename] = reasons or ["Issue details unavailable"]
+
+    invalid_records = []
+    for filename in invalid_images:
+        invalid_records.append(
+            {
+                "filename": filename,
+                "reasons": invalid_reasons_by_image.get(filename, ["Issue details unavailable"]),
+            }
+        )
+
+    valid_count = len(valid_images)
+    invalid_count = len(invalid_records)
+    computed_total = valid_count + invalid_count
+    session_total = request.session.get("total_images_count", 0)
+    total_images = max(session_total, computed_total)
+
+    valid_percentage = round((valid_count / total_images) * 100, 1) if total_images else 0.0
+    invalid_percentage = round((invalid_count / total_images) * 100, 1) if total_images else 0.0
+
+    issue_image_counter = Counter()
+    issue_occurrence_counter = Counter()
+    for invalid_record in invalid_records:
+        unique_issues = set(invalid_record["reasons"])
+        for issue in unique_issues:
+            issue_image_counter[issue] += 1
+        for issue in invalid_record["reasons"]:
+            issue_occurrence_counter[issue] += 1
+
+    total_issue_occurrences = sum(issue_occurrence_counter.values())
+    issue_distribution = []
+    for issue, affected_images in issue_image_counter.most_common():
+        occurrence_count = issue_occurrence_counter[issue]
+        issue_distribution.append(
+            {
+                "issue": issue,
+                "affected_images": affected_images,
+                "affected_images_pct": round((affected_images / invalid_count) * 100, 1) if invalid_count else 0.0,
+                "occurrence_count": occurrence_count,
+                "occurrence_pct": round((occurrence_count / total_issue_occurrences) * 100, 1)
+                if total_issue_occurrences
+                else 0.0,
+            }
+        )
+
+    top_issue_distribution = issue_distribution[:8]
+
+    return {
+        "has_data": total_images > 0,
+        "path_found": bool(path and os.path.exists(path)),
+        "total_images": total_images,
+        "valid_count": valid_count,
+        "invalid_count": invalid_count,
+        "valid_percentage": valid_percentage,
+        "invalid_percentage": invalid_percentage,
+        "issue_distribution": issue_distribution,
+        "top_issue_distribution": top_issue_distribution,
+        "invalid_records": invalid_records,
+        "issue_labels_json": json.dumps([item["issue"] for item in top_issue_distribution]),
+        "issue_values_json": json.dumps([item["affected_images"] for item in top_issue_distribution]),
+        "status_labels_json": json.dumps(["Valid", "Invalid"]),
+        "status_values_json": json.dumps([valid_count, invalid_count]),
+    }
+
+
+def validation_report(request):
+    report = _build_validation_report(request)
+    return render(request, "api/validation_report.html", report)
 
 
 def image_gallery(request):

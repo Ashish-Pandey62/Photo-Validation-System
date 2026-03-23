@@ -24,12 +24,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '*5gbl+xa_@tu65rcsgdlmab#@blby1=-=l*k(sfnl(8q)#@njs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() in ('1', 'true', 'yes', 'on')
 
 # ALLOWED_HOSTS = [os.environ.get("hostname")]
 ALLOWED_HOSTS = ['*']
-CSRF_COOKIE_SECURE=True
-CSRF_TRUSTED_ORIGINS=['https://*','https://api.linkify.social','https://photo.itclub.asmitphuyal.com.np']
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_TRUSTED_ORIGINS = ['https://*', 'https://api.linkify.social', 'https://photo.itclub.asmitphuyal.com.np']
 
 # Application definition
 

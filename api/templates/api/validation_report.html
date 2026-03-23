@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Validation Report - Photo Validation System</title>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --background-color: #ffffff;
+        --background-alt: #f8fafc;
+        --surface-color: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --text-muted: #94a3b8;
+        --border-color: #e2e8f0;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --radius-sm: 6px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: rgb(243, 242, 247);
+        color: var(--text-primary);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.5;
+        font-size: 14px;
+        padding-top: 80px;
+      }
+
+      .header {
+        text-align: center;
+        padding: 1rem 2rem;
+        background: var(--background-color);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+      }
+
+      .header h1 {
+        font-family: "Poppins", sans-serif;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      .header h1 i {
+        color: var(--primary-color);
+      }
+
+      .header p {
+        color: var(--text-secondary);
+        margin-top: 0.4rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .nav-bar {
+        background: var(--background-color);
+        border-radius: var(--radius-lg);
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: var(--shadow-md);
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+      }
+
+      .nav-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        padding: 0.65rem 1rem;
+        border-radius: var(--radius-md);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .nav-link:hover {
+        color: var(--primary-color);
+        background: var(--background-alt);
+      }
+
+      .nav-link.active {
+        color: var(--primary-color);
+        background: var(--background-alt);
+        font-weight: 600;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        margin-left: auto;
+      }
+
+      .btn {
+        border: 1px solid var(--border-color);
+        background: var(--background-color);
+        color: var(--text-primary);
+        text-decoration: none;
+        padding: 0.65rem 0.95rem;
+        border-radius: var(--radius-md);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn:hover {
+        border-color: var(--text-muted);
+        background: var(--background-alt);
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .summary-card {
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1.2rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .summary-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+      }
+
+      .summary-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-top: 0.5rem;
+        color: var(--text-primary);
+      }
+
+      .value-valid {
+        color: var(--success-color);
+      }
+
+      .value-invalid {
+        color: var(--danger-color);
+      }
+
+      .value-total {
+        color: var(--primary-color);
+      }
+
+      .chart-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .panel {
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 1rem;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .panel h3 {
+        font-size: 1rem;
+        color: var(--text-primary);
+        margin-bottom: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .panel-subtitle {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: 0.8rem;
+      }
+
+      .chart-wrap {
+        position: relative;
+        height: 280px;
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.65rem 0.6rem;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      td {
+        color: var(--text-primary);
+      }
+
+      .issue-pill {
+        display: inline-block;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+        border: 1px solid #fecaca;
+        background: #fee2e2;
+        color: #b91c1c;
+        font-size: 0.75rem;
+        margin: 0.1rem 0.2rem 0.1rem 0;
+      }
+
+      .empty {
+        background: var(--background-color);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-lg);
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .empty i {
+        font-size: 2.4rem;
+        color: var(--text-muted);
+        margin-bottom: 0.8rem;
+      }
+
+      .empty p {
+        color: var(--text-secondary);
+      }
+
+      @media (max-width: 900px) {
+        .chart-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .container {
+          padding: 1rem;
+        }
+
+        .header h1 {
+          font-size: 1.55rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1><i class="fas fa-chart-pie"></i> Validation Report Dashboard</h1>
+      <p>Detailed analytics for the latest validation run</p>
+    </div>
+
+    <div class="container">
+      <nav class="nav-bar">
+        <div class="nav-links">
+          <a href="{% url 'startPage' %}" class="nav-link"><i class="fas fa-home"></i> Home</a>
+          <a href="{% url 'image_gallery' %}" class="nav-link"><i class="fas fa-exclamation-triangle"></i> Invalid Images</a>
+          <a href="{% url 'valid_images_gallery' %}" class="nav-link"><i class="fas fa-check-circle"></i> Valid Images</a>
+          <a href="{% url 'validation_report' %}" class="nav-link active"><i class="fas fa-chart-pie"></i> Report</a>
+        </div>
+        <div class="actions">
+          <a href="{% url 'download_csv' %}" class="btn"><i class="fas fa-download"></i> Results CSV</a>
+          <a href="{% url 'download_invalid_images' %}" class="btn"><i class="fas fa-file-archive"></i> Invalid ZIP</a>
+          <a href="{% url 'download_valid_images' %}" class="btn"><i class="fas fa-file-archive"></i> Valid ZIP</a>
+        </div>
+      </nav>
+
+      {% if has_data %}
+      <section class="summary-grid">
+        <article class="summary-card">
+          <div class="summary-label">Total Images</div>
+          <div class="summary-value value-total">{{ total_images }}</div>
+        </article>
+        <article class="summary-card">
+          <div class="summary-label">Validated (Passed)</div>
+          <div class="summary-value value-valid">{{ valid_count }}</div>
+          <div class="summary-label">{{ valid_percentage }}%</div>
+        </article>
+        <article class="summary-card">
+          <div class="summary-label">Invalidated (Failed)</div>
+          <div class="summary-value value-invalid">{{ invalid_count }}</div>
+          <div class="summary-label">{{ invalid_percentage }}%</div>
+        </article>
+      </section>
+
+      <section class="chart-grid">
+        <article class="panel">
+          <h3><i class="fas fa-chart-donut"></i> Validation Distribution</h3>
+          <p class="panel-subtitle">Share of valid vs invalid images</p>
+          <div class="chart-wrap">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </article>
+        <article class="panel">
+          <h3><i class="fas fa-chart-bar"></i> Top Invalidation Issues</h3>
+          <p class="panel-subtitle">Number of invalid images affected by each issue</p>
+          <div class="chart-wrap">
+            <canvas id="issueChart"></canvas>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel" style="margin-top: 1rem;">
+        <h3><i class="fas fa-table"></i> Invalidation Issue Breakdown</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Issue</th>
+                <th>Affected Invalid Images</th>
+                <th>% of Invalid Images</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in issue_distribution %}
+              <tr>
+                <td>{{ item.issue }}</td>
+                <td>{{ item.affected_images }}</td>
+                <td>{{ item.affected_images_pct }}%</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {% else %}
+      <div class="empty">
+        <i class="fas fa-inbox"></i>
+        <h3>No validation data available</h3>
+        <p>Upload a ZIP and run validation to generate this report dashboard.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if has_data %}
+    <script>
+      const statusLabels = {{ status_labels_json|safe }};
+      const statusValues = {{ status_values_json|safe }};
+      const issueLabels = {{ issue_labels_json|safe }};
+      const issueValues = {{ issue_values_json|safe }};
+
+      const statusCtx = document.getElementById("statusChart");
+      if (statusCtx) {
+        new Chart(statusCtx, {
+          type: "doughnut",
+          data: {
+            labels: statusLabels,
+            datasets: [{
+              data: statusValues,
+              backgroundColor: ["#10b981", "#ef4444"],
+              borderColor: ["#0f766e", "#b91c1c"],
+              borderWidth: 1,
+            }],
+          },
+          options: {
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+      }
+
+      const issueCtx = document.getElementById("issueChart");
+      if (issueCtx) {
+        new Chart(issueCtx, {
+          type: "bar",
+          data: {
+            labels: issueLabels,
+            datasets: [{
+              label: "Affected Invalid Images",
+              data: issueValues,
+              backgroundColor: "rgba(37, 99, 235, 0.8)",
+              borderColor: "#1d4ed8",
+              borderWidth: 1,
+              borderRadius: 6,
+            }],
+          },
+          options: {
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            scales: {
+              x: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0,
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+          },
+        });
+      }
+    </script>
+    {% endif %}
+  </body>
+</html>
