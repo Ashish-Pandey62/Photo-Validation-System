@@ -97,7 +97,7 @@ A robust Django-based web application for automated photo validation with compre
 
 2. **Run the container**
    ```bash
-   docker run -p 8000:8000 photo-validator
+docker run -p 3000:3000 photo-validator
    ```
 
 ## 📖 Usage
