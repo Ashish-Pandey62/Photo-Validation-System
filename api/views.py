@@ -470,6 +470,40 @@ def _build_validation_report(request):
 
     top_issue_distribution = issue_distribution[:8]
 
+    # Pareto data: issue count + cumulative contribution percentage
+    pareto_labels = [item["issue"] for item in top_issue_distribution]
+    pareto_values = [item["affected_images"] for item in top_issue_distribution]
+    pareto_total = sum(pareto_values)
+    running_total = 0
+    pareto_cumulative = []
+    for value in pareto_values:
+        running_total += value
+        pareto_cumulative.append(round((running_total / pareto_total) * 100, 1) if pareto_total else 0.0)
+
+    # Co-occurrence matrix for top issues
+    cooccurrence_issues = pareto_labels[:6]
+    issue_index = {issue: idx for idx, issue in enumerate(cooccurrence_issues)}
+    matrix_size = len(cooccurrence_issues)
+    cooccurrence_matrix = [[0 for _ in range(matrix_size)] for _ in range(matrix_size)]
+
+    for invalid_record in invalid_records:
+        present_issues = [issue for issue in set(invalid_record["reasons"]) if issue in issue_index]
+        for issue in present_issues:
+            idx = issue_index[issue]
+            cooccurrence_matrix[idx][idx] += 1
+
+        for i in range(len(present_issues)):
+            for j in range(i + 1, len(present_issues)):
+                idx_i = issue_index[present_issues[i]]
+                idx_j = issue_index[present_issues[j]]
+                cooccurrence_matrix[idx_i][idx_j] += 1
+                cooccurrence_matrix[idx_j][idx_i] += 1
+
+    cooccurrence_max = 0
+    for row in cooccurrence_matrix:
+        if row:
+            cooccurrence_max = max(cooccurrence_max, max(row))
+
     return {
         "has_data": total_images > 0,
         "path_found": bool(path and os.path.exists(path)),
@@ -483,6 +517,12 @@ def _build_validation_report(request):
         "invalid_records": invalid_records,
         "issue_labels_json": json.dumps([item["issue"] for item in top_issue_distribution]),
         "issue_values_json": json.dumps([item["affected_images"] for item in top_issue_distribution]),
+        "pareto_labels_json": json.dumps(pareto_labels),
+        "pareto_values_json": json.dumps(pareto_values),
+        "pareto_cumulative_json": json.dumps(pareto_cumulative),
+        "cooccurrence_labels_json": json.dumps(cooccurrence_issues),
+        "cooccurrence_matrix_json": json.dumps(cooccurrence_matrix),
+        "cooccurrence_max": cooccurrence_max,
         "status_labels_json": json.dumps(["Valid", "Invalid"]),
         "status_values_json": json.dumps([valid_count, invalid_count]),
     }

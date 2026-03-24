@@ -212,6 +212,19 @@
         margin: 1rem 0;
       }
 
+      .heatmap-wrap {
+        overflow-x: auto;
+      }
+
+      .heatmap-canvas {
+        width: 100%;
+        height: 320px;
+        display: block;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        background: #fff;
+      }
+
       .panel {
         background: var(--background-color);
         border: 1px solid var(--border-color);
@@ -368,28 +381,21 @@
         </article>
       </section>
 
-      <section class="panel" style="margin-top: 1rem;">
-        <h3><i class="fas fa-table"></i> Invalidation Issue Breakdown</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Issue</th>
-                <th>Affected Invalid Images</th>
-                <th>% of Invalid Images</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in issue_distribution %}
-              <tr>
-                <td>{{ item.issue }}</td>
-                <td>{{ item.affected_images }}</td>
-                <td>{{ item.affected_images_pct }}%</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+      <section class="chart-grid">
+        <article class="panel">
+          <h3><i class="fas fa-chart-line"></i> Invalidation Pareto Analysis</h3>
+          <p class="panel-subtitle">Bars show affected images; line shows cumulative impact (%)</p>
+          <div class="chart-wrap">
+            <canvas id="paretoChart"></canvas>
+          </div>
+        </article>
+        <article class="panel">
+          <h3><i class="fas fa-th"></i> Issue Co-occurrence Heatmap</h3>
+          <p class="panel-subtitle">Darker cells indicate issues frequently failing together</p>
+          <div class="heatmap-wrap">
+            <canvas id="cooccurrenceHeatmap" class="heatmap-canvas"></canvas>
+          </div>
+        </article>
       </section>
 
       {% else %}
@@ -403,10 +409,17 @@
 
     {% if has_data %}
     <script>
-      const statusLabels = {{ status_labels_json|safe }};
-      const statusValues = {{ status_values_json|safe }};
-      const issueLabels = {{ issue_labels_json|safe }};
-      const issueValues = {{ issue_values_json|safe }};
+      const statusLabels = JSON.parse('{{ status_labels_json|escapejs }}');
+      const statusValues = JSON.parse('{{ status_values_json|escapejs }}');
+      const issueLabels = JSON.parse('{{ issue_labels_json|escapejs }}');
+      const issueValues = JSON.parse('{{ issue_values_json|escapejs }}');
+
+      const paretoLabels = JSON.parse('{{ pareto_labels_json|escapejs }}');
+      const paretoValues = JSON.parse('{{ pareto_values_json|escapejs }}');
+      const paretoCumulative = JSON.parse('{{ pareto_cumulative_json|escapejs }}');
+      const cooccurrenceLabels = JSON.parse('{{ cooccurrence_labels_json|escapejs }}');
+      const cooccurrenceMatrix = JSON.parse('{{ cooccurrence_matrix_json|escapejs }}');
+      const cooccurrenceMax = Number('{{ cooccurrence_max }}');
 
       const statusCtx = document.getElementById("statusChart");
       if (statusCtx) {
@@ -466,6 +479,156 @@
           },
         });
       }
+
+      const paretoCtx = document.getElementById("paretoChart");
+      if (paretoCtx) {
+        new Chart(paretoCtx, {
+          data: {
+            labels: paretoLabels,
+            datasets: [
+              {
+                type: "bar",
+                label: "Affected Invalid Images",
+                data: paretoValues,
+                backgroundColor: "rgba(239, 68, 68, 0.75)",
+                borderColor: "#b91c1c",
+                borderWidth: 1,
+                borderRadius: 6,
+                yAxisID: "y",
+              },
+              {
+                type: "line",
+                label: "Cumulative %",
+                data: paretoCumulative,
+                borderColor: "#2563eb",
+                backgroundColor: "#2563eb",
+                tension: 0.25,
+                pointRadius: 3,
+                yAxisID: "y1",
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  precision: 0,
+                },
+              },
+              y1: {
+                beginAtZero: true,
+                max: 100,
+                position: "right",
+                grid: {
+                  drawOnChartArea: false,
+                },
+                ticks: {
+                  callback: (value) => `${value}%`,
+                },
+              },
+            },
+            plugins: {
+              legend: {
+                position: "bottom",
+              },
+            },
+          },
+        });
+      }
+
+      function drawCooccurrenceHeatmap(canvas, labels, matrix, maxValue) {
+        if (!canvas || !Array.isArray(labels) || !Array.isArray(matrix) || labels.length === 0) {
+          return;
+        }
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          return;
+        }
+
+        const n = labels.length;
+        const dpr = window.devicePixelRatio || 1;
+        const cssWidth = canvas.clientWidth || 720;
+
+        const marginLeft = 180;
+        const marginTop = 40;
+        const marginRight = 20;
+        const marginBottom = 90;
+        const minCell = 24;
+
+        const desiredGridWidth = Math.max(minCell * n, cssWidth - marginLeft - marginRight);
+        const cssHeight = marginTop + desiredGridWidth / n * n + marginBottom;
+
+        canvas.width = Math.floor(cssWidth * dpr);
+        canvas.height = Math.floor(cssHeight * dpr);
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+
+        const drawWidth = cssWidth - marginLeft - marginRight;
+        const drawHeight = cssHeight - marginTop - marginBottom;
+        const cellSize = Math.max(minCell, Math.min(drawWidth / n, drawHeight / n));
+        const gridWidth = cellSize * n;
+        const gridHeight = cellSize * n;
+        const startX = marginLeft;
+        const startY = marginTop;
+        const denominator = maxValue > 0 ? maxValue : 1;
+
+        ctx.clearRect(0, 0, cssWidth, cssHeight);
+        ctx.font = "12px Inter, sans-serif";
+        ctx.textBaseline = "middle";
+
+        for (let i = 0; i < n; i++) {
+          for (let j = 0; j < n; j++) {
+            const value = Number((matrix[i] && matrix[i][j]) || 0);
+            const intensity = value / denominator;
+            const alpha = 0.08 + intensity * 0.82;
+            ctx.fillStyle = `rgba(37, 99, 235, ${alpha})`;
+            const x = startX + j * cellSize;
+            const y = startY + i * cellSize;
+            ctx.fillRect(x, y, cellSize, cellSize);
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.strokeRect(x, y, cellSize, cellSize);
+
+            ctx.fillStyle = intensity > 0.55 ? "#ffffff" : "#0f172a";
+            ctx.textAlign = "center";
+            ctx.fillText(String(value), x + cellSize / 2, y + cellSize / 2);
+          }
+        }
+
+        ctx.fillStyle = "#334155";
+        ctx.textAlign = "right";
+        for (let i = 0; i < n; i++) {
+          const y = startY + i * cellSize + cellSize / 2;
+          ctx.fillText(labels[i], startX - 8, y);
+        }
+
+        ctx.save();
+        ctx.textAlign = "center";
+        for (let j = 0; j < n; j++) {
+          const x = startX + j * cellSize + cellSize / 2;
+          ctx.save();
+          ctx.translate(x, startY + gridHeight + 10);
+          ctx.rotate(-Math.PI / 3.5);
+          ctx.fillText(labels[j], 0, 0);
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+
+      const cooccurrenceCanvas = document.getElementById("cooccurrenceHeatmap");
+      const renderHeatmap = () =>
+        drawCooccurrenceHeatmap(
+          cooccurrenceCanvas,
+          cooccurrenceLabels,
+          cooccurrenceMatrix,
+          cooccurrenceMax
+        );
+
+      renderHeatmap();
+      window.addEventListener("resize", renderHeatmap);
     </script>
     {% endif %}
   </body>
